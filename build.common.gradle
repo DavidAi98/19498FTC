@@ -21,7 +21,7 @@ apply plugin: 'com.android.application'
 
 android {
 
-    compileSdkVersion 30
+    compileSdkVersion 34
 
     signingConfigs {
         release {
@@ -79,7 +79,7 @@ android {
         matcher.find()
         def vName = matcher.group(1)
         //
-        versionCode vCode
+        versionCode 1000
         versionName vName
     }
 
