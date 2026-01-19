@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.TeleOp;
+package org.firstinspires.ftc.teamcode.OpMode.TeleOp;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
@@ -15,8 +15,8 @@ public class ServoTuner extends OpMode {
     public TelemetryPacket packet = new TelemetryPacket();
 
     public void init(){
-        spindexer1 = hardwareMap.get(Servo.class, "spindexer1");
-        spindexer2 = hardwareMap.get(Servo.class, "spindexer2");
+        spindexer1 = hardwareMap.get(Servo.class, "turret1");
+        spindexer2 = hardwareMap.get(Servo.class, "turret2");
     }
     public void loop(){
         packet.put("Spindexer 1 Position", spindexer1Position);

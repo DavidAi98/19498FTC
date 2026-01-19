@@ -1,6 +1,7 @@
-package org.firstinspires.ftc.teamcode.TeleOp;
+package org.firstinspires.ftc.teamcode.OpMode.TeleOp.SubSystem;
 
 import com.acmerobotics.dashboard.config.Config;
+
 import java.util.TreeMap;
 
 @Config
@@ -10,12 +11,11 @@ public class Constant {
     public static String motif = "PPG"; // The target color pattern
 
     // --- Drive & Odometry ---
-    // Offsets for the GoBilda Pinpoint Sensor
-    public static double magicConstant = 1;
     // forward = x+
     // left = y+
-    public static double ODO_X_OFFSET = 166.771; //straf pod
-    public static double ODO_Y_OFFSET = -68; //forward pod
+    public static double deltaTime = 0.1;
+    public static double ODO_X_OFFSET = 121.271; //straf pod
+    public static double ODO_Y_OFFSET = -60; //forward pod
     public static double ODO_YAW_SCALAR = 1.000861242911554;
     public static double ODO_TICK_PER_UNIT = 0; //2.919045586*(119/115); why tf is the document formula like this
 
@@ -32,17 +32,18 @@ public class Constant {
 //    public static double kV = 0.0003804471334;
 //    public static double kS = 0.04348887;
 //    public static double NOMINAL_VOLTAGE = 12.5;
-    public static double kP = 0.0029;
+    public static double kP = 0.004;
     public static double kI = 0.0;
-    public static double kD = 0.00004;
-    public static double kV = 0.0003804471334;
-    public static double kS = 0.04348887;
-    public static double NOMINAL_VOLTAGE = 13.0;
+    public static double kD = 0.08;
+    public static double kV = 0.00036114812667215992241;
+    public static double kS = 0.067;
+    public static double NOMINAL_VOLTAGE = 12.67;
 
     // --- Turret ---
-    public static double TURRET_LEFT_MAX = 0.01;
-    public static double TURRET_RIGHT_MAX = 0.925;
-    public static double TURRET_INIT = 0.01;
+    public static double TURRET_MIN = 0.059;
+    public static double TURRET_MAX = 0.9725;
+    public static double TURRET_RANGE = TURRET_MAX-TURRET_MIN;
+    public static double TURRET_INIT = TURRET_RANGE/2 + TURRET_MIN;
     public static double TURRET_ANTIBACKLASH = 0.0005;
 
     // --- Hood ---
@@ -50,22 +51,21 @@ public class Constant {
     public static double HOOD_MAX = 0.17;
 
     // --- Pivot ---
-    public static double LEFT_PIVOT_UP = 0.05;
-    public static double RIGHT_PIVOT_UP = 0.05;
+    public static double PIVOT_UP = 0.05;
     public static double PIVOT_DOWN = 1.0;
 
     // --- Spindexer Positions ---
     // Intake
-    public static double SPINDEXER_INTAKE_POS1 = 0.06;
-    public static double SPINDEXER_INTAKE_POS2 = 0.35;
-    public static double SPINDEXER_INTAKE_POS3 = 0.62;
+    public static double SPINDEXER_INTAKE_POS1 = 0.0025;
+    public static double SPINDEXER_INTAKE_POS2 = 0.145;
+    public static double SPINDEXER_INTAKE_POS3 = 0.2825;
 
     // Outtake
-    public static double SPINDEXER_OUTTAKE_POS1 = 0.48;
-    public static double SPINDEXER_OUTTAKE_POS2 = 0.76;
-    public static double SPINDEXER_OUTTAKE_POS3 = 0.2;
+    public static double SPINDEXER_OUTTAKE_POS1 = 0.2135;
+    public static double SPINDEXER_OUTTAKE_POS2 = 0.355;
+    public static double SPINDEXER_OUTTAKE_POS3 = 0.0775;
 
-    public static double SPINDEXER_INIT = 0.06;
+    public static double SPINDEXER_INIT = SPINDEXER_INTAKE_POS1;
     public static double SPINDEXER_ANTIBACKLASH = 0.003;
 
     // --- Intake Motor ---
@@ -99,6 +99,6 @@ public class Constant {
 
     // camera
     public static double hTarget = 0.747;   // meters
-    public static double hCamera = 0.35941;   // meters
+    public static double hCamera = 0.3468015;   // meters
     public static double cameraAngle = 15;  // degrees
 }
