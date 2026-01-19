@@ -74,8 +74,8 @@ public class Spindexer {
 
         switch (intakeStage) {
             case 0: // Detection
-                if (artifacts.size() < 3 && colorSensor.blue() >= 100 && colorSensor.green() >= 100) {
-                    String color = (colorSensor.blue() > colorSensor.green()) ? "P" : "G";
+                if (artifacts.size() < 3 && colorSensor.blue() >= 150 && colorSensor.green() >= 150) {
+                    String color = (colorSensor.blue() >= colorSensor.green()) ? "P" : "G";
                     artifacts.add(new Artifact(color, getOuttakePos(intakeIndex)));
                     intakeStage = 1;
                 }
