@@ -1,12 +1,14 @@
-package org.firstinspires.ftc.teamcode.OpMode.TeleOp.SubSystem;
+package org.firstinspires.ftc.teamcode.OpMode.TeleOp.SubSystem.teamcode.OpMode.TeleOp.SubSystem;
 
 import androidx.annotation.NonNull;
+
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
+
 import java.util.ArrayList;
 
 public class Spindexer {

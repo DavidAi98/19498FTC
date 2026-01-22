@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.OpMode.TeleOp.SubSystem;
+package org.firstinspires.ftc.teamcode.OpMode.TeleOp.SubSystem.teamcode.OpMode.TeleOp.SubSystem;
 
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.robotcore.hardware.DcMotor;
