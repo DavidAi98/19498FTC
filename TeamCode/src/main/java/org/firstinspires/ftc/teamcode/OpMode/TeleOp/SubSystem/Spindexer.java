@@ -12,11 +12,12 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 public class Spindexer {
     public DcMotor spindexerEncoder, intake;
     public Servo spindexer1, spindexer2, leftPivot, rightPivot;
-    public ColorSensor colorSensor;
+    public ColorSensor colorSensor1, colorSensor2;
     private VoltageSensor battery;
 
     public Artifact[] slots = new Artifact[3];
     public int artifactCount = 0;
+    private String color;
 
     private ElapsedTime stateTimer = new ElapsedTime();
     private ElapsedTime pivotTimer = new ElapsedTime();
@@ -48,7 +49,8 @@ public class Spindexer {
         spindexer2 = hwMap.get(Servo.class, "spindexer2");
         leftPivot = hwMap.get(Servo.class, "LeftPivot");
         rightPivot = hwMap.get(Servo.class, "RightPivot");
-        colorSensor = hwMap.get(ColorSensor.class, "colorSensor");
+        colorSensor1 = hwMap.get(ColorSensor.class, "colorSensor1");
+        colorSensor2 = hwMap.get(ColorSensor.class, "colorSensor2");
         spindexerEncoder = hwMap.get(DcMotor.class, "SpindexerEncoder");
         spindexerEncoder.setDirection(DcMotorSimple.Direction.REVERSE);
         battery = hwMap.voltageSensor.iterator().next();
@@ -59,9 +61,9 @@ public class Spindexer {
         intake.setPower(0);
     }
 
-    public void update(boolean fireButton, boolean shooterReady, boolean purpleButton, boolean greenButton) {
+    public void update(boolean fireButton, boolean shooterReady, boolean purpleButton, boolean greenButton, boolean skipSlotButton) {
         if (encoderResetDone) {
-            handleIntakeLogic();
+            handleIntakeLogic(skipSlotButton);
             handleOuttakeLogic(fireButton, shooterReady, purpleButton, greenButton);
         } else {
             intakeStage = -1;
@@ -92,7 +94,7 @@ public class Spindexer {
         }
         setSpindexer(Constant.OUTTAKE_POS2);
         if (inverseTimer.milliseconds() < Constant.INVERSE_TIMER && withinTarget(Constant.OUTTAKE_POS2_TICK, 400)) {
-            intake.setPower(-0.8);
+            intake.setPower(-1);
         } else {
             intake.setPower(0);
         }
@@ -105,7 +107,7 @@ public class Spindexer {
     }
     public void stopOuttake() { outtakeStage = -1; }
 
-    private void handleIntakeLogic() {
+    private void handleIntakeLogic(boolean skipSlot) {
         if (intakeStage == -1) {
             // Antistuck
             if (artifactCount == 3 && outtakeStage == -1) inverseIntake();
@@ -117,8 +119,10 @@ public class Spindexer {
 
         switch (intakeStage) {
             case 1: // Color sensing
-                if (artifactCount < 3 && colorSensor.blue() >= 150 && colorSensor.green() >= 150) {
-                    String color = (colorSensor.blue() >= colorSensor.green()) ? "P" : "G";
+                boolean color1Detected = artifactCount < 3 && colorSensor1.blue() >= 150 && colorSensor1.green() >= 150;
+                boolean color2Detected = artifactCount < 3 && colorSensor2.blue() >= 150 && colorSensor2.green() >= 150;
+                if (skipSlot || color2Detected) {
+                    color = (colorSensor2.blue() >= colorSensor2.green()) ? "P" : "G";
 
                     // Record artifact into slots Array
                     slots[Index - 1] = new Artifact(color, getOuttakePos(Index));
@@ -363,6 +367,11 @@ public class Spindexer {
                 break;
         }
     }
+    public double getIntakePos(int i) { return (i==1) ? Constant.INTAKE_POS1 : (i==2) ? Constant.INTAKE_POS2 : Constant.INTAKE_POS3; }
+    public double getOuttakePos(int i) { return (i==1) ? Constant.OUTTAKE_POS1 : (i==2) ? Constant.OUTTAKE_POS2 : Constant.OUTTAKE_POS3; }
+    public int getOuttakeTick(int i) { return (i==1) ? Constant.OUTTAKE_POS1_TICK : (i==2) ? Constant.OUTTAKE_POS2_TICK : Constant.OUTTAKE_POS3_TICK; }
+    public int getIntakeTick(int i) { return (i==1) ? Constant.INTAKE_POS1_TICK : (i==2) ? Constant.INTAKE_POS2_TICK : Constant.INTAKE_POS3_TICK; }
+}
 
     private void handleAutonOuttakeLogic(String motif, boolean shooterReady) {
 

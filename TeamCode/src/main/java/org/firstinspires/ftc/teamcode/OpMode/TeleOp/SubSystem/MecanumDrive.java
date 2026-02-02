@@ -11,13 +11,15 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 
 public class MecanumDrive {
+    Pose2D pos;
     public DcMotor leftFront, rightFront, leftBack, rightBack;
     public GoBildaPinpointDriver pinpoint;
     private double dx, dy;
-    public double headingDeg;
+    public double botX, botY;
+    public double turretX, turretY;
+    public double headingDeg, headingRad;
     public boolean calibrating = false;
     public ElapsedTime calibrateTimer = new ElapsedTime();
-    Pose2D pos;
 
     public MecanumDrive(HardwareMap hwMap) {
         // Initialize Motors
@@ -46,38 +48,40 @@ public class MecanumDrive {
     }
 
     public void updateRelativePostion(double targetX, double targetY) {
+        // elementry pos
         pos = pinpoint.getPosition();
+        botX = pos.getX(DistanceUnit.INCH);
+        botY = pos.getY(DistanceUnit.INCH);
         headingDeg = pos.getHeading(AngleUnit.DEGREES);
-        dx = pos.getX(DistanceUnit.INCH) - targetX;
-        dy = pos.getY(DistanceUnit.INCH) - targetY;
+        headingRad = pos.getHeading(AngleUnit.RADIANS);
+        // advance calculations
+        turretX = botX - Constant.TURRET_OFFSET * Math.cos(headingRad);
+        turretY = botY - Constant.TURRET_OFFSET * Math.sin(headingRad);
+        dx = turretX - targetX;
+        dy = turretY - targetY;
     }
 
     // Mecanum drive
     public void drive(double y, double x, double rx, boolean fieldCentric) {
-        if (!calibrating) {
-            if (fieldCentric) {
-                double headingRad = Math.toRadians(headingDeg);
-                double rotX = x * Math.cos(-headingRad) - y * Math.sin(-headingRad);
-                double rotY = x * Math.sin(-headingRad) + y * Math.cos(-headingRad);
-                x = rotX;
-                y = rotY;
-            }
-            double denom = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1.0);
-            leftFront.setPower((y + x + rx) / denom);
-            leftBack.setPower((y - x + rx) / denom);
-            rightFront.setPower((y - x - rx) / denom);
-            rightBack.setPower((y + x - rx) / denom);
-        } else {
+        if (calibrating) {
             if (calibrateTimer.milliseconds() > Constant.CALIBRATE_TIMER) {
                 calibrating = false;
-            } else if (calibrateTimer.milliseconds() > 250) {
-                pinpoint.resetPosAndIMU();
+            } else if (calibrateTimer.milliseconds() > 125) {
+                pinpoint.setPosition(new Pose2D(DistanceUnit.INCH, 0, 0, AngleUnit.RADIANS, 0));
             }
-            leftFront.setPower(0);
-            leftBack.setPower(0);
-            rightFront.setPower(0);
-            rightBack.setPower(0);
+            return;
         }
+        if (fieldCentric) {
+            double rotX = x * Math.cos(-headingRad) - y * Math.sin(-headingRad);
+            double rotY = x * Math.sin(-headingRad) + y * Math.cos(-headingRad);
+            x = rotX;
+            y = rotY;
+        }
+        double denom = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1.0);
+        leftFront.setPower(!calibrating ? (y + x + rx) / denom : 0);
+        leftBack.setPower(!calibrating ? (y - x + rx) / denom : 0);
+        rightFront.setPower(!calibrating ? (y - x - rx) / denom : 0);
+        rightBack.setPower(!calibrating ? (y + x - rx) / denom : 0);
     }
 
     // --- Helper methods ---

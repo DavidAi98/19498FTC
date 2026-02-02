@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.OpMode.TeleOp;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.teamcode.OpMode.TeleOp.SubSystem.*;
@@ -10,12 +12,14 @@ public class BlueTeleOp extends OpMode {
     private Shooter shooter;
     private Spindexer spindexer;
     private boolean FieldCentric = false;
+    private FtcDashboard dashboard;
 
     @Override
     public void init() {
         drive = new MecanumDrive(hardwareMap);
         shooter = new Shooter(hardwareMap);
         spindexer = new Spindexer(hardwareMap);
+        dashboard = FtcDashboard.getInstance();
     }
 
     @Override
@@ -51,7 +55,6 @@ public class BlueTeleOp extends OpMode {
             if (spindexer.intakeStage == -1) spindexer.startIntake();
             else spindexer.stopIntake();
         }
-
         if (gamepad2.yWasPressed()) {
             if (spindexer.outtakeStage == -1) spindexer.startOuttake();
             else spindexer.stopOuttake();
@@ -60,7 +63,7 @@ public class BlueTeleOp extends OpMode {
         // 4. SUBSYSTEM UPDATES
         shooter.runShooter(spindexer.outtakeStage != -1);
         // Passing Fire Button (Left Bumper) and Shooter Ready state
-        spindexer.update(gamepad2.left_bumper, shooter.isReady(), gamepad2.dpadUpWasPressed(), gamepad2.dpadDownWasPressed());
+        spindexer.update(gamepad2.left_bumper, shooter.isReady(), gamepad2.dpadUpWasPressed(), gamepad2.dpadDownWasPressed(), gamepad1.leftBumperWasPressed());
 
         // 5. Visual Slot Logic
         StringBuilder slotVisual = new StringBuilder();
@@ -75,17 +78,34 @@ public class BlueTeleOp extends OpMode {
         }
 
         // 6. TELEMETRY
+        TelemetryPacket packet = new TelemetryPacket();
+        packet.put("kP", Constant.kP);
+        packet.put("kI", Constant.kI);
+        packet.put("kD", Constant.kD);
+        packet.put("kV", Constant.kV);
+        packet.put("kS", Constant.kS);
+        packet.put("target RPM", shooter.calculatedTargetVelocity);
+        packet.put("actual RPM", shooter.leftShooter.getVelocity());
+        dashboard.sendTelemetryPacket(packet);
         telemetry.addData("Spindexer Slots", slotVisual.toString());
         telemetry.addData("Field Centric", FieldCentric);
         telemetry.addData("Intake Stage", spindexer.intakeStage);
         telemetry.addData("Outtake Stage", spindexer.outtakeStage);
         telemetry.addData("Robot Heading", "%.2f", drive.headingDeg);
+        telemetry.addData("Target Velo", shooter.calculatedTargetVelocity);
         telemetry.addData("Velo Error", "%.1f", shooter.calculatedTargetVelocity - shooter.leftShooter.getVelocity());
         telemetry.addData("Distance (odo)", "%.2f", dist);
-        telemetry.addData("Distance (ll)", "%.2f", shooter.limelightDistanceInch);
         telemetry.addData("target ticks", spindexer.targetTicks);
         telemetry.addData("current ticks", spindexer.currentTicks);
         telemetry.addData("filteredAprilX", shooter.filteredAprilX);
+        telemetry.addData("Drive Pos",
+                "X=%.1f  Y=%.1f",
+                drive.botX,
+                drive.botY);
+        telemetry.addData("Turret Pos",
+                "X=%.1f  Y=%.1f",
+                drive.turretX,
+                drive.turretY);
         telemetry.update();
     }
 }

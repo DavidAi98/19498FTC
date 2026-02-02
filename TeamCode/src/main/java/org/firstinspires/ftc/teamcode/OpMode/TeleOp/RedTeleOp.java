@@ -59,7 +59,7 @@ public class RedTeleOp extends OpMode {
         // 4. SUBSYSTEM UPDATES
         shooter.runShooter(spindexer.outtakeStage != -1);
         // Passing Fire Button (Left Bumper) and Shooter Ready state
-        spindexer.update(gamepad2.left_bumper, shooter.isReady(), gamepad2.dpadUpWasPressed(), gamepad2.dpadDownWasPressed());
+        spindexer.update(gamepad2.left_bumper, shooter.isReady(), gamepad2.dpadUpWasPressed(), gamepad2.dpadDownWasPressed(), gamepad1.leftBumperWasPressed());
 
         // 5. Visual Slot Logic
         StringBuilder slotVisual = new StringBuilder();
@@ -81,10 +81,17 @@ public class RedTeleOp extends OpMode {
         telemetry.addData("Robot Heading", "%.2f", drive.headingDeg);
         telemetry.addData("Velo Error", "%.1f", shooter.calculatedTargetVelocity - shooter.leftShooter.getVelocity());
         telemetry.addData("Distance (odo)", "%.2f", dist);
-        telemetry.addData("Distance (ll)", "%.2f", shooter.limelightDistanceInch);
         telemetry.addData("target ticks", spindexer.targetTicks);
         telemetry.addData("current ticks", spindexer.currentTicks);
         telemetry.addData("filteredAprilX", shooter.filteredAprilX);
+        telemetry.addData("Drive Pos",
+                "X=%.1f  Y=%.1f",
+                drive.botX,
+                drive.botY);
+        telemetry.addData("Turret Pos",
+                "X=%.1f  Y=%.1f",
+                drive.turretX,
+                drive.turretY);
         telemetry.update();
     }
 }

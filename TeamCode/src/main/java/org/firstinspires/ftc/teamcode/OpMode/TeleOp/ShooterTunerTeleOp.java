@@ -33,6 +33,13 @@ public class ShooterTunerTeleOp extends OpMode {
     public static double HOOD_ANGLE = 45; // degrees (25–45)
     public double aprilx;
     public double filteredAprilX;
+    public static double kP = Constant.kP;
+    public static double kI = Constant.kI;
+    public static double kD = Constant.kD;
+
+    // Feedforward
+    public static double kV = Constant.kV;
+    public static double kS = Constant.kS;
 
     // ================= HARDWARE =================
     private DcMotor leftFront, rightFront, leftBack, rightBack;
@@ -95,7 +102,7 @@ public class ShooterTunerTeleOp extends OpMode {
         // ---- Control ----
         batteryVoltageSensor = hardwareMap.voltageSensor.iterator().next();
         shooterPID = new PIDFController(
-                new PIDCoefficients(Constant.kP, Constant.kI, Constant.kD)
+                new PIDCoefficients(kP, kI, kD)
         );
         dashboard = FtcDashboard.getInstance();
 
@@ -104,7 +111,7 @@ public class ShooterTunerTeleOp extends OpMode {
         odo = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
         odo.setOffsets(Constant.ODO_X_OFFSET, Constant.ODO_Y_OFFSET, DistanceUnit.MM);
         odo.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
-        odo.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.REVERSED, GoBildaPinpointDriver.EncoderDirection.FORWARD);
+        odo.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.FORWARD, GoBildaPinpointDriver.EncoderDirection.FORWARD);
         odo.setYawScalar(Constant.ODO_YAW_SCALAR);
         odo.recalibrateIMU();
         odo.resetPosAndIMU();
@@ -112,19 +119,26 @@ public class ShooterTunerTeleOp extends OpMode {
 
     @Override
     public void loop() {
+        shooterPID = new PIDFController(
+                new PIDCoefficients(kP, kI, kD)
+        );
 
         // ================= ODOMETRY =================
         odo.update();
         Pose2D pos = odo.getPosition();
 
-        double x = pos.getX(DistanceUnit.INCH);
-        double y = pos.getY(DistanceUnit.INCH);
-        double headingRad = pos.getHeading(AngleUnit.RADIANS);
+        pos = odo.getPosition();
+        double botX = pos.getX(DistanceUnit.INCH);
+        double botY = pos.getY(DistanceUnit.INCH);
         double headingDeg = pos.getHeading(AngleUnit.DEGREES);
+        double headingRad = pos.getHeading(AngleUnit.RADIANS);
+        // advance calculations
+        double turretX = botX - Constant.TURRET_OFFSET * Math.cos(headingRad);
+        double turretY = botY - Constant.TURRET_OFFSET * Math.sin(headingRad);
+        double dx = turretX - Constant.GOAL_CENTER_X;
+        double dy = turretY - Constant.BLUE_GOAL_CENTER_Y;
         filteredAprilX += aprilx * 0.08;
 
-        double dx = x - Constant.GOAL_CENTER_X;
-        double dy = y - Constant.RED_GOAL_CENTER_Y;
         double distance = Math.hypot(dx, dy);
 
         LLResult results = limelight.getLatestResult();
@@ -219,12 +233,22 @@ public class ShooterTunerTeleOp extends OpMode {
         packet.put("Hood Angle", hoodAngle);
         packet.put("Turret Pos", turretPos);
         packet.put("Turret Heading", turretHeading);
+        packet.put("kP", kP);
+        packet.put("kI", kI);
+        packet.put("kD", kD);
+        packet.put("kV", kV);
+        packet.put("kS", kS);
         dashboard.sendTelemetryPacket(packet);
 
         telemetry.addData("Distance", "%.2f", distance);
         telemetry.addData("Target RPM", TARGET_RPM);
         telemetry.addData("Actual RPM", "%.1f", leftShooter.getVelocity());
         telemetry.addData("Hood Angle", hoodAngle);
+        telemetry.addData("kP", kP);
+        telemetry.addData("kI", kI);
+        telemetry.addData("kD", kD);
+        telemetry.addData("kV", kV);
+        telemetry.addData("kS", kS);
         telemetry.update();
     }
 
@@ -234,12 +258,12 @@ public class ShooterTunerTeleOp extends OpMode {
         double currentVelo = leftShooter.getVelocity();
         double voltage = batteryVoltageSensor.getVoltage();
 
-        double ff = (Constant.kV * targetVelo) + (targetVelo > 0 ? Constant.kS : 0);
-
+        double ff = (kV * targetVelo) + (targetVelo > 0 ? kS : 0);
+        double error = Math.abs(currentVelo - targetVelo);
         shooterPID.setTargetPosition(targetVelo);
         double pid = shooterPID.update(currentVelo);
 
-        double power = (pid + ff) * (Constant.NOMINAL_VOLTAGE / voltage);
+        double power = (pid + ff)* (Constant.NOMINAL_VOLTAGE / voltage);
         double safe = Math.max(0, Math.min(1.0, power));
 
         leftShooter.setPower(safe);
