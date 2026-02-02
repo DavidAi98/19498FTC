@@ -22,22 +22,22 @@ public class Shooter {
     private VoltageSensor battery;
     private Limelight3A limelight;
 
-    public double calculatedTargetVelocity = 0.0;
-    private double calculatedHoodAngle = 0.0;
-    public double calculatedTurretPos = 0.0;
+    public double calculatedTargetVelocity, calculatedHoodAngle, calculatedTurretPos;
 
     // Original tracking variables
     public double limelightDistanceInch = -1;
     public double last_Distance = -1;
-    private double filteredAprilX = 0;
-    private double aprilx = 0;
+    public double filteredAprilX, aprilx;
+    private boolean motifDetected = false;
+
 
     public Shooter(HardwareMap hwMap) {
         leftShooter = hwMap.get(DcMotorEx.class, "LeftShooterMotor");
         rightShooter = hwMap.get(DcMotorEx.class, "RightShooterMotor");
         leftShooter.setDirection(DcMotorSimple.Direction.REVERSE);
         leftShooter.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        rightShooter.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        leftShooter.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightShooter.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         turret1 = hwMap.get(Servo.class, "turret1");
         turret2 = hwMap.get(Servo.class, "turret2");
@@ -65,25 +65,19 @@ public class Shooter {
 
                     // --- Your Original Polynomial Conversion ---
                     double limelightDistanceMeter = (Constant.hTarget - Constant.hCamera) / Math.tan(Math.toRadians(Constant.cameraAngle + ty));
-                    limelightDistanceInch = limelightDistanceMeter * 39.3700787;
-                    linearInterpolation(limelightDistanceInch);
+                    limelightDistanceInch = limelightDistanceMeter * 37.5;
+                    linearInterpolation(odoDistance);
                     last_Distance = limelightDistanceInch;
+                    break;
                 }
             }
         } else {
-            filteredAprilX = 0;
+//            filteredAprilX = 0;
             aprilx = 0;
-            linearInterpolation(odoDistance);
-//            if (last_Distance != -1) {
-//                linearInterpolation(last_Distance);
-//            } else {
-//                linearInterpolation(odoDistance);
-//            }
         }
     }
 
     public void updateTurret(double rawTurretAngle) {
-        // Original logic: turretHeading = referenceAngle + headingDeg + filteredAprilX
         filteredAprilX += aprilx * 0.08;
         double turretHeading = rawTurretAngle + filteredAprilX;
 
@@ -112,24 +106,73 @@ public class Shooter {
             calculatedHoodAngle = low.getValue()[1];
         }
 
-        if (calculatedTargetVelocity != 0) {
+        if (leftShooter.getVelocity() > 100) {
             double hoodServoPos = (Constant.HOOD_MAX - Constant.HOOD_INIT) / (45 - 25) * (calculatedHoodAngle - 45) + Constant.HOOD_MAX;
             hood.setPosition(hoodServoPos);
+        } else {
+            hood.setPosition(Constant.HOOD_INIT);
         }
     }
 
     public void runShooter(boolean active) {
-        double targetVelo = active ? calculatedTargetVelocity : 0.0;
-        double currentVelo = leftShooter.getVelocity();
-        double ff = (Constant.kV * targetVelo) + (targetVelo > 0 ? Constant.kS : 0);
-        shooterPID.setTargetPosition(targetVelo);
+        if (!active) {
+            leftShooter.setPower(0);
+            rightShooter.setPower(0);
+            return;
+        }
 
-        double power = (shooterPID.update(currentVelo) + ff) * (Constant.NOMINAL_VOLTAGE / battery.getVoltage());
-        leftShooter.setPower(active ? Math.max(0, Math.min(1.0, power)) : 0);
-        rightShooter.setPower(active ? Math.max(0, Math.min(1.0, power)): 0);
+        double currentVelo = leftShooter.getVelocity();
+        double voltageComp = Constant.NOMINAL_VOLTAGE / battery.getVoltage();
+        double ff = ((Constant.kV * calculatedTargetVelocity) + Constant.kS) * voltageComp;
+
+        shooterPID.setTargetPosition(calculatedTargetVelocity);
+        double pidContribution = shooterPID.update(currentVelo);
+        double totalPower = pidContribution + ff;
+        totalPower = Math.max(0, Math.min(1.0, totalPower));
+
+        leftShooter.setPower(totalPower);
+        rightShooter.setPower(totalPower);
     }
 
+    public void setTurretPosition(double position){
+        double calculatedTurretPos = position * (Constant.TURRET_MAX-Constant.TURRET_MIN) + Constant.TURRET_MIN;
+        calculatedTurretPos = Math.max(Constant.TURRET_MIN,Math.min(Constant.TURRET_MAX, calculatedTurretPos));
+        turret1.setPosition(calculatedTurretPos - Constant.TURRET_ANTIBACKLASH);
+        turret2.setPosition(calculatedTurretPos + Constant.TURRET_ANTIBACKLASH);
+    }
+    public void setHoodPosition(double position){
+        hood.setPosition(position);
+    }
+
+    public String detectMotif() {
+
+        String motif = "null";
+        LLResult result = limelight.getLatestResult();
+        List<LLResultTypes.FiducialResult> aprils = result.getFiducialResults();
+
+        if (!aprils.isEmpty()) {
+            for (LLResultTypes.FiducialResult april : aprils)
+                switch (april.getFiducialId()) {
+                    case 21:
+                        motif = "GPP";
+                        break;
+                    case 22:
+                        motif = "PGP";
+                        break;
+                    case 23:
+                        motif = "PPG";
+                        break;
+                }
+
+        }
+        return motif;
+
+
+    }
+
+
     public boolean isReady() {
-        return calculatedTargetVelocity > 0 && Math.abs(leftShooter.getVelocity() - calculatedTargetVelocity) <= 40;
+        double error = Math.abs(leftShooter.getVelocity() - calculatedTargetVelocity);
+        return calculatedTargetVelocity > 0 && ((error <= 0.075 * leftShooter.getVelocity()) || (error <= 80));
     }
 }

@@ -25,7 +25,7 @@ import org.firstinspires.ftc.teamcode.OpMode.TeleOp.SubSystem.Constant;
 import java.util.List;
 
 @Config
-@TeleOp(name = "Shooter Tuner (Turret)")
+@TeleOp(name = "Shooter Tuner (BLUE)")
 public class ShooterTunerTeleOp extends OpMode {
 
     // ================= DASHBOARD TUNING =================
@@ -128,18 +128,17 @@ public class ShooterTunerTeleOp extends OpMode {
         double distance = Math.hypot(dx, dy);
 
         LLResult results = limelight.getLatestResult();
-        if (results.isValid()) {
-            List<LLResultTypes.FiducialResult> detection = results.getFiducialResults();
 
+        if (results != null && results.isValid()) {
+            List<LLResultTypes.FiducialResult> detection = results.getFiducialResults();
             for (LLResultTypes.FiducialResult april : detection) {
-                if (april.getFiducialId() == 24) {
+                if (april.getFiducialId() == 20) {
                     aprilx = april.getTargetXDegrees();
-                    ty = april.getTargetYDegrees();
+                    break;
                 }
             }
         } else {
             aprilx = 0;
-            filteredAprilX = 0;
         }
         // ================= DRIVE =================
         if (gamepad1.a && !prevA) {
@@ -222,12 +221,10 @@ public class ShooterTunerTeleOp extends OpMode {
         packet.put("Turret Heading", turretHeading);
         dashboard.sendTelemetryPacket(packet);
 
-        telemetry.addData("limelightDistanceInch", "%.2f", limelightDistanceMeter*39.37);
-        telemetry.addData("odoDistance", "%.2f", distance);
+        telemetry.addData("Distance", "%.2f", distance);
         telemetry.addData("Target RPM", TARGET_RPM);
         telemetry.addData("Actual RPM", "%.1f", leftShooter.getVelocity());
         telemetry.addData("Hood Angle", hoodAngle);
-        telemetry.addData("Turret Heading", "%.1f", turretHeading);
         telemetry.update();
     }
 
