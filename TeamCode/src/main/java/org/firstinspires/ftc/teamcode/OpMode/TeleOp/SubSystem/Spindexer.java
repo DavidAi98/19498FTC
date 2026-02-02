@@ -3,30 +3,36 @@ package org.firstinspires.ftc.teamcode.OpMode.TeleOp.SubSystem;
 import androidx.annotation.NonNull;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import java.util.ArrayList;
 
 public class Spindexer {
-    public DcMotorEx spindexerEncoder;
-    public DcMotor intake;
+    public DcMotor spindexerEncoder, intake;
     public Servo spindexer1, spindexer2, leftPivot, rightPivot;
-    public ColorSensor colorSensor;
+    public ColorSensor colorSensor1, colorSensor2;
+    private VoltageSensor battery;
 
-    public ArrayList<Artifact> artifacts = new ArrayList<>();
+    public Artifact[] slots = new Artifact[3];
+    public int artifactCount = 0;
+    private String color;
+
     private ElapsedTime stateTimer = new ElapsedTime();
     private ElapsedTime pivotTimer = new ElapsedTime();
+    private ElapsedTime inverseTimer = new ElapsedTime();
+    public ElapsedTime resetTimer = new ElapsedTime();
+    private boolean intakeDone = false;
+    public boolean encoderResetDone = false;
 
-    public int intakeStage = -1;
-    public int outtakeStage = -1;
-    private int intakeIndex = 1;
-    public double nearestPosition = 0;
-    public int nearestIndex = -1;
-    private boolean encoderResetDone = false;
-    public int targetTicks;
-    public int currentTicks;
+    public int intakeStage = -1, outtakeStage = -1;
+    public int Index = 1, nearestIndex = -1;
+    public int targetTicks, currentTicks;
+    public double nearestPos, lastPos;
+    private String targetColor = "NaN";
+    private static final int[] priorityOrder = {2, 1, 3};
+
 
     public Spindexer(@NonNull HardwareMap hwMap) {
         intake = hwMap.get(DcMotor.class, "IntakeMotor");
@@ -34,172 +40,240 @@ public class Spindexer {
         spindexer2 = hwMap.get(Servo.class, "spindexer2");
         leftPivot = hwMap.get(Servo.class, "LeftPivot");
         rightPivot = hwMap.get(Servo.class, "RightPivot");
-        colorSensor = hwMap.get(ColorSensor.class, "colorSensor");
-        spindexerEncoder = hwMap.get(DcMotorEx.class, "RightFrontMotor");
-
+        colorSensor1 = hwMap.get(ColorSensor.class, "colorSensor1");
+        colorSensor2 = hwMap.get(ColorSensor.class, "colorSensor2");
+        spindexerEncoder = hwMap.get(DcMotor.class, "SpindexerEncoder");
+        spindexerEncoder.setDirection(DcMotorSimple.Direction.REVERSE);
+        battery = hwMap.voltageSensor.iterator().next();
         leftPivot.setDirection(Servo.Direction.REVERSE);
-        setSpindexer(Constant.SPINDEXER_INTAKE_POS1);
+
+        setSpindexer(Constant.INTAKE_POS1);
         setPivot(Constant.PIVOT_DOWN);
         intake.setPower(0);
     }
 
-    // --- High Level Commands called by TeleOp ---
-    public void startIntake() { intakeStage = 0; }
-    public void stopIntake() { intakeStage = -1; intake.setPower(0); }
-    public void startOuttake() { outtakeStage = 1; }
+    public void update(boolean fireButton, boolean shooterReady, boolean purpleButton, boolean greenButton, boolean skipSlotButton) {
+        if (encoderResetDone) {
+            handleIntakeLogic(skipSlotButton);
+            handleOuttakeLogic(fireButton, shooterReady, purpleButton, greenButton);
+        } else {
+            intakeStage = -1;
+            outtakeStage = -1;
+            artifactCount = 0;
+            Index = 1;
+            setSpindexer(Constant.INTAKE_POS1);
+            if (resetTimer.milliseconds() >= 2 * Constant.ANTI_STUCK_TIMER) {
+                spindexerEncoder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                spindexerEncoder.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                encoderResetDone = true;
+            }
+        }
+    }
+
+    public void startIntake() {
+        if (outtakeStage == -1 && artifactCount < 3) {
+            setSpindexer(getIntakePos(Index));
+            intakeStage = 1;
+        }
+    }
+    public void stopIntake() { intake.setPower(0); intakeStage = -1; }
+
+    public void inverseIntake() {
+        if (!intakeDone) {
+            intakeDone = true;
+            inverseTimer.reset();
+        }
+        setSpindexer(Constant.OUTTAKE_POS2);
+        if (inverseTimer.milliseconds() < Constant.INVERSE_TIMER && withinTarget(Constant.OUTTAKE_POS2_TICK, 400)) {
+            intake.setPower(-1);
+        } else {
+            intake.setPower(0);
+        }
+    }
+
+    public void startOuttake() {
+        if (intakeStage == -1 && artifactCount > 0) {
+            outtakeStage = 1;
+        }
+    }
     public void stopOuttake() { outtakeStage = -1; }
 
-    public void update(boolean fireButton, boolean shooterReady) {
-        currentTicks = spindexerEncoder.getCurrentPosition();
-        handleIntakeLogic();
-        handleOuttakeLogic(fireButton, shooterReady);
-        if (!encoderResetDone) {
-            spindexerEncoder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            spindexerEncoder.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            encoderResetDone = true;
+    private void handleIntakeLogic(boolean skipSlot) {
+        if (intakeStage == -1) {
+            // Antistuck
+            if (artifactCount == 3 && outtakeStage == -1) inverseIntake();
+            else stopIntake();
+            return;
+        } else {
+            intake.setPower(1);
         }
-    }
 
-    public class Artifact {
-        private String color;
-        private double position;
-        public Artifact(String color, double position){
-            this.color = color;
-            this.position= position;
-        }
-        public String getColor(){ return color; }
-        public double getPosition(){ return position; }
-        public String toString() { return color + " " + position;}
-    }
-
-    private void handleIntakeLogic() {
-        intake.setPower(intakeStage != -1 ? Constant.INTAKE_POWER : 0);
         switch (intakeStage) {
-            case 0:
-                if (artifacts.size() < 3 && colorSensor.blue() >= 150 && colorSensor.green() >= 150) {
-                    String color = (colorSensor.blue() >= colorSensor.green()) ? "P" : "G";
-                    artifacts.add(new Artifact(color, getOuttakePos(intakeIndex)));
-                    intakeStage = artifacts.size() < 3 ? 1 : -1;
+            case 1: // Color sensing
+                boolean color1Detected = artifactCount < 3 && colorSensor1.blue() >= 150 && colorSensor1.green() >= 150;
+                boolean color2Detected = artifactCount < 3 && colorSensor2.blue() >= 150 && colorSensor2.green() >= 150;
+                if (skipSlot || color2Detected) {
+                    color = (colorSensor2.blue() >= colorSensor2.green()) ? "P" : "G";
+
+                    // Record artifact into slots Array
+                    slots[Index - 1] = new Artifact(color, getOuttakePos(Index));
+                    artifactCount++;
+
+                    // Next stage if less than 3 artifacts
+                    intakeStage = (artifactCount < 3) ? 2 : -1;
                 }
                 break;
-            case 1:
-                intakeIndex = (intakeIndex % 3) + 1;
-                setSpindexer(getIntakePos(intakeIndex));
+
+            case 2: // Getting index for next slot
+                Index++;
+                if (Index > 3) Index = 1; // module
+                // Move to target index
+                setSpindexer(getIntakePos(Index));
                 stateTimer.reset();
-                intakeStage = 2;
+                intakeStage = 3;
                 break;
-            case 2:
-                if (isSpindexerAtTarget(getSpindexTargetTicksIntake(intakeIndex))) {
-                    intakeStage = (artifacts.size() < 3) ? 0 : -1;
+
+            case 3: // Waiting for motion
+                targetTicks = getIntakeTick(Index);
+                boolean inSlot = withinTarget(targetTicks, Constant.INTAKE_TICK_TOLERANCE);
+                if (inSlot) {
+                    // Start detecting again
+                    intakeStage = 1;
+                } else if (stateTimer.milliseconds() > Constant.ANTI_STUCK_TIMER) {
+                    resetTimer.reset();
+                    encoderResetDone = false;
                 }
                 break;
         }
     }
 
-    private void handleOuttakeLogic(boolean fireButton, boolean shooterReady) {
-        if (outtakeStage == -1 || (artifacts.isEmpty() && outtakeStage != 3)) {
+    private void handleOuttakeLogic(boolean fireButton, boolean shooterReady, boolean purpleButton, boolean greenButton) {
+        // Reduce runtime with return and setting IDLE state (-1)
+        if (outtakeStage == -1 || (artifactCount == 0 && outtakeStage != 3)) {
             outtakeStage = -1;
             return;
         }
 
         switch (outtakeStage) {
-            case 1: // Selection Logic: Sequence 2 -> 1 -> 3
-                int count = artifacts.size();
-
-                // If the ball at index 0 is at Position 2, it means we have Slot 2 and Slot 3 (but no Slot 1)
-                // We check the first ball's position to see if it's Slot 2.
-                boolean hasSlot2 = false;
-                for(Artifact a : artifacts) if(a.getPosition() == getOuttakePos(2)) hasSlot2 = true;
-
-                if (count == 3 || (count == 2 && hasSlot2)) {
-                    // Target Slot 2 if it exists (Index 1 if 3 balls, Index 0 if 2 balls)
-                    nearestIndex = 2;
-                    nearestPosition = getOuttakePos(2);
-                } else if (count == 2 || (count == 1 && artifacts.get(0).getPosition() == getOuttakePos(1))) {
-                    nearestIndex = 1;
-                    nearestPosition = getOuttakePos(1);
-                } else {
-                    nearestIndex = 3;
-                    nearestPosition = getOuttakePos(3);
+            case 0: // Anti-stuck by going back to last outtake slot
+                setSpindexer(lastPos);
+                if (stateTimer.milliseconds() > 2 * Constant.ANTI_STUCK_TIMER) {
+                    stateTimer.reset();
+                    setSpindexer(nearestPos);
+                    outtakeStage = 2;
                 }
-                setSpindexer(nearestPosition);
-                stateTimer.reset();
-                outtakeStage = 2;
                 break;
-            case 2: // Fire Readiness
-                targetTicks = getSpindexTargetTicksOuttake(nearestIndex);
 
-                if (isSpindexerAtTarget(targetTicks) && shooterReady && fireButton) {
-                    // Minimal removal logic: Find the ball that matches the physical slot we just fired
-                    for (int i = 0; i < artifacts.size(); i++) {
-                        if (artifacts.get(i).getPosition() == getOuttakePos(nearestIndex)) {
-                            artifacts.remove(i);
-                            break;
-                        }
+            case 1: // Selection Logic: 2 -> 1 -> 3
+                int foundIndex = -1;
+                // Trigger by Left Bumper or Dpad Up/Down
+                if (fireButton)        targetColor = "ANY";
+                else if (purpleButton) targetColor = "P";
+                else if (greenButton)  targetColor = "G";
+
+                // Fast leave to reduce runtime
+                if (targetColor.equals("NaN")) return;
+
+                for (int i : priorityOrder) {
+                    Artifact a = slots[i - 1];
+                    // Skip loop if target NOT FOUND
+                    if (a == null) continue;
+                    if (targetColor.equals("ANY") || a.getColor().equals(targetColor)) {
+                        // Target index FOUND
+                        foundIndex = i;
+                        break;
                     }
+                }
+
+                // For antistuck
+                lastPos = nearestPos;
+
+                if (foundIndex != -1) {
+                    nearestIndex = foundIndex;
+                    nearestPos = getOuttakePos(nearestIndex);
+                    setSpindexer(nearestPos);
+                    stateTimer.reset();
+                    outtakeStage = 2;
+                } else if (targetColor.equals("G") || targetColor.equals("P")) {
+                    // If can't find specific color, fire closet slot
+                    targetColor = "ANY";
+                }
+                break;
+
+            case 2: // Waiting for Fire
+                targetTicks = getOuttakeTick(nearestIndex);
+                boolean inSlot = withinTarget(targetTicks, Constant.OUTTAKE_TICK_TOLERANCE);
+
+                // Check Spindex pos and shooter RPM
+                if (inSlot && shooterReady) {
+                    slots[nearestIndex - 1] = null;
+                    artifactCount--;
                     setPivot(Constant.PIVOT_UP);
                     pivotTimer.reset();
                     outtakeStage = 3;
+                    // Reset targetColor for next time
+                    targetColor = "NaN";
+                } else if (stateTimer.milliseconds() > Constant.ANTI_STUCK_TIMER && !inSlot) {
+                    stateTimer.reset();
+                    outtakeStage = 0;
                 }
                 break;
-            case 3:
-                if (pivotTimer.milliseconds() >= 125) {
+
+            case 3: // Waiting for Pivot to go up
+                if (pivotTimer.milliseconds() >= Constant.PIVOT_UP_TIMER) {
                     setPivot(Constant.PIVOT_DOWN);
-                    if (pivotTimer.milliseconds() >= (artifacts.isEmpty() ? 600 : 225)) {
-                        if (artifacts.isEmpty()) {
-                            outtakeStage = -1;
-                            intakeIndex = 1; // RESET INTAKE TO SLOT 1 HERE
-                        } else {
-                            outtakeStage = 1;
-                        }
-                        nearestIndex = -1;
-                    }
+                }
+
+                // Waiting for Pivot to come down + Fast leave to reduce runtime
+                if (pivotTimer.milliseconds() < (artifactCount == 0 ? 5*Constant.PIVOT_DOWN_TIMER : Constant.PIVOT_DOWN_TIMER)) {
+                    return;
+                }
+
+                // Next artifact or Exit
+                nearestIndex = -1;
+                if (artifactCount == 0) {
+                    outtakeStage = -1;
+                    Index = 1;
+                    intakeDone = false;
+                    setSpindexer(Constant.INTAKE_POS1);
+                } else {
+                    outtakeStage = 1;
                 }
                 break;
         }
     }
 
-    public void setSpindexer(double p) {
-        spindexer1.setPosition(p + Constant.SPINDEXER_ANTIBACKLASH);
-        spindexer2.setPosition(p - Constant.SPINDEXER_ANTIBACKLASH);
-    }
+    // --- Helper methods (DO NOT TOUCH) ---
+    public class Artifact {
+        private String color;
+        private double position;
 
+        public Artifact(String color, double position){
+            this.color = color;
+            this.position = position;
+        }
+        public String getColor() {
+            return color;
+        }
+        public double getPosition(){
+            return position;
+        }
+    }
+    public void setSpindexer(double p) {
+        spindexer1.setPosition(p);
+        spindexer2.setPosition(p);
+    }
     public void setPivot(double p) {
-        leftPivot.setPosition(p + 0.01);
+        leftPivot.setPosition(p + 0.015);
         rightPivot.setPosition(p);
     }
-
-    public double getIntakePos(int i) {
-        return (i==1) ? Constant.SPINDEXER_INTAKE_POS1 :
-                (i==2) ? Constant.SPINDEXER_INTAKE_POS2 : Constant.SPINDEXER_INTAKE_POS3;
-    }
-
-    public double getOuttakePos(int i) {
-        return (i==1) ? Constant.SPINDEXER_OUTTAKE_POS1 :
-                (i==2) ? Constant.SPINDEXER_OUTTAKE_POS2 : Constant.SPINDEXER_OUTTAKE_POS3;
-    }
-
-    public int getIntakeIndex(){ return intakeIndex; }
-
-    private boolean isSpindexerAtTarget(int targetTicks) {
+    private boolean withinTarget(int targetTicks, int tickTolerance) {
         currentTicks = spindexerEncoder.getCurrentPosition();
-        return Math.abs(currentTicks - targetTicks) <= Constant.SPINDEX_TICK_TOLERANCE;
+        return Math.abs(currentTicks - targetTicks) <= tickTolerance;
     }
-
-    private int getSpindexTargetTicksOuttake(int position) {
-        switch (position) {
-            case 1: return Constant.SPINDEXER_OUTTAKE_POS1_TICK;
-            case 2: return Constant.SPINDEXER_OUTTAKE_POS2_TICK;
-            case 3: return Constant.SPINDEXER_OUTTAKE_POS3_TICK;
-            default: return Constant.SPINDEXER_OUTTAKE_POS1_TICK;
-        }
-    }
-    private int getSpindexTargetTicksIntake(int position) {
-        switch (position) {
-            case 1: return Constant.SPINDEXER_INTAKE_POS1_TICK;
-            case 2: return Constant.SPINDEXER_INTAKE_POS2_TICK;
-            case 3: return Constant.SPINDEXER_INTAKE_POS3_TICK;
-            default: return Constant.SPINDEXER_INTAKE_POS1_TICK;
-        }
-    }
+    public double getIntakePos(int i) { return (i==1) ? Constant.INTAKE_POS1 : (i==2) ? Constant.INTAKE_POS2 : Constant.INTAKE_POS3; }
+    public double getOuttakePos(int i) { return (i==1) ? Constant.OUTTAKE_POS1 : (i==2) ? Constant.OUTTAKE_POS2 : Constant.OUTTAKE_POS3; }
+    public int getOuttakeTick(int i) { return (i==1) ? Constant.OUTTAKE_POS1_TICK : (i==2) ? Constant.OUTTAKE_POS2_TICK : Constant.OUTTAKE_POS3_TICK; }
+    public int getIntakeTick(int i) { return (i==1) ? Constant.INTAKE_POS1_TICK : (i==2) ? Constant.INTAKE_POS2_TICK : Constant.INTAKE_POS3_TICK; }
 }
+
