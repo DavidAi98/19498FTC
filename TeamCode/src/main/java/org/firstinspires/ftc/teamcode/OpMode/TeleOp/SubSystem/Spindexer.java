@@ -257,10 +257,10 @@ public class Spindexer {
         handleAutonIntakeLogic();
         handleAutonOuttakeLogic(motif, shooterReady);
     }
-    public void matrixUpdate(String motif,int line,boolean shooterReady,boolean shootOff){
-        handleIntakeLogic();
-        matrixOuttake(motif,line,shooterReady,shootOff);
-    }
+//    public void matrixUpdate(String motif,int line,boolean shooterReady,boolean shootOff){
+//        handleIntakeLogic();
+//        matrixOuttake(motif,line,shooterReady,shootOff);
+//    }
 
     public void matrixOuttake(String motif,int line,boolean shooterReady,boolean shootOff){
 
@@ -336,8 +336,10 @@ public class Spindexer {
 
         switch (intakeStage) {
             case 1: // Color sensing
-                if (artifactCount < 3 && colorSensor.blue() >= 150 && colorSensor.green() >= 150) {
-                    String color = (colorSensor.blue() >= colorSensor.green()) ? "P" : "G";
+                boolean color1Detected = artifactCount < 3 && colorSensor1.blue() >= 150 && colorSensor1.green() >= 150;
+                boolean color2Detected = artifactCount < 3 && colorSensor2.blue() >= 150 && colorSensor2.green() >= 150;
+                if ( color2Detected) {
+                    color = (colorSensor2.blue() >= colorSensor2.green()) ? "P" : "G";
 
                     // Record artifact into slots Array
                     slots[Index - 1] = new Artifact(color, getOuttakePos(Index));
@@ -363,15 +365,14 @@ public class Spindexer {
                 if (inSlot) {
                     // Start detecting again
                     intakeStage = 1;
+                } else if (stateTimer.milliseconds() > Constant.ANTI_STUCK_TIMER) {
+                    resetTimer.reset();
+                    encoderResetDone = false;
                 }
                 break;
         }
     }
-    public double getIntakePos(int i) { return (i==1) ? Constant.INTAKE_POS1 : (i==2) ? Constant.INTAKE_POS2 : Constant.INTAKE_POS3; }
-    public double getOuttakePos(int i) { return (i==1) ? Constant.OUTTAKE_POS1 : (i==2) ? Constant.OUTTAKE_POS2 : Constant.OUTTAKE_POS3; }
-    public int getOuttakeTick(int i) { return (i==1) ? Constant.OUTTAKE_POS1_TICK : (i==2) ? Constant.OUTTAKE_POS2_TICK : Constant.OUTTAKE_POS3_TICK; }
-    public int getIntakeTick(int i) { return (i==1) ? Constant.INTAKE_POS1_TICK : (i==2) ? Constant.INTAKE_POS2_TICK : Constant.INTAKE_POS3_TICK; }
-}
+
 
     private void handleAutonOuttakeLogic(String motif, boolean shooterReady) {
 

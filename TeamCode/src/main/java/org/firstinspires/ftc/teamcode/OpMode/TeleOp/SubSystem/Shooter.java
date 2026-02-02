@@ -31,7 +31,7 @@ public class Shooter {
     public double lastKP, lastKI, lastKD;
     public double limelightDistanceInch = -1;
     public double last_Distance = -1;
-    public double filteredAprilX, aprilx;
+
     private boolean motifDetected = false;
 
 
