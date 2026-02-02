@@ -21,10 +21,7 @@
 //import com.qualcomm.robotcore.hardware.VoltageSensor;
 //import com.qualcomm.robotcore.util.ElapsedTime;
 //
-//import org.firstinspires.ftc.teamcode.OpMode.TeleOp.Artifact;
-//import org.firstinspires.ftc.teamcode.OpMode.TeleOp.Constant;
-//import org.firstinspires.ftc.teamcode.OpMode.TeleOp.PIDCoefficients;
-//import org.firstinspires.ftc.teamcode.OpMode.TeleOp.PIDFController;
+//import org.firstinspires.ftc.teamcode.OpMode.TeleOp.SubSystem.Constant;
 //import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 //
 //import java.util.ArrayList;
@@ -625,8 +622,8 @@
 //                }
 //                break;
 //            case 1:
-//                spindexer1.setPosition(Constant.SPINDEXER_OUTTAKE_POS2);
-//                spindexer2.setPosition(Constant.SPINDEXER_OUTTAKE_POS2);
+//                spindexer1.setPosition(Constant.OUTTAKE_POS2);
+//                spindexer2.setPosition(Constant.OUTTAKE_POS2);
 //                if (actionTimer.getElapsedTimeSeconds() > 0.6) {
 //                    setActionState(2);
 //                }
@@ -638,8 +635,8 @@
 //                }
 //                break;
 //            case 3:
-//                spindexer1.setPosition(Constant.SPINDEXER_OUTTAKE_POS1);
-//                spindexer2.setPosition(Constant.SPINDEXER_OUTTAKE_POS1);
+//                spindexer1.setPosition(Constant.OUTTAKE_POS1);
+//                spindexer2.setPosition(Constant.OUTTAKE_POS1);
 //                if (actionTimer.getElapsedTimeSeconds() > 0.6) {
 //                    setActionState(4);
 //                }
@@ -651,8 +648,8 @@
 //                }
 //                break;
 //            case 5:
-//                spindexer1.setPosition(Constant.SPINDEXER_OUTTAKE_POS3);
-//                spindexer2.setPosition(Constant.SPINDEXER_OUTTAKE_POS3);
+//                spindexer1.setPosition(Constant.OUTTAKE_POS3);
+//                spindexer2.setPosition(Constant.OUTTAKE_POS3);
 //                if (actionTimer.getElapsedTimeSeconds() > 0.6) {
 //                    setActionState(6);
 //                }
@@ -679,8 +676,8 @@
 //                }
 //                break;
 //            case 1:
-//                spindexer1.setPosition(Constant.SPINDEXER_OUTTAKE_POS1);
-//                spindexer2.setPosition(Constant.SPINDEXER_OUTTAKE_POS1);
+//                spindexer1.setPosition(Constant.OUTTAKE_POS1);
+//                spindexer2.setPosition(Constant.OUTTAKE_POS1);
 //                if (actionTimer.getElapsedTimeSeconds() > 0.6) {
 //                    setActionState(2);
 //                }
@@ -692,8 +689,8 @@
 //                }
 //                break;
 //            case 3:
-//                spindexer1.setPosition(Constant.SPINDEXER_OUTTAKE_POS3);
-//                spindexer2.setPosition(Constant.SPINDEXER_OUTTAKE_POS3);
+//                spindexer1.setPosition(Constant.OUTTAKE_POS3);
+//                spindexer2.setPosition(Constant.OUTTAKE_POS3);
 //                if (actionTimer.getElapsedTimeSeconds() > 0.6) {
 //                    setActionState(4);
 //                }
@@ -705,8 +702,8 @@
 //                }
 //                break;
 //            case 5:
-//                spindexer1.setPosition(Constant.SPINDEXER_OUTTAKE_POS2);
-//                spindexer2.setPosition(Constant.SPINDEXER_OUTTAKE_POS2);
+//                spindexer1.setPosition(Constant.OUTTAKE_POS2);
+//                spindexer2.setPosition(Constant.OUTTAKE_POS2);
 //                if (actionTimer.getElapsedTimeSeconds() > 0.6) {
 //                    setActionState(6);
 //                }
@@ -733,8 +730,8 @@
 //                }
 //                break;
 //            case 1:
-//                spindexer1.setPosition(Constant.SPINDEXER_OUTTAKE_POS3);
-//                spindexer2.setPosition(Constant.SPINDEXER_OUTTAKE_POS3);
+//                spindexer1.setPosition(Constant.OUTTAKE_POS3);
+//                spindexer2.setPosition(Constant.OUTTAKE_POS3);
 //                if (actionTimer.getElapsedTimeSeconds() > 0.6) {
 //                    setActionState(2);
 //                }
@@ -746,8 +743,8 @@
 //                }
 //                break;
 //            case 3:
-//                spindexer1.setPosition(Constant.SPINDEXER_OUTTAKE_POS2);
-//                spindexer2.setPosition(Constant.SPINDEXER_OUTTAKE_POS2);
+//                spindexer1.setPosition(Constant.OUTTAKE_POS2);
+//                spindexer2.setPosition(Constant.OUTTAKE_POS2);
 //                if (actionTimer.getElapsedTimeSeconds() > 0.6) {
 //                    setActionState(4);
 //                }
@@ -759,8 +756,8 @@
 //                }
 //                break;
 //            case 5:
-//                spindexer1.setPosition(Constant.SPINDEXER_OUTTAKE_POS1);
-//                spindexer2.setPosition(Constant.SPINDEXER_OUTTAKE_POS1);
+//                spindexer1.setPosition(Constant.OUTTAKE_POS1);
+//                spindexer2.setPosition(Constant.OUTTAKE_POS1);
 //                if (actionTimer.getElapsedTimeSeconds() > 0.6) {
 //                    setActionState(6);
 //                }
@@ -910,19 +907,6 @@
 //        buildPaths();
 //        follower.setStartingPose(initPos);
 //
-//        hood.setPosition(Constant.HOOD_MAX);
-//
-//
-//        leftPivot.setPosition(Constant.PIVOT_DOWN);
-//        rightPivot.setPosition(Constant.PIVOT_DOWN);
-//
-//        spindexer1.setPosition(Constant.SPINDEXER_INIT);
-//        spindexer2.setPosition(Constant.SPINDEXER_INIT);
-//
-//
-//        limelight = hardwareMap.get(Limelight3A.class, "limelight");
-//
-//        limelight.pipelineSwitch(0);
 //
 //
 //        limelight.start();

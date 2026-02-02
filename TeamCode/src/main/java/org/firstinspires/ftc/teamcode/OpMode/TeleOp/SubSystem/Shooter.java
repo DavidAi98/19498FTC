@@ -29,6 +29,11 @@ public class Shooter {
     public double filteredAprilX, aprilx;
 
     public double lastKP, lastKI, lastKD;
+    public double limelightDistanceInch = -1;
+    public double last_Distance = -1;
+    public double filteredAprilX, aprilx;
+    private boolean motifDetected = false;
+
 
     public Shooter(HardwareMap hwMap) {
         leftShooter = hwMap.get(DcMotorEx.class, "LeftShooterMotor");
@@ -152,6 +157,43 @@ public class Shooter {
             rightShooter.setPower(totalPower);
         }
     }
+
+    public void setTurretPosition(double position){
+        double calculatedTurretPos = position * (Constant.TURRET_MAX-Constant.TURRET_MIN) + Constant.TURRET_MIN;
+        calculatedTurretPos = Math.max(Constant.TURRET_MIN,Math.min(Constant.TURRET_MAX, calculatedTurretPos));
+        turret1.setPosition(calculatedTurretPos - Constant.TURRET_ANTIBACKLASH);
+        turret2.setPosition(calculatedTurretPos + Constant.TURRET_ANTIBACKLASH);
+    }
+    public void setHoodPosition(double position){
+        hood.setPosition(position);
+    }
+
+    public String detectMotif() {
+
+        String motif = "null";
+        LLResult result = limelight.getLatestResult();
+        List<LLResultTypes.FiducialResult> aprils = result.getFiducialResults();
+
+        if (!aprils.isEmpty()) {
+            for (LLResultTypes.FiducialResult april : aprils)
+                switch (april.getFiducialId()) {
+                    case 21:
+                        motif = "GPP";
+                        break;
+                    case 22:
+                        motif = "PGP";
+                        break;
+                    case 23:
+                        motif = "PPG";
+                        break;
+                }
+
+        }
+        return motif;
+
+
+    }
+
 
     public boolean isReady() {
         double error = Math.abs(leftShooter.getVelocity() - calculatedTargetVelocity);
