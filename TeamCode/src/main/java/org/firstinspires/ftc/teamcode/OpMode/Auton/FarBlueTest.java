@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.OpMode.Auton;
 
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.BezierCurve;
+import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.Path;
 import com.pedropathing.paths.PathChain;
@@ -21,7 +22,7 @@ public class FarBlueTest extends OpMode {
     private PathChain firstPickup1, firstPickup2, secondPickup1, secondPickup2, openRedGate2, firstPickupBreak1, firstPickupBreak2, endPath, secondPickupBreak1, secondPickupBreak2, pickup2ToGate, thirdPickup1, thirdPickup2;
     private Path preLoadShot;
     public static Pose initPos = new Pose(63.359, 6.409, Math.toRadians(180));
-    public static Pose shootingPos = new Pose(56.796, 22.476, Math.toRadians(180));
+    public static Pose shootingPos = new Pose(60, 16, Math.toRadians(180));
     public static Pose redGate = new Pose(11.923, 70.669, Math.toRadians(180));
     public static Pose pickup1Pos = new Pose(7.552, 35.232, Math.toRadians(180));
     public static Pose pickup2Pos = new Pose(10.591, 59.790, Math.toRadians(180));
@@ -34,13 +35,13 @@ public class FarBlueTest extends OpMode {
 
     private Shooter shooter;
     private Spindexer spindexer;
-    private String targetMotif = "null";
+    private String targetMotif = "Null";
 
 
 
     public void buildPaths() {
 
-        preLoadShot = new Path(new BezierCurve(initPos, shootingPos));
+        preLoadShot = new Path(new BezierLine(initPos, shootingPos));
         preLoadShot.setLinearHeadingInterpolation(initPos.getHeading(), shootingPos.getHeading());
 
 
@@ -81,7 +82,7 @@ public class FarBlueTest extends OpMode {
 
         pickup2ToGate = follower.pathBuilder()
                 .addPath(new BezierCurve(pickup2Pos,
-                        new Pose(24.378, 66.423),
+                        new Pose(28, 66.423),
                         redGate
                 ))
                 .setLinearHeadingInterpolation(pickup2Pos.getHeading(), redGate.getHeading())
@@ -119,7 +120,7 @@ public class FarBlueTest extends OpMode {
 
 
         thirdPickup2 = follower.pathBuilder()
-                .addPath(new BezierCurve(
+                .addPath(new BezierLine(
                         pickup3Pos,
 
                         shootingPos))
@@ -128,7 +129,7 @@ public class FarBlueTest extends OpMode {
 
 
         endPath = follower.pathBuilder()
-                .addPath(new BezierCurve(
+                .addPath(new BezierLine(
                         shootingPos,
 
                         endPos1
@@ -159,7 +160,7 @@ public class FarBlueTest extends OpMode {
 
                 targetMotif = shooter.detectMotif();
 
-                if (!follower.isBusy() && !targetMotif.equals("null")) {
+                if (!follower.isBusy() && !targetMotif.equals("Null")&&pathTimer.getElapsedTimeSeconds()>0.2) {
                     setActionState(0);
                     spindexer.startOuttake();
                     setPathState(2);
@@ -309,11 +310,11 @@ public class FarBlueTest extends OpMode {
         // These loop the movements of the robot, these must be called continuously in order to work
         follower.update();
         if(!targetMotif.equals("null")){
-            shooter.setTurretPosition(0.938);
+            shooter.updateShootingParams(122.9753932, 20);
+            shooter.updateAutonTurret(0.938);
         }
         shooter.runShooter(spindexer.outtakeStage != -1);
         spindexer.update(targetMotif,shooter.isReady());
-
 
         autonomousPathUpdate();
 
@@ -331,20 +332,17 @@ public class FarBlueTest extends OpMode {
 
         // 6. TELEMETRY
         telemetry.addData("Spindexer Slots", slotVisual.toString());
-
         telemetry.addData("Intake Stage", spindexer.intakeStage);
         telemetry.addData("Outtake Stage", spindexer.outtakeStage);
-
         telemetry.addData("Velo Error", "%.1f", shooter.calculatedTargetVelocity - shooter.leftShooter.getVelocity());
-
         telemetry.addData("target ticks", spindexer.targetTicks);
         telemetry.addData("current ticks", spindexer.currentTicks);
-        telemetry.addData("filteredAprilX", shooter.filteredAprilX);
-
+        telemetry.addData("Motif",targetMotif);
         telemetry.addData("path state", pathState);
-        telemetry.addData("x", follower.getPose().getX());
-        telemetry.addData("y", follower.getPose().getY());
-        telemetry.addData("heading", follower.getPose().getHeading());
+        telemetry.addData("TargetColor",spindexer.targetColor);
+//        telemetry.addData("x", follower.getPose().getX());
+//        telemetry.addData("y", follower.getPose().getY());
+//        telemetry.addData("heading", follower.getPose().getHeading());
         telemetry.update();
     }
 
@@ -360,12 +358,10 @@ public class FarBlueTest extends OpMode {
         opmodeTimer.resetTimer();
 
         shooter = new Shooter(hardwareMap);
-        shooter.calculatedTargetVelocity = 2200;
+//        shooter.calculatedTargetVelocity = 1800;
         shooter.setTurretPosition(1);
-        shooter.setHoodPosition(Constant.HOOD_INIT);
+//        shooter.setHoodPosition(Constant.HOOD_INIT);
         spindexer = new Spindexer(hardwareMap);
-
-
         follower = Constants.createFollower(hardwareMap);
         buildPaths();
         follower.setStartingPose(initPos);

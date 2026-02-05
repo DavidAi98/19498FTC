@@ -30,7 +30,7 @@ public class Spindexer {
     public int Index = 1, nearestIndex = -1;
     public int targetTicks, currentTicks;
     public double nearestPos, lastPos;
-    private String targetColor = "NaN";
+    public String targetColor = "NaN";
 
     private static final int[] priorityOrder = {2, 1, 3};
     private String motifLine = "";
@@ -254,8 +254,24 @@ public class Spindexer {
         }
     }
     public void update(String motif, boolean shooterReady) {
-        handleAutonIntakeLogic();
-        handleAutonOuttakeLogic(motif, shooterReady);
+
+
+        if (encoderResetDone) {
+            handleAutonIntakeLogic();
+            handleAutonOuttakeLogic(motif, shooterReady);
+        } else {
+            intakeStage = -1;
+            outtakeStage = -1;
+            artifactCount = 0;
+            Index = 1;
+            setSpindexer(Constant.INTAKE_POS1);
+            if (resetTimer.milliseconds() >= 2 * Constant.ANTI_STUCK_TIMER) {
+                spindexerEncoder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                spindexerEncoder.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                encoderResetDone = true;
+            }
+        }
+
     }
 //    public void matrixUpdate(String motif,int line,boolean shooterReady,boolean shootOff){
 //        handleIntakeLogic();
@@ -390,7 +406,12 @@ public class Spindexer {
             case 1: // Selection Logic: 2 -> 1 -> 3
 
                 int foundIndex = -1;
-                targetColor = motif.substring(autonColor-1,autonColor);
+                if(!motif.equals("Null")){
+                    targetColor = motif.substring(autonColor-1,autonColor);
+                }else{
+                    targetColor = "ANY";
+                }
+
 
 
                 for (int i : priorityOrder) {
@@ -420,7 +441,7 @@ public class Spindexer {
                 break;
 
             case 2: // Waiting for Fire
-                targetTicks = getOuttakeTick(nearestIndex);
+                targetTicks = -getOuttakeTick(nearestIndex);
                 boolean inSlot = withinTarget(targetTicks, Constant.OUTTAKE_TICK_TOLERANCE);
 
                 // Check Spindex pos and shooter RPM
@@ -431,7 +452,7 @@ public class Spindexer {
                     pivotTimer.reset();
                     outtakeStage = 3;
                     autonColor = autonColor%3+1;
-                    targetColor = "";
+                    targetColor = "NaN";
                 } else if (stateTimer.milliseconds() > Constant.ANTI_STUCK_TIMER && !inSlot) {
                     stateTimer.reset();
                     outtakeStage = 0;

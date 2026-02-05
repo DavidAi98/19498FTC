@@ -35,6 +35,7 @@ public class Shooter {
     private boolean motifDetected = false;
 
 
+
     public Shooter(HardwareMap hwMap) {
         leftShooter = hwMap.get(DcMotorEx.class, "LeftShooterMotor");
         rightShooter = hwMap.get(DcMotorEx.class, "RightShooterMotor");
@@ -79,6 +80,7 @@ public class Shooter {
     }
 
     public void updateTurret(double rawTurretAngle) {
+
         filteredAprilX += aprilx * 0.08;
         double turretHeading = rawTurretAngle + filteredAprilX;
 
@@ -86,6 +88,18 @@ public class Shooter {
         turretHeading = ((turretHeading % 360) + 360) % 360;
 
         calculatedTurretPos = Constant.TURRET_MIN + (turretHeading / 360.0) * Constant.TURRET_RANGE;
+
+        calculatedTurretPos = Math.max(Constant.TURRET_MIN, Math.min(Constant.TURRET_MAX, calculatedTurretPos));
+
+        turret1.setPosition(calculatedTurretPos - Constant.TURRET_ANTIBACKLASH);
+        turret2.setPosition(calculatedTurretPos + Constant.TURRET_ANTIBACKLASH);
+    }
+
+    public void updateAutonTurret(double baseAngle) {
+
+        filteredAprilX += aprilx * 0.08;
+
+        calculatedTurretPos = baseAngle+(((filteredAprilX % 360) + 360) % 360 / 360.0) * Constant.TURRET_RANGE;
 
         calculatedTurretPos = Math.max(Constant.TURRET_MIN, Math.min(Constant.TURRET_MAX, calculatedTurretPos));
 
@@ -106,7 +120,7 @@ public class Shooter {
             calculatedHoodAngle = low.getValue()[1];
         }
 
-        if (leftShooter.getVelocity() > 100) {
+        if (leftShooter.getVelocity() > 700) {
             double hoodServoPos = (Constant.HOOD_MAX - Constant.HOOD_INIT) / (45 - 25) * (calculatedHoodAngle - 45) + Constant.HOOD_MAX;
             hoodServoPos= Math.max(Constant.HOOD_MAX, Math.min(Constant.HOOD_INIT, hoodServoPos));
             hood.setPosition(hoodServoPos);
@@ -117,8 +131,8 @@ public class Shooter {
 
     public void runShooter(boolean active) {
         if (!active) {
-            leftShooter.setPower(0.5);
-            rightShooter.setPower(0.5);
+            leftShooter.setPower(0.3);
+            rightShooter.setPower(0.3);
             return;
         }
 
@@ -149,7 +163,7 @@ public class Shooter {
         double totalPower = pidContribution + ff;
 
         totalPower = Math.max(0, Math.min(1.0, totalPower));
-        if (error > 0.075 * leftShooter.getVelocity() && totalPower > 0.2) {
+        if (error > 0.075 * leftShooter.getVelocity() ) {
             leftShooter.setPower(1);
             rightShooter.setPower(1);
         } else {
@@ -157,6 +171,8 @@ public class Shooter {
             rightShooter.setPower(totalPower);
         }
     }
+
+
 
     public void setTurretPosition(double position){
         double calculatedTurretPos = position * (Constant.TURRET_MAX-Constant.TURRET_MIN) + Constant.TURRET_MIN;
@@ -196,7 +212,9 @@ public class Shooter {
 
 
     public boolean isReady() {
+        double currentVelo = leftShooter.getVelocity();
+        double voltageComp = Constant.NOMINAL_VOLTAGE / battery.getVoltage();
         double error = Math.abs(leftShooter.getVelocity() - calculatedTargetVelocity);
-        return calculatedTargetVelocity > 0 && ((error <= 0.075 * leftShooter.getVelocity()) || (error <= 100));
+        return calculatedTargetVelocity > 0 && ((error <= 200*(1/voltageComp)*(2300/currentVelo)));
     }
 }
