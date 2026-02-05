@@ -33,7 +33,7 @@ public class BlueTeleOp extends OpMode {
             FieldCentric = !FieldCentric;
         }
         // reset odometry
-        if (gamepad1.xWasPressed()) {
+        if (gamepad1.x) {
             drive.calibrateTimer.reset();
             drive.calibrating = true;
             shooter.filteredAprilX = 0;

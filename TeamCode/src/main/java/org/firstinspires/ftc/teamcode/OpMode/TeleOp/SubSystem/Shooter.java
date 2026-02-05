@@ -33,6 +33,7 @@ public class Shooter {
     public double last_Distance = -1;
 
     private boolean motifDetected = false;
+    String motif = "Null";
 
 
 
@@ -95,17 +96,17 @@ public class Shooter {
         turret2.setPosition(calculatedTurretPos + Constant.TURRET_ANTIBACKLASH);
     }
 
-    public void updateAutonTurret(double baseAngle) {
-
-        filteredAprilX += aprilx * 0.08;
-
-        calculatedTurretPos = baseAngle+(((filteredAprilX % 360) + 360) % 360 / 360.0) * Constant.TURRET_RANGE;
-
-        calculatedTurretPos = Math.max(Constant.TURRET_MIN, Math.min(Constant.TURRET_MAX, calculatedTurretPos));
-
-        turret1.setPosition(calculatedTurretPos - Constant.TURRET_ANTIBACKLASH);
-        turret2.setPosition(calculatedTurretPos + Constant.TURRET_ANTIBACKLASH);
-    }
+//    public void updateAutonTurret(double baseAngle) {
+//
+//        filteredAprilX += aprilx * 0.08;
+//
+//        calculatedTurretPos = baseAngle+(((filteredAprilX % 360) + 360) % 360 / 360.0) * Constant.TURRET_RANGE;
+//
+//        calculatedTurretPos = Math.max(Constant.TURRET_MIN, Math.min(Constant.TURRET_MAX, calculatedTurretPos));
+//
+//        turret1.setPosition(calculatedTurretPos - Constant.TURRET_ANTIBACKLASH);
+//        turret2.setPosition(calculatedTurretPos + Constant.TURRET_ANTIBACKLASH);
+//    }
 
     private void linearInterpolation(double distance) {
         Map.Entry<Double, double[]> low = Constant.SHOOTING_TABLE.floorEntry(distance);
@@ -186,7 +187,7 @@ public class Shooter {
 
     public String detectMotif() {
 
-        String motif = "null";
+
         LLResult result = limelight.getLatestResult();
         List<LLResultTypes.FiducialResult> aprils = result.getFiducialResults();
 

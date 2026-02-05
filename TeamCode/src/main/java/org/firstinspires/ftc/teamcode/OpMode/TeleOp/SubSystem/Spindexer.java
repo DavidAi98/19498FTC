@@ -350,7 +350,21 @@ public class Spindexer {
             intake.setPower(1);
         }
 
+
         switch (intakeStage) {
+
+            case 0: // Anti-stuck by going back to last outtake slot
+                setSpindexer(lastPos);
+                intake.setPower(-1);
+                if (stateTimer.milliseconds() > 2 * Constant.ANTI_STUCK_TIMER) {
+                    intake.setPower(1);
+                    stateTimer.reset();
+                    setSpindexer(nearestPos);
+
+                    intakeStage = 2;
+                }
+
+                break;
             case 1: // Color sensing
                 boolean color1Detected = artifactCount < 3 && colorSensor1.blue() >= 150 && colorSensor1.green() >= 150;
                 boolean color2Detected = artifactCount < 3 && colorSensor2.blue() >= 150 && colorSensor2.green() >= 150;
@@ -383,6 +397,7 @@ public class Spindexer {
                     intakeStage = 1;
                 } else if (stateTimer.milliseconds() > Constant.ANTI_STUCK_TIMER) {
                     resetTimer.reset();
+                    intakeStage=0;
                     encoderResetDone = false;
                 }
                 break;
@@ -395,7 +410,9 @@ public class Spindexer {
         switch (outtakeStage) {
             case 0: // Anti-stuck by going back to last outtake slot
                 setSpindexer(lastPos);
+                intake.setPower(-1);
                 if (stateTimer.milliseconds() > 2 * Constant.ANTI_STUCK_TIMER) {
+                    intake.setPower(1);
                     stateTimer.reset();
                     setSpindexer(nearestPos);
 
@@ -406,11 +423,12 @@ public class Spindexer {
             case 1: // Selection Logic: 2 -> 1 -> 3
 
                 int foundIndex = -1;
-                if(!motif.equals("Null")){
+
+                if(!motif.equals("ANY")){
                     targetColor = motif.substring(autonColor-1,autonColor);
-                }else{
-                    targetColor = "ANY";
                 }
+
+
 
 
 
