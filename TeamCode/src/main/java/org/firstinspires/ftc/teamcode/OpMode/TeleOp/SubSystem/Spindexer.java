@@ -6,14 +6,13 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 public class Spindexer {
     public DcMotor spindexerEncoder, intake;
     public Servo spindexer1, spindexer2, leftPivot, rightPivot;
+    public Servo blinkin;
     public ColorSensor colorSensor1, colorSensor2;
-    private VoltageSensor battery;
 
     public Artifact[] slots = new Artifact[3];
     public int artifactCount = 0;
@@ -30,11 +29,13 @@ public class Spindexer {
     public int Index = 1, nearestIndex = -1;
     public int targetTicks, currentTicks;
     public double nearestPos, lastPos;
-    private String targetColor = "NaN";
+    public String targetColor = "NaN";
 
     private static final int[] priorityOrder = {2, 1, 3};
     private String motifLine = "";
     private int autonColor = 1;
+    private boolean colorDetected;
+    public int sensorInUse = 1;
 
     private String[][] shootMatrix = {
                 {"acb", "bac", "cba"}, // GPP: line1->acb, line2->bac, line3->cba
@@ -49,11 +50,15 @@ public class Spindexer {
         spindexer2 = hwMap.get(Servo.class, "spindexer2");
         leftPivot = hwMap.get(Servo.class, "LeftPivot");
         rightPivot = hwMap.get(Servo.class, "RightPivot");
+
         colorSensor1 = hwMap.get(ColorSensor.class, "colorSensor1");
         colorSensor2 = hwMap.get(ColorSensor.class, "colorSensor2");
         spindexerEncoder = hwMap.get(DcMotor.class, "SpindexerEncoder");
+
+        blinkin = hwMap.get(Servo.class, "blinkin");
+        blinkin.setPosition(0.75);
+
         spindexerEncoder.setDirection(DcMotorSimple.Direction.REVERSE);
-        battery = hwMap.voltageSensor.iterator().next();
         leftPivot.setDirection(Servo.Direction.REVERSE);
 
         setSpindexer(Constant.INTAKE_POS1);
@@ -74,8 +79,20 @@ public class Spindexer {
             if (resetTimer.milliseconds() >= 2 * Constant.ANTI_STUCK_TIMER) {
                 spindexerEncoder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                 spindexerEncoder.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                intake.setPower(0);
                 encoderResetDone = true;
             }
+        }
+        updateLED();
+    }
+
+    public void updateLED() {
+        if (outtakeStage == 1) {
+            blinkin.setPosition(0.71); // Green
+        } else if (artifactCount == 3) {
+            blinkin.setPosition(0.73); // Blue
+        } else {
+            blinkin.setPosition(0.75); // Purple
         }
     }
 
@@ -89,6 +106,7 @@ public class Spindexer {
 
     public void inverseIntake() {
         if (!intakeDone) {
+            intakeStage = -1;
             intakeDone = true;
             inverseTimer.reset();
         }
@@ -110,7 +128,7 @@ public class Spindexer {
     private void handleIntakeLogic(boolean skipSlot) {
         if (intakeStage == -1) {
             // Antistuck
-            if (artifactCount == 3 && outtakeStage == -1) inverseIntake();
+            if ((artifactCount == 3 && outtakeStage == -1)) inverseIntake();
             else stopIntake();
             return;
         } else {
@@ -119,10 +137,18 @@ public class Spindexer {
 
         switch (intakeStage) {
             case 1: // Color sensing
-                boolean color1Detected = artifactCount < 3 && colorSensor1.blue() >= 150 && colorSensor1.green() >= 150;
-                boolean color2Detected = artifactCount < 3 && colorSensor2.blue() >= 150 && colorSensor2.green() >= 150;
-                if (skipSlot || color2Detected) {
-                    color = (colorSensor2.blue() >= colorSensor2.green()) ? "P" : "G";
+                if (sensorInUse == 1) {
+                    colorDetected = artifactCount < 3 && colorSensor1.blue() >= 150 && colorSensor1.green() >= 150;
+                } else {
+                    colorDetected = artifactCount < 3 && colorSensor2.blue() >= 150 && colorSensor2.green() >= 150;
+                }
+
+                if (colorDetected || skipSlot) {
+                    if (sensorInUse == 1) {
+                        color = (colorSensor1.blue() >= colorSensor1.green()) ? "P" : "G";
+                    } else {
+                        color = (colorSensor2.blue() >= colorSensor2.green()) ? "P" : "G";
+                    }
 
                     // Record artifact into slots Array
                     slots[Index - 1] = new Artifact(color, getOuttakePos(Index));
@@ -132,6 +158,25 @@ public class Spindexer {
                     intakeStage = (artifactCount < 3) ? 2 : -1;
                 }
                 break;
+//
+//                double blue1 = colorSensor1.blue(), green1 = colorSensor1.green();
+//                double blue2 = colorSensor2.blue(), green2 = colorSensor2.green();
+//                double prox1 = blue1+green1, prox2 = blue2+green2;
+//
+//                if (skipSlot || (artifactCount < 3 && (prox1+prox2) > 550)) {
+//                    if (prox2 > prox1) {
+//                        color = (blue2 >= green2) ? "P" : "G";
+//                    } else{
+//                        color = (blue1 >= green1) ? "P" : "G";
+//                    }
+//                    // Record artifact into slots Array
+//                    slots[Index - 1] = new Artifact(color, getOuttakePos(Index));
+//                    artifactCount++;
+//
+//                    // Next stage if less than 3 artifacts
+//                    intakeStage = (artifactCount < 3) ? 2 : -1;
+//                }
+//                break;
 
             case 2: // Getting index for next slot
                 Index++;
@@ -151,6 +196,7 @@ public class Spindexer {
                 } else if (stateTimer.milliseconds() > Constant.ANTI_STUCK_TIMER) {
                     resetTimer.reset();
                     encoderResetDone = false;
+                    intake.setPower(-1);
                 }
                 break;
         }
@@ -253,21 +299,30 @@ public class Spindexer {
                 break;
         }
     }
+
     public void update(String motif, boolean shooterReady) {
-        handleAutonIntakeLogic();
-        handleAutonOuttakeLogic(motif, shooterReady);
+        if (encoderResetDone) {
+            handleAutonIntakeLogic();
+            handleAutonOuttakeLogic(motif, shooterReady);
+        } else {
+            intake.setPower(0);
+            spindexerEncoder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            spindexerEncoder.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            encoderResetDone = true;
+        }
     }
-    public void matrixUpdate(String motif,int line,boolean shooterReady,boolean shootOff){
-        handleIntakeLogic();
-        matrixOuttake(motif,line,shooterReady,shootOff);
-    }
+
+//    public void matrixUpdate(String motif,int line,boolean shooterReady,boolean shootOff){
+//        handleIntakeLogic();
+//        matrixOuttake(motif,line,shooterReady,shootOff);
+//    }
 
     public void matrixOuttake(String motif,int line,boolean shooterReady,boolean shootOff){
 
 
-        if(shootOff){
+        if (shootOff) {
             outtakeStage = -1;
-        }else if(outtakeStage==-1){
+        } else if (outtakeStage==-1){
             motifLine = shootMatrix[motif.equals("GPP")? 0:(motif.equals("PGP")? 1:2)][line-1];
             outtakeStage = 1;
         }
@@ -323,7 +378,6 @@ public class Spindexer {
         }
     }
 
-
     private void handleAutonIntakeLogic() {
         if (intakeStage == -1) {
             // Antistuck
@@ -334,10 +388,31 @@ public class Spindexer {
             intake.setPower(1);
         }
 
+
+
         switch (intakeStage) {
             case 1: // Color sensing
-                if (artifactCount < 3 && colorSensor.blue() >= 150 && colorSensor.green() >= 150) {
-                    String color = (colorSensor.blue() >= colorSensor.green()) ? "P" : "G";
+//                double blue1 = colorSensor1.blue(), green1 = colorSensor1.green();
+//                double blue2 = colorSensor2.blue(), green2 = colorSensor2.green();
+//                double prox1 = blue1+green1, prox2 = blue2+green2;
+//
+//                if (artifactCount < 3 && (prox1+prox2) > 550) {
+//                    if (prox2 > prox1) {
+//                        color = (blue2 >= green2) ? "P" : "G";
+//                    } else{
+//                        color = (blue1 >= green1) ? "P" : "G";
+//                    }
+//                    // Record artifact into slots Array
+//                    slots[Index - 1] = new Artifact(color, getOuttakePos(Index));
+//                    artifactCount++;
+//
+//                    // Next stage if less than 3 artifacts
+//                    intakeStage = (artifactCount < 3) ? 2 : -1;
+//                }
+//                break;
+                boolean colorDetected = artifactCount < 3 && colorSensor2.blue() >= 150 && colorSensor2.green() >= 150;
+                if (colorDetected) {
+                    color = (colorSensor2.blue() >= colorSensor2.green()) ? "P" : "G";
 
                     // Record artifact into slots Array
                     slots[Index - 1] = new Artifact(color, getOuttakePos(Index));
@@ -363,15 +438,14 @@ public class Spindexer {
                 if (inSlot) {
                     // Start detecting again
                     intakeStage = 1;
+                } else if (stateTimer.milliseconds() > Constant.ANTI_STUCK_TIMER) {
+                    resetTimer.reset();
+                    encoderResetDone = false;
+                    intake.setPower(-1);
                 }
                 break;
         }
     }
-    public double getIntakePos(int i) { return (i==1) ? Constant.INTAKE_POS1 : (i==2) ? Constant.INTAKE_POS2 : Constant.INTAKE_POS3; }
-    public double getOuttakePos(int i) { return (i==1) ? Constant.OUTTAKE_POS1 : (i==2) ? Constant.OUTTAKE_POS2 : Constant.OUTTAKE_POS3; }
-    public int getOuttakeTick(int i) { return (i==1) ? Constant.OUTTAKE_POS1_TICK : (i==2) ? Constant.OUTTAKE_POS2_TICK : Constant.OUTTAKE_POS3_TICK; }
-    public int getIntakeTick(int i) { return (i==1) ? Constant.INTAKE_POS1_TICK : (i==2) ? Constant.INTAKE_POS2_TICK : Constant.INTAKE_POS3_TICK; }
-}
 
     private void handleAutonOuttakeLogic(String motif, boolean shooterReady) {
 
@@ -382,6 +456,7 @@ public class Spindexer {
                     stateTimer.reset();
                     setSpindexer(nearestPos);
 
+                    intake.setPower(0);
                     outtakeStage = 2;
                 }
                 break;
@@ -389,7 +464,10 @@ public class Spindexer {
             case 1: // Selection Logic: 2 -> 1 -> 3
 
                 int foundIndex = -1;
-                targetColor = motif.substring(autonColor-1,autonColor);
+                if(!targetColor.equals("ANY")){
+                    targetColor = motif.substring(autonColor-1,autonColor);
+                }
+
 
 
                 for (int i : priorityOrder) {
@@ -434,6 +512,7 @@ public class Spindexer {
                 } else if (stateTimer.milliseconds() > Constant.ANTI_STUCK_TIMER && !inSlot) {
                     stateTimer.reset();
                     outtakeStage = 0;
+
                 }
                 break;
 

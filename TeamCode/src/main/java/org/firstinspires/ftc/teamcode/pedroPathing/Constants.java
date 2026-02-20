@@ -26,7 +26,7 @@ public class Constants {
             .lateralZeroPowerAcceleration(-(62.97+68.21+60.48+62)/4)
 
             .translationalPIDFCoefficients(new PIDFCoefficients(0.39, 0.00001, 0.033, 0))//F: the motor trying to move but not move(sound); P: set correct line(vertical; D: more slowly back
-            .headingPIDFCoefficients(new PIDFCoefficients(2.8, 0, 0.16, 0))
+            .headingPIDFCoefficients(new PIDFCoefficients(3, 0, 0.2, 0))//2.8,0.16
             .drivePIDFCoefficients(new FilteredPIDFCoefficients(0.025, 0.000001, 0.0027, 0.6, 0))//line test contains the t and h pidf while drive tuner not; keep the same f with forwardtunner
             .centripetalScaling(0.0005);
 

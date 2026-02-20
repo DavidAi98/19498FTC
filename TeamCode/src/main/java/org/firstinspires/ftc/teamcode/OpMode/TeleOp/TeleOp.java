@@ -1,55 +1,86 @@
 package org.firstinspires.ftc.teamcode.OpMode.TeleOp;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import org.firstinspires.ftc.teamcode.OpMode.TeleOp.SubSystem.*;
 
-@TeleOp(name = "BLUE TeleOp", group="03")
-public class BlueTeleOp extends OpMode {
+import org.firstinspires.ftc.teamcode.OpMode.TeleOp.SubSystem.Constant;
+import org.firstinspires.ftc.teamcode.OpMode.TeleOp.SubSystem.MecanumDrive;
+import org.firstinspires.ftc.teamcode.OpMode.TeleOp.SubSystem.Shooter;
+import org.firstinspires.ftc.teamcode.OpMode.TeleOp.SubSystem.Spindexer;
+
+@com.qualcomm.robotcore.eventloop.opmode.TeleOp(name = "TeleOp", group = "01")
+public class TeleOp extends OpMode {
     private MecanumDrive drive;
     private Shooter shooter;
     private Spindexer spindexer;
     private boolean FieldCentric = true;
+    private FtcDashboard dashboard;
 
     @Override
     public void init() {
         drive = new MecanumDrive(hardwareMap);
         shooter = new Shooter(hardwareMap);
         spindexer = new Spindexer(hardwareMap);
+        dashboard = FtcDashboard.getInstance();
     }
 
     @Override
     public void loop() {
-        // 1. DRIVE
+        // 1. DRIVE & UTILITY
         drive.pinpoint.update();
-        drive.updateRelativePostion(Constant.GOAL_CENTER_X, Constant.BLUE_GOAL_CENTER_Y);
+        drive.updateRelativePostion(Constant.GOAL_CENTER_X, Constant.ALLIANCE.equalsIgnoreCase("RED") ? Constant.RED_GOAL_CENTER_Y : Constant.BLUE_GOAL_CENTER_Y);
         drive.drive(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x, FieldCentric);
+
+        // Toolkit:
+
+        // A: Field/Robot toggle
+        // X: reset pos
+        // B: reset spindexer
+        // Y: shooter
+
+        // Left bumper: shoot Any
+
+        // Dpad Up: shoot P
+        // Dpad Down: shoot G
+        // Dpad Left: calibrate odo + imu
+        // Dpad Right: swap color sensor
+
+        // Right stick button: swap alliance
 
         if (gamepad1.aWasPressed()) {
             FieldCentric = !FieldCentric;
-        }
-        // calibrate odometry
-        if (gamepad1.dpadRightWasPressed()) {
-            drive.calibrateTimer.reset();
-            drive.calibrating = true;
-            shooter.filteredAprilX = 0;
         }
         // reset odometry
         if (gamepad1.x) {
             drive.resetPos = true;
             shooter.filteredAprilX = 0;
-
         }
         // reset spindexer
         if (gamepad1.bWasPressed()) {
             spindexer.resetTimer.reset();
             spindexer.encoderResetDone = false;
+            spindexer.intake.setPower(-1);
+        }
+        // change opMode
+        if (gamepad1.rightStickButtonWasPressed()) {
+            Constant.ALLIANCE = Constant.ALLIANCE.equalsIgnoreCase("RED") ? "BLUE" : "RED";
+        }
+        // calibrate odometry
+        if (gamepad1.dpadLeftWasPressed()) {
+            drive.calibrateTimer.reset();
+            drive.calibrating = true;
+            shooter.filteredAprilX = 0;
+        }
+        // change color sensor
+        if (gamepad1.dpadRightWasPressed()) {
+            spindexer.sensorInUse = spindexer.sensorInUse == 1 ? 2 : 1;
         }
 
         // 2. VISION & AIMING
         double dist = drive.distanceToGoal();
         double rawTurretAngle = drive.getAngleToGoal();
-        shooter.updateShootingParams(dist, 20, spindexer.outtakeStage != -1);
+        shooter.updateShootingParams(dist, Constant.ALLIANCE.equalsIgnoreCase("RED") ? 24 : 20, spindexer.outtakeStage != -1);
         shooter.updateTurret(rawTurretAngle);
 
         // 3. INTAKE/OUTTAKE CONTROL
@@ -66,9 +97,10 @@ public class BlueTeleOp extends OpMode {
         shooter.runShooter(spindexer.outtakeStage != -1);
         // Passing Fire Button (Left Bumper) and Shooter Ready state
         spindexer.update(gamepad1.left_bumper || gamepad2.left_bumper,
-                shooter.isReady(), gamepad1.dpadUpWasPressed() || gamepad2.dpadUpWasPressed(),
-                gamepad1.dpadUpWasPressed() || gamepad2.dpadUpWasPressed(),
-                gamepad1.leftBumperWasPressed()); //skipslot
+                shooter.isReady(),
+                gamepad1.dpadUpWasPressed(), // P Artifact
+                gamepad1.dpadDownWasPressed(), // G Artifact
+                gamepad1.leftBumperWasPressed()); // skipslot
 
         // 5. Visual Slot Logic
         StringBuilder slotVisual = new StringBuilder();
@@ -83,15 +115,24 @@ public class BlueTeleOp extends OpMode {
         }
 
         // 6. TELEMETRY
+        TelemetryPacket packet = new TelemetryPacket();
+        packet.put("current velocity", shooter.leftShooter.getVelocity());
+        packet.put("target velocity", shooter.calculatedTargetVelocity);
+
+
+        dashboard.sendTelemetryPacket(packet);
+
         telemetry.addData("Spindexer Slots", slotVisual.toString());
         telemetry.addData("Field Centric", FieldCentric);
+        telemetry.addData("OpMode", Constant.ALLIANCE);
+        telemetry.addData("Sensor in use", spindexer.sensorInUse);
         telemetry.addData("Intake Stage", spindexer.intakeStage);
         telemetry.addData("Outtake Stage", spindexer.outtakeStage);
         telemetry.addData("Robot Heading", "%.2f", drive.headingDeg);
         telemetry.addData("Velo Error", "%.1f", shooter.calculatedTargetVelocity - shooter.leftShooter.getVelocity());
         telemetry.addData("Distance (odo)", "%.2f", dist);
         telemetry.addData("target ticks", spindexer.targetTicks);
-        telemetry.addData("current ticks", spindexer.currentTicks);
+        telemetry.addData("current ticks", spindexer.spindexerEncoder.getCurrentPosition());
         telemetry.addData("filteredAprilX", shooter.filteredAprilX);
         telemetry.addData("Drive Pos",
                 "X=%.1f  Y=%.1f",

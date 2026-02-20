@@ -6,7 +6,7 @@ import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Servo;
-@TeleOp
+@TeleOp (name = "SERVO TUNER", group="03")
 @Config
 public class ServoTuner extends OpMode {
     private Servo spindexer1, spindexer2, turret1, turret2, hood;

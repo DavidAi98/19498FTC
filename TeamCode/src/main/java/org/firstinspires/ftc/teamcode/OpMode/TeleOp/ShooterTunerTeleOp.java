@@ -25,7 +25,7 @@ import org.firstinspires.ftc.teamcode.OpMode.TeleOp.SubSystem.Constant;
 import java.util.List;
 
 @Config
-@TeleOp(name = "Shooter Tuner (BLUE)")
+@TeleOp(name = "Shooter Tuner (BLUE)", group="03")
 public class ShooterTunerTeleOp extends OpMode {
 
     // ================= DASHBOARD TUNING =================
@@ -192,8 +192,8 @@ public class ShooterTunerTeleOp extends OpMode {
         double hoodAngle = Math.max(25, Math.min(45, HOOD_ANGLE));
         double hoodPos =
                 (Constant.HOOD_MAX - Constant.HOOD_INIT) / (45 - 25)
-                        * (hoodAngle - 45)
-                        + Constant.HOOD_MAX;
+                        * (hoodAngle - 25)
+                        + Constant.HOOD_INIT;
         hood.setPosition(hoodPos);
 
         // ================= TURRET AUTO-AIM =================

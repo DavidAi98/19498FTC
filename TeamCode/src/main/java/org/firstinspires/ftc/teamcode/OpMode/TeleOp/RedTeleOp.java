@@ -4,12 +4,12 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.teamcode.OpMode.TeleOp.SubSystem.*;
 
-@TeleOp(name = "RED TeleOp")
+@TeleOp(name = "RED TeleOp", group="03")
 public class RedTeleOp extends OpMode {
     private MecanumDrive drive;
     private Shooter shooter;
     private Spindexer spindexer;
-    private boolean FieldCentric = false;
+    private boolean FieldCentric = true;
 
     @Override
     public void init() {
@@ -28,10 +28,15 @@ public class RedTeleOp extends OpMode {
         if (gamepad1.aWasPressed()) {
             FieldCentric = !FieldCentric;
         }
-        // reset odometry
-        if (gamepad1.xWasPressed()) {
+        // calibrate odometry
+        if (gamepad1.dpadRightWasPressed()) {
             drive.calibrateTimer.reset();
             drive.calibrating = true;
+            shooter.filteredAprilX = 0;
+        }
+        // reset odometry
+        if (gamepad1.x) {
+            drive.resetPos = true;
             shooter.filteredAprilX = 0;
         }
         // reset spindexer
@@ -43,7 +48,7 @@ public class RedTeleOp extends OpMode {
         // 2. VISION & AIMING
         double dist = drive.distanceToGoal();
         double rawTurretAngle = drive.getAngleToGoal();
-        shooter.updateShootingParams(dist, 24);
+        shooter.updateShootingParams(dist, 24, spindexer.outtakeStage != -1);
         shooter.updateTurret(rawTurretAngle);
 
         // 3. INTAKE/OUTTAKE CONTROL
@@ -51,7 +56,7 @@ public class RedTeleOp extends OpMode {
             if (spindexer.intakeStage == -1) spindexer.startIntake();
             else spindexer.stopIntake();
         }
-        if (gamepad2.yWasPressed()) {
+        if (gamepad1.yWasPressed() || gamepad2.yWasPressed()) {
             if (spindexer.outtakeStage == -1) spindexer.startOuttake();
             else spindexer.stopOuttake();
         }
@@ -59,7 +64,11 @@ public class RedTeleOp extends OpMode {
         // 4. SUBSYSTEM UPDATES
         shooter.runShooter(spindexer.outtakeStage != -1);
         // Passing Fire Button (Left Bumper) and Shooter Ready state
-        spindexer.update(gamepad2.left_bumper, shooter.isReady(), gamepad2.dpadUpWasPressed(), gamepad2.dpadDownWasPressed(), gamepad1.leftBumperWasPressed());
+        spindexer.update(gamepad1.left_bumper || gamepad2.left_bumper,
+                shooter.isReady(),
+                gamepad1.dpadUpWasPressed() || gamepad2.dpadUpWasPressed(),
+                gamepad1.dpadUpWasPressed() || gamepad2.dpadUpWasPressed(),
+                gamepad1.leftBumperWasPressed()); // skipslot
 
         // 5. Visual Slot Logic
         StringBuilder slotVisual = new StringBuilder();

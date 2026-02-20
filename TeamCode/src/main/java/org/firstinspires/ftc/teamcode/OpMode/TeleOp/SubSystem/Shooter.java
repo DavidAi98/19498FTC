@@ -27,13 +27,8 @@ public class Shooter {
 
     // Original tracking variables
     public double filteredAprilX, aprilx;
-
     public double lastKP, lastKI, lastKD;
-    public double limelightDistanceInch = -1;
-    public double last_Distance = -1;
-    public double filteredAprilX, aprilx;
-    private boolean motifDetected = false;
-
+    String motif = "Null";
 
     public Shooter(HardwareMap hwMap) {
         leftShooter = hwMap.get(DcMotorEx.class, "LeftShooterMotor");
@@ -47,8 +42,6 @@ public class Shooter {
         turret2 = hwMap.get(Servo.class, "turret2");
         hood = hwMap.get(Servo.class, "RightHood");
         hood.setPosition(Constant.HOOD_INIT);
-        turret1.setPosition(Constant.TURRET_INIT);
-        turret2.setPosition(Constant.TURRET_INIT);
 
         battery = hwMap.voltageSensor.iterator().next();
 
@@ -61,9 +54,9 @@ public class Shooter {
         );
     }
 
-    public void updateShootingParams(double odoDistance, int aprilTagID) {
+    public void updateShootingParams(double odoDistance, int aprilTagID, boolean active) {
         LLResult results = limelight.getLatestResult();
-        linearInterpolation(odoDistance);
+        linearInterpolation(odoDistance, active);
 
         if (results != null && results.isValid()) {
             List<LLResultTypes.FiducialResult> detection = results.getFiducialResults();
@@ -79,6 +72,7 @@ public class Shooter {
     }
 
     public void updateTurret(double rawTurretAngle) {
+
         filteredAprilX += aprilx * 0.08;
         double turretHeading = rawTurretAngle + filteredAprilX;
 
@@ -93,7 +87,7 @@ public class Shooter {
         turret2.setPosition(calculatedTurretPos + Constant.TURRET_ANTIBACKLASH);
     }
 
-    private void linearInterpolation(double distance) {
+    private void linearInterpolation(double distance, boolean active) {
         Map.Entry<Double, double[]> low = Constant.SHOOTING_TABLE.floorEntry(distance);
         Map.Entry<Double, double[]> high = Constant.SHOOTING_TABLE.ceilingEntry(distance);
 
@@ -104,11 +98,14 @@ public class Shooter {
         } else if (low != null) {
             calculatedTargetVelocity = low.getValue()[0];
             calculatedHoodAngle = low.getValue()[1];
+        } else if (high != null) {
+            calculatedTargetVelocity = high.getValue()[0];
+            calculatedHoodAngle = high.getValue()[1];
         }
 
-        if (leftShooter.getVelocity() > 100) {
-            double hoodServoPos = (Constant.HOOD_MAX - Constant.HOOD_INIT) / (45 - 25) * (calculatedHoodAngle - 45) + Constant.HOOD_MAX;
-            hoodServoPos= Math.max(Constant.HOOD_MAX, Math.min(Constant.HOOD_INIT, hoodServoPos));
+        if (active) {
+            double hoodServoPos = (Constant.HOOD_MAX - Constant.HOOD_INIT) / (45 - 25) * (calculatedHoodAngle - 25) + Constant.HOOD_INIT;
+            hoodServoPos= Math.max(Constant.HOOD_INIT, Math.min(Constant.HOOD_MAX, hoodServoPos));
             hood.setPosition(hoodServoPos);
         } else {
             hood.setPosition(Constant.HOOD_INIT);
@@ -149,7 +146,7 @@ public class Shooter {
         double totalPower = pidContribution + ff;
 
         totalPower = Math.max(0, Math.min(1.0, totalPower));
-        if (error > 0.075 * leftShooter.getVelocity() && totalPower > 0.2) {
+        if (error > 0.1 * calculatedTargetVelocity) {
             leftShooter.setPower(1);
             rightShooter.setPower(1);
         } else {
@@ -164,13 +161,10 @@ public class Shooter {
         turret1.setPosition(calculatedTurretPos - Constant.TURRET_ANTIBACKLASH);
         turret2.setPosition(calculatedTurretPos + Constant.TURRET_ANTIBACKLASH);
     }
-    public void setHoodPosition(double position){
-        hood.setPosition(position);
-    }
 
     public String detectMotif() {
 
-        String motif = "null";
+
         LLResult result = limelight.getLatestResult();
         List<LLResultTypes.FiducialResult> aprils = result.getFiducialResults();
 
@@ -196,7 +190,9 @@ public class Shooter {
 
 
     public boolean isReady() {
-        double error = Math.abs(leftShooter.getVelocity() - calculatedTargetVelocity);
-        return calculatedTargetVelocity > 0 && ((error <= 0.075 * leftShooter.getVelocity()) || (error <= 100));
+        double currentVelo = leftShooter.getVelocity();
+        double voltageComp = Constant.NOMINAL_VOLTAGE / battery.getVoltage();
+        double error = Math.abs(currentVelo - calculatedTargetVelocity);
+        return calculatedTargetVelocity > 0 && (error < Constant.VELOCITY_TOLERANCE * (1/voltageComp) * (2200/currentVelo));
     }
 }

@@ -18,7 +18,7 @@ public class MecanumDrive {
     public double botX, botY;
     public double turretX, turretY;
     public double headingDeg, headingRad;
-    public boolean calibrating = false;
+    public boolean calibrating = false, resetPos = false;
     public ElapsedTime calibrateTimer = new ElapsedTime();
 
     public MecanumDrive(HardwareMap hwMap) {
@@ -44,7 +44,9 @@ public class MecanumDrive {
         pinpoint.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
         pinpoint.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.FORWARD, GoBildaPinpointDriver.EncoderDirection.FORWARD);
         pinpoint.setYawScalar(Constant.ODO_YAW_SCALAR);
-        pinpoint.recalibrateIMU();
+
+        pinpoint.setPosition(new Pose2D(DistanceUnit.INCH, Constant.AUTON_LAST_X, Constant.AUTON_LAST_Y, AngleUnit.RADIANS, Constant.AUTON_LAST_HEADING_RAD));
+
     }
 
     public void updateRelativePostion(double targetX, double targetY) {
@@ -67,9 +69,13 @@ public class MecanumDrive {
             if (calibrateTimer.milliseconds() > Constant.CALIBRATE_TIMER) {
                 calibrating = false;
             } else if (calibrateTimer.milliseconds() > 125) {
-                pinpoint.setPosition(new Pose2D(DistanceUnit.INCH, 0, 0, AngleUnit.RADIANS, 0));
+                pinpoint.resetPosAndIMU();
             }
             return;
+        }
+        if (resetPos) {
+            pinpoint.setPosition(new Pose2D(DistanceUnit.INCH, 0, 0, AngleUnit.RADIANS, 0));
+            resetPos = false;
         }
         if (fieldCentric) {
             double rotX = x * Math.cos(-headingRad) - y * Math.sin(-headingRad);
