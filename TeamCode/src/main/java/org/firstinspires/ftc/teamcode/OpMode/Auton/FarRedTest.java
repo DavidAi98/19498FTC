@@ -15,7 +15,7 @@ import org.firstinspires.ftc.teamcode.OpMode.TeleOp.SubSystem.Shooter;
 import org.firstinspires.ftc.teamcode.OpMode.TeleOp.SubSystem.Spindexer;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
-@Autonomous(name = "FarRed")
+@Autonomous(name = "RED Far (9 solo)", group = "04")
 public class FarRedTest extends OpMode {
 
     private Follower follower;
@@ -438,6 +438,7 @@ public class FarRedTest extends OpMode {
         spindexer = new Spindexer(hardwareMap);
 
 //        shooter.calculatedTargetVelocity = 1800;
+        spindexer.setSpindexer(Constant.INTAKE_POS1);
         shooter.setTurretPosition(0.5);
 //        shooter.setHoodPosition(Constant.HOOD_INIT);
         follower = Constants.createFollower(hardwareMap);

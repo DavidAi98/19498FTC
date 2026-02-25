@@ -21,9 +21,9 @@ public class Constants {
     public static FollowerConstants followerConstants = new FollowerConstants()
             .mass(11.75)
 
-            .forwardZeroPowerAcceleration(-(31.45+29.87+31.45+32.63+30.18+33.83)/6
+            .forwardZeroPowerAcceleration(-(26.229+27.65+24.63+25.40+24.45+24.17)/6
             )
-            .lateralZeroPowerAcceleration(-(62.97+68.21+60.48+62)/4)
+            .lateralZeroPowerAcceleration(-(62.82+62.44+60.00+62.87+59.70)/5)
 
             .translationalPIDFCoefficients(new PIDFCoefficients(0.39, 0.00001, 0.033, 0))//F: the motor trying to move but not move(sound); P: set correct line(vertical; D: more slowly back
             .headingPIDFCoefficients(new PIDFCoefficients(3, 0, 0.2, 0))//2.8,0.16
@@ -40,8 +40,8 @@ public class Constants {
             .leftRearMotorDirection(DcMotorSimple.Direction.REVERSE)
             .rightFrontMotorDirection(DcMotorSimple.Direction.FORWARD)
             .rightRearMotorDirection(DcMotorSimple.Direction.FORWARD)
-            .xVelocity((67.002404881127+64.08+68.81+67+67.42)/5)
-            .yVelocity((50.28+49.4+50.48)/3) //(54.4996131236159 + 55.765637495386315 + 55.52764892578125 + 53.797435850609006) / 4
+            .xVelocity((80.23))
+            .yVelocity(61.81) //(54.4996131236159 + 55.765637495386315 + 55.52764892578125 + 53.797435850609006) / 4
             .useBrakeModeInTeleOp(true)
             .useVoltageCompensation(true);
 
@@ -59,11 +59,11 @@ public class Constants {
             .encoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD)
             .forwardEncoderDirection(GoBildaPinpointDriver.EncoderDirection.FORWARD)
             .strafeEncoderDirection(GoBildaPinpointDriver.EncoderDirection.FORWARD);
-    public static PathConstraints pathConstraints = new PathConstraints(0.995,
+    public static PathConstraints pathConstraints = new PathConstraints(0.995,//0.995
             0.1,
             0.1,
             0.009,
-            30,
+            10,
             1.2,
             10,
             1);//in the path constraints

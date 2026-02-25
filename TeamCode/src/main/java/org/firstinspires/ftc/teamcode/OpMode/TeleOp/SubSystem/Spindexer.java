@@ -11,7 +11,6 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 public class Spindexer {
     public DcMotor spindexerEncoder, intake;
     public Servo spindexer1, spindexer2, leftPivot, rightPivot;
-    public Servo blinkin;
     public ColorSensor colorSensor1, colorSensor2;
 
     public Artifact[] slots = new Artifact[3];
@@ -35,13 +34,15 @@ public class Spindexer {
     private String motifLine = "";
     private int autonColor = 1;
     private boolean colorDetected;
-    public int sensorInUse = 1;
+    public int sensorInUse = 2;
 
     private String[][] shootMatrix = {
                 {"acb", "bac", "cba"}, // GPP: line1->acb, line2->bac, line3->cba
                 {"bac", "cba", "acb"}, // PGP: line1->bac, line2->cba, line3->acb
                 {"cba", "acb", "bac"}  // PPG: line1->cba, line2->acb, line3->bac
         };
+
+    public boolean onStart;
 
 
     public Spindexer(@NonNull HardwareMap hwMap) {
@@ -55,13 +56,9 @@ public class Spindexer {
         colorSensor2 = hwMap.get(ColorSensor.class, "colorSensor2");
         spindexerEncoder = hwMap.get(DcMotor.class, "SpindexerEncoder");
 
-        blinkin = hwMap.get(Servo.class, "blinkin");
-        blinkin.setPosition(0.75);
-
         spindexerEncoder.setDirection(DcMotorSimple.Direction.REVERSE);
         leftPivot.setDirection(Servo.Direction.REVERSE);
 
-        setSpindexer(Constant.INTAKE_POS1);
         setPivot(Constant.PIVOT_DOWN);
         intake.setPower(0);
     }
@@ -81,18 +78,15 @@ public class Spindexer {
                 spindexerEncoder.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
                 intake.setPower(0);
                 encoderResetDone = true;
-            }
-        }
-        updateLED();
-    }
+                onStart = false;
+            } else if (resetTimer.milliseconds() >= Constant.ANTI_STUCK_TIMER) {
+                if (!onStart) {
+                    intake.setPower(-1);
+                } else {
+                    intake.setPower(0);
 
-    public void updateLED() {
-        if (outtakeStage == 1) {
-            blinkin.setPosition(0.71); // Green
-        } else if (artifactCount == 3) {
-            blinkin.setPosition(0.73); // Blue
-        } else {
-            blinkin.setPosition(0.75); // Purple
+                }
+            }
         }
     }
 
@@ -139,8 +133,10 @@ public class Spindexer {
             case 1: // Color sensing
                 if (sensorInUse == 1) {
                     colorDetected = artifactCount < 3 && colorSensor1.blue() >= 150 && colorSensor1.green() >= 150;
-                } else {
+                } else if (sensorInUse == 2) {
                     colorDetected = artifactCount < 3 && colorSensor2.blue() >= 150 && colorSensor2.green() >= 150;
+                } else if (sensorInUse == -1) {
+                    colorDetected = false;
                 }
 
                 if (colorDetected || skipSlot) {
@@ -196,7 +192,6 @@ public class Spindexer {
                 } else if (stateTimer.milliseconds() > Constant.ANTI_STUCK_TIMER) {
                     resetTimer.reset();
                     encoderResetDone = false;
-                    intake.setPower(-1);
                 }
                 break;
         }
@@ -227,6 +222,9 @@ public class Spindexer {
                 if (fireButton)        targetColor = "ANY";
                 else if (purpleButton) targetColor = "P";
                 else if (greenButton)  targetColor = "G";
+
+
+
 
                 // Fast leave to reduce runtime
                 if (targetColor.equals("NaN")) return;
@@ -305,10 +303,19 @@ public class Spindexer {
             handleAutonIntakeLogic();
             handleAutonOuttakeLogic(motif, shooterReady);
         } else {
-            intake.setPower(0);
-            spindexerEncoder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            spindexerEncoder.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            encoderResetDone = true;
+            intakeStage = -1;
+            outtakeStage = -1;
+            artifactCount = 0;
+            Index = 1;
+            setSpindexer(Constant.INTAKE_POS1);
+            if (resetTimer.milliseconds() >= 2 * Constant.ANTI_STUCK_TIMER) {
+                spindexerEncoder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                spindexerEncoder.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                intake.setPower(0);
+                encoderResetDone = true;
+            } else if (resetTimer.milliseconds() >= Constant.ANTI_STUCK_TIMER) {
+                intake.setPower(-1);
+            }
         }
     }
 
@@ -410,7 +417,7 @@ public class Spindexer {
 //                    intakeStage = (artifactCount < 3) ? 2 : -1;
 //                }
 //                break;
-                boolean colorDetected = artifactCount < 3 && colorSensor2.blue() >= 150 && colorSensor2.green() >= 150;
+                boolean colorDetected = artifactCount < 3 && colorSensor2.blue() >= 200 && colorSensor2.green() >= 200;
                 if (colorDetected) {
                     color = (colorSensor2.blue() >= colorSensor2.green()) ? "P" : "G";
 
@@ -441,7 +448,6 @@ public class Spindexer {
                 } else if (stateTimer.milliseconds() > Constant.ANTI_STUCK_TIMER) {
                     resetTimer.reset();
                     encoderResetDone = false;
-                    intake.setPower(-1);
                 }
                 break;
         }

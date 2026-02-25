@@ -23,13 +23,13 @@ public class TeleOp extends OpMode {
         shooter = new Shooter(hardwareMap);
         spindexer = new Spindexer(hardwareMap);
         dashboard = FtcDashboard.getInstance();
+        spindexer.onStart = true;
     }
 
     @Override
     public void loop() {
         // 1. DRIVE & UTILITY
-        drive.pinpoint.update();
-        drive.updateRelativePostion(Constant.GOAL_CENTER_X, Constant.ALLIANCE.equalsIgnoreCase("RED") ? Constant.RED_GOAL_CENTER_Y : Constant.BLUE_GOAL_CENTER_Y);
+        drive.update(Constant.GOAL_CENTER_X, Constant.ALLIANCE.equalsIgnoreCase("RED") ? Constant.RED_GOAL_CENTER_Y : Constant.BLUE_GOAL_CENTER_Y);
         drive.drive(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x, FieldCentric);
 
         // Toolkit:
@@ -52,34 +52,36 @@ public class TeleOp extends OpMode {
             FieldCentric = !FieldCentric;
         }
         // reset odometry
-        if (gamepad1.x) {
-            drive.resetPos = true;
+        if (gamepad1.xWasPressed()) {
+            drive.resetingPos = true;
             shooter.filteredAprilX = 0;
         }
         // reset spindexer
         if (gamepad1.bWasPressed()) {
             spindexer.resetTimer.reset();
             spindexer.encoderResetDone = false;
-            spindexer.intake.setPower(-1);
         }
+
         // change opMode
-        if (gamepad1.rightStickButtonWasPressed()) {
-            Constant.ALLIANCE = Constant.ALLIANCE.equalsIgnoreCase("RED") ? "BLUE" : "RED";
-        }
-        // calibrate odometry
-        if (gamepad1.dpadLeftWasPressed()) {
-            drive.calibrateTimer.reset();
-            drive.calibrating = true;
-            shooter.filteredAprilX = 0;
-        }
+//        if (gamepad1.rightStickButtonWasPressed()) {
+//            Constant.ALLIANCE = Constant.ALLIANCE.equalsIgnoreCase("RED") ? "BLUE" : "RED";
+//        }
         // change color sensor
         if (gamepad1.dpadRightWasPressed()) {
+            spindexer.resetTimer.reset();
+            spindexer.encoderResetDone = false;
             spindexer.sensorInUse = spindexer.sensorInUse == 1 ? 2 : 1;
+        }
+        // disable color sensor (ONLY IF BOTH COLOR SENSOR DC)
+        if (gamepad1.dpadLeftWasPressed()) {
+            spindexer.resetTimer.reset();
+            spindexer.encoderResetDone = false;
+            spindexer.sensorInUse = -1;
         }
 
         // 2. VISION & AIMING
         double dist = drive.distanceToGoal();
-        double rawTurretAngle = drive.getAngleToGoal();
+        double rawTurretAngle = drive.angleToGoal();
         shooter.updateShootingParams(dist, Constant.ALLIANCE.equalsIgnoreCase("RED") ? 24 : 20, spindexer.outtakeStage != -1);
         shooter.updateTurret(rawTurretAngle);
 
@@ -118,7 +120,9 @@ public class TeleOp extends OpMode {
         TelemetryPacket packet = new TelemetryPacket();
         packet.put("current velocity", shooter.leftShooter.getVelocity());
         packet.put("target velocity", shooter.calculatedTargetVelocity);
-
+        packet.put("target velocity", shooter.calculatedTargetVelocity);
+        packet.put("target velocity", shooter.calculatedTargetVelocity);
+        
 
         dashboard.sendTelemetryPacket(packet);
 

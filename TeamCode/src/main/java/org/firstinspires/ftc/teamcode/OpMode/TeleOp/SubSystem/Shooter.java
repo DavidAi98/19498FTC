@@ -41,7 +41,6 @@ public class Shooter {
         turret1 = hwMap.get(Servo.class, "turret1");
         turret2 = hwMap.get(Servo.class, "turret2");
         hood = hwMap.get(Servo.class, "RightHood");
-        hood.setPosition(Constant.HOOD_INIT);
 
         battery = hwMap.voltageSensor.iterator().next();
 
@@ -71,10 +70,11 @@ public class Shooter {
         }
     }
 
-    public void updateTurret(double rawTurretAngle) {
+    public void updateTurret(double rawTurretAngle, double AUTON) {
 
-        filteredAprilX += aprilx * 0.08;
+        filteredAprilX += aprilx * 0.1 * AUTON;
         double turretHeading = rawTurretAngle + filteredAprilX;
+
 
         // Normalize 0-360
         turretHeading = ((turretHeading % 360) + 360) % 360;
@@ -86,6 +86,23 @@ public class Shooter {
         turret1.setPosition(calculatedTurretPos - Constant.TURRET_ANTIBACKLASH);
         turret2.setPosition(calculatedTurretPos + Constant.TURRET_ANTIBACKLASH);
     }
+    public void updateTurret(double rawTurretAngle) {
+
+        filteredAprilX += aprilx * 0.1;
+        double turretHeading = rawTurretAngle + filteredAprilX;
+
+
+        // Normalize 0-360
+        turretHeading = ((turretHeading % 360) + 360) % 360;
+
+        calculatedTurretPos = Constant.TURRET_MIN + (turretHeading / 360.0) * Constant.TURRET_RANGE;
+
+        calculatedTurretPos = Math.max(Constant.TURRET_MIN, Math.min(Constant.TURRET_MAX, calculatedTurretPos));
+
+        turret1.setPosition(calculatedTurretPos - Constant.TURRET_ANTIBACKLASH);
+        turret2.setPosition(calculatedTurretPos + Constant.TURRET_ANTIBACKLASH);
+    }
+
 
     private void linearInterpolation(double distance, boolean active) {
         Map.Entry<Double, double[]> low = Constant.SHOOTING_TABLE.floorEntry(distance);

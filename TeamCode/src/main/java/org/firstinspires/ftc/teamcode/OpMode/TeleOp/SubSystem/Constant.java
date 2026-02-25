@@ -104,9 +104,10 @@ public class Constant {
         SHOOTING_TABLE.put(90.0,  new double[]{1680, 45});
         SHOOTING_TABLE.put(100.0, new double[]{1740, 45});
         SHOOTING_TABLE.put(110.0, new double[]{1840, 45});
-        SHOOTING_TABLE.put(120.0, new double[]{1920, 45});
-        SHOOTING_TABLE.put(130.0, new double[]{2005, 45});// 2100
+        SHOOTING_TABLE.put(120.0, new double[]{1940, 45});
+        SHOOTING_TABLE.put(130.0, new double[]{2020, 45}); // 2100
         SHOOTING_TABLE.put(140.0, new double[]{2080, 45}); // 2200
+        SHOOTING_TABLE.put(150.0, new double[]{2160, 45});
     }
 
     // LimeLight constants

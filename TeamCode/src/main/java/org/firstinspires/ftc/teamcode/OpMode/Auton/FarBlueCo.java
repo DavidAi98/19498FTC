@@ -10,52 +10,36 @@ import com.pedropathing.util.Timer;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import  com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
-import org.firstinspires.ftc.teamcode.OpMode.TeleOp.SubSystem.Constant;
-import org.firstinspires.ftc.teamcode.OpMode.TeleOp.SubSystem.Shooter;
-import org.firstinspires.ftc.teamcode.OpMode.TeleOp.SubSystem.Spindexer;
+import org.firstinspires.ftc.teamcode.OpMode.TeleOp.SubSystem.*;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
-
-@Autonomous(name = "NearBlue")
-public class NearBlue extends OpMode {
+@Autonomous(name = "FarBlueCo")
+public class FarBlueCo extends OpMode {
 
     private Follower follower;
-    private PathChain firstPickup1, firstPickup2, secondPickup1, secondPickup2, openRedGate2, firstPickupBreak1, firstPickupBreak2, endPath, secondPickupBreak1, secondPickupBreak2, pickup2ToGate, thirdPickup1, thirdPickup2,
-    firstPickupTest1,firstPickupTest2,firstPickupTest3;
+    private PathChain firstPickup1, firstPickup2, secondPickup1, secondPickup2, openRedGate2, firstPickupBreak1, firstPickupBreak2, endPath, secondPickupBreak1, secondPickupBreak2, pickup2ToGate, thirdPickup1,
+            thirdPickup2,randomPickup1,randomPickup2,randomPickup3,randomPickup4,randomPickup5,randomPickup6;
     private Path preLoadShot;
-    public static Pose initPos = new Pose(144-111, 136.685, Math.toRadians(180));
-//    public static Pose initPos = new Pose(33.000, 136.685, Math.toRadians(180));
-    public static Pose shootingPos = new Pose(51.2, 84.133, Math.toRadians(180));
-//    public static Pose shootingPos = new Pose(50.387, 84.133, Math.toRadians(180));
-    public static Pose redGate = new Pose(14.5, 70.4, Math.toRadians(180));
-    public static Pose pickup1Pos = new Pose(10, 34.8, Math.toRadians(180));
+    public static Pose initPos = new Pose(63.3, 6.6, Math.toRadians(180));
+    public static Pose shootingPos = new Pose(64, 16, Math.toRadians(180));
+    public static Pose redGate = new Pose(15, 69.901, Math.toRadians(180));
+    public static Pose pickup1Pos = new Pose(9.5, 35.2, Math.toRadians(180));
     public static Pose pickup2Pos = new Pose(10, 59.088, Math.toRadians(180));
     public static Pose pickup3Pos = new Pose(16, 84.04, Math.toRadians(180));
-    public static Pose endPos1 = new Pose(56.619, 36.669, Math.toRadians(180));
-    public static Pose shooting2Pos = new Pose(60, 102, Math.toRadians(180));
+    public static Pose random1 = new Pose(10,15.5,Math.toRadians(180));
+    public static Pose random2 = new Pose(10,35.122,Math.toRadians(170));
 
-    public static Pose pickup1PosTest = new Pose(9.149, 35.403,Math.toRadians(180));
+    public static Pose random3  = new Pose(10,9,Math.toRadians(180));
+    public static Pose endPos1 = new Pose(15, 16, Math.toRadians(180));
 
-    private Timer pathTimer, actionTimer, opmodeTimer,testTimer;
+    private Timer pathTimer, actionTimer, opmodeTimer;
 
     private int pathState,actionState;
 
     private Shooter shooter;
     private Spindexer spindexer;
-
-
-
-    private double odoDist =75;
-    private double angle = 40;//40
-
-
-
     private String targetMotif = "Null";
-
-
-
-
-
+    private int angle =22;
 
 
 
@@ -63,35 +47,7 @@ public class NearBlue extends OpMode {
     public void buildPaths() {
 
         preLoadShot = new Path(new BezierLine(initPos, shootingPos));
-        preLoadShot.setLinearHeadingInterpolation(initPos.getHeading(), Math.toRadians(180));
-
-        firstPickupTest1 = follower.pathBuilder()
-                .addPath(new BezierCurve(
-                        shootingPos,
-                        new Pose(49.088, 43.892),
-                        new Pose(57.210, 32.970),
-                        pickup1PosTest
-                ))
-                .setTangentHeadingInterpolation()
-                .build();
-
-
-        firstPickupTest2 = follower.pathBuilder()
-                .addPath(new BezierLine(
-                        pickup1PosTest,
-                        new Pose(16.398, 43.994)
-                ))
-                .setLinearHeadingInterpolation(pickup1PosTest.getHeading(),Math.toRadians(180))
-                .build();
-
-        firstPickupTest3 = follower.pathBuilder()
-                .addPath(new BezierLine(
-                        new Pose(16.398, 43.994),
-                        shooting2Pos
-                ))
-                .setTangentHeadingInterpolation()
-                .setReversed()
-                .build();
+        preLoadShot.setLinearHeadingInterpolation(initPos.getHeading(), shootingPos.getHeading());
 
 
         firstPickupBreak1 = follower.pathBuilder()
@@ -114,8 +70,8 @@ public class NearBlue extends OpMode {
         firstPickup1 = follower.pathBuilder()
                 .addPath(new BezierCurve(
                         shootingPos,
-                        new Pose(49.088, 43.892),
-                        new Pose(57.210, 32.970),
+                        new Pose(42.776, 32.392),
+                        new Pose(55.318, 38.757),
                         pickup1Pos))
                 .setLinearHeadingInterpolation(pickup2Pos.getHeading(), shootingPos.getHeading())
                 .build();
@@ -124,16 +80,14 @@ public class NearBlue extends OpMode {
                 .addPath(new BezierLine(
                         pickup1Pos,
 
-                        shooting2Pos))
-//                .setTangentHeadingInterpolation()
-//                .setReversed()
+                        shootingPos))
                 .setLinearHeadingInterpolation(pickup1Pos.getHeading(), shootingPos.getHeading())
                 .build();
 
 
         pickup2ToGate = follower.pathBuilder()
                 .addPath(new BezierCurve(pickup2Pos,
-                        new Pose(36.025, 63.124),
+                        new Pose(30, 66.423),
                         redGate
                 ))
                 .setLinearHeadingInterpolation(pickup2Pos.getHeading(), redGate.getHeading())
@@ -142,7 +96,7 @@ public class NearBlue extends OpMode {
 
         openRedGate2 = follower.pathBuilder()
                 .addPath(new BezierCurve(redGate,
-                        new Pose(48, 66),
+                        new Pose(53.403, 45.746),
                         shootingPos
                 ))
                 .setLinearHeadingInterpolation(pickup2Pos.getHeading(), redGate.getHeading())
@@ -151,19 +105,22 @@ public class NearBlue extends OpMode {
         secondPickup1 = follower.pathBuilder()
                 .addPath(new BezierCurve(
                         shootingPos,
-                        new Pose(50.544, 64.848),
-                        new Pose(52.953, 57.312),
+                        new Pose(45.749, 71.580),
+                        new Pose(36.373, 57.647),
                         pickup2Pos))
                 .setLinearHeadingInterpolation(shootingPos.getHeading(), pickup2Pos.getHeading(), 0.4)
                 .build();
 
 
         thirdPickup1 = follower.pathBuilder()
-                .addPath(new BezierLine(
+                .addPath(new BezierCurve(
                         shootingPos,
 
+                        new Pose(63.547, 96),
+                        new Pose(35.122, 85),
+                        new Pose(50.050, 87),
                         pickup3Pos))
-                .setLinearHeadingInterpolation(pickup2Pos.getHeading(), shootingPos.getHeading())
+                .setTangentHeadingInterpolation()
                 .build();
 
 
@@ -185,6 +142,64 @@ public class NearBlue extends OpMode {
                 .setLinearHeadingInterpolation(pickup2Pos.getHeading(), shootingPos.getHeading())
                 .build();
 
+
+        randomPickup1 = follower.pathBuilder()
+                .addPath(new BezierCurve(
+                        shootingPos,
+                        new Pose(31.939,15.316),
+
+                        random1))
+                .setTangentHeadingInterpolation()
+                .build();
+        randomPickup2 = follower.pathBuilder()
+                .addPath(new BezierCurve(
+                        random1,
+                        new Pose(13.8,26),
+                        random2))
+                .setLinearHeadingInterpolation(random1.getHeading(), random2.getHeading())
+                .build();
+
+        randomPickup3 = follower.pathBuilder()
+                .addPath(new BezierCurve(
+                        random2,
+
+
+                        new Pose(42.994,33.265),
+                        shootingPos))
+                .setTangentHeadingInterpolation()
+                .setReversed()
+                .build();
+        randomPickup4 = follower.pathBuilder()
+                .addPath(new BezierCurve(
+                        shootingPos,
+
+
+                        new Pose(36.036,8.38),
+                        random3))
+                .setTangentHeadingInterpolation()
+
+                .build();
+        randomPickup5 = follower.pathBuilder()
+                .addPath(new BezierCurve(
+                        random3,
+
+
+                        new Pose(14,13),
+                        random1))
+                .setConstantHeadingInterpolation(random1.getHeading())
+
+                .build();
+        randomPickup6 = follower.pathBuilder()
+                .addPath(new BezierCurve(
+                        random1,
+
+                        new Pose(31.939,15.316),
+                        shootingPos))
+                .setTangentHeadingInterpolation()
+
+                .setReversed()
+                .build();
+
     }
 
 
@@ -195,6 +210,8 @@ public class NearBlue extends OpMode {
         switch (pathState) {
 
             case 0:
+                opmodeTimer.resetTimer();
+
 
 
                 follower.followPath(preLoadShot);
@@ -217,57 +234,28 @@ public class NearBlue extends OpMode {
                 break;
 
             case 99:
-                if(spindexer.intakeStage==-1&&pathTimer.getElapsedTimeSeconds()>0.5){
+                if(spindexer.intakeStage==-1&&pathTimer.getElapsedTimeSeconds()>3){
                     spindexer.startOuttake();
-                    setPathState(2);
-                }
-                break;
-            case 88:
-                if (spindexer.outtakeStage==-1&&pathTimer.getElapsedTimeSeconds()>1) {
-                    setActionState(0);
-                    testTimer.resetTimer();
-                    follower.followPath(firstPickupTest1, true);
-                    spindexer.startIntake();
-                    setPathState(77);
-
-
-                }
-                break;
-
-            case 77:
-                if(pathTimer.getElapsedTimeSeconds()>1.6){
-                    follower.setMaxPower(0.5);
-                }
-
-                if (!follower.isBusy()) {
-                    follower.setMaxPower(1);
-                    follower.followPath(firstPickupTest2, true);
-
-                    setActionState(0);
-                    setPathState(66);
-                }
-                break;
-            case 66:
-                if(!follower.isBusy()){
-
-                    follower.followPath(firstPickupTest3,true);
-                    setPathState(55);
-                }
-                break;
-            case 55:
-                if(!follower.isBusy()){
-                    testTimer.resetTimer();
                     setPathState(13);
                 }
                 break;
             case 2:
 
 
-                if (spindexer.outtakeStage==-1&&pathTimer.getElapsedTimeSeconds()>0.2) {
+                if (spindexer.outtakeStage==-1) {
                     setActionState(0);
-                    follower.followPath(secondPickup1, true);
-                    spindexer.startIntake();
-                    setPathState(3);
+                    angle = 60;
+
+                    if(opmodeTimer.getElapsedTimeSeconds()<20){
+                        follower.followPath(randomPickup1, true);
+                        spindexer.startIntake();
+                        setPathState(3);
+
+                    }else{
+                        follower.followPath(randomPickup4, true);
+                        spindexer.startIntake();
+                        setPathState(10);
+                    }
 
 
                 }
@@ -275,14 +263,17 @@ public class NearBlue extends OpMode {
 
             case 3://
 
-                if(pathTimer.getElapsedTimeSeconds()>0.7){
-                    follower.setMaxPower(0.5);
+                if(pathTimer.getElapsedTimeSeconds()>1){
+                    follower.setMaxPower(0.7);
                 }
                 if (!follower.isBusy()) {
-                    follower.setMaxPower(1);
 
-                    follower.followPath(pickup2ToGate, true);
-                    setPathState(4);
+
+                        follower.followPath(randomPickup2, true);
+                        setPathState(4);
+
+
+
 
                 }
 
@@ -293,10 +284,11 @@ public class NearBlue extends OpMode {
 
 
 
-                if (!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>2.5) {
+                if (!follower.isBusy()) {
                     follower.setMaxPower(1);
-                    follower.followPath(openRedGate2, true);
-                    spindexer.stopIntake();
+
+                    follower.followPath(randomPickup3, true);
+
                     setActionState(0);
                     setPathState(5);
 
@@ -304,12 +296,15 @@ public class NearBlue extends OpMode {
 
                 break;
 
+
             case 5:
 
 
+
                 if (!follower.isBusy()) {
+                    spindexer.stopIntake();
                     spindexer.startOuttake();
-                    setPathState(6);
+                    setPathState(2);
 
                 }
                 break;
@@ -317,7 +312,8 @@ public class NearBlue extends OpMode {
             case 6:
 
                 if (spindexer.outtakeStage==-1) {
-                    follower.followPath(thirdPickup1, true);
+
+                    follower.followPath(firstPickup1, true);
                     setActionState(0);
 
                     spindexer.startIntake();
@@ -327,14 +323,14 @@ public class NearBlue extends OpMode {
                 break;
             case 7:
                 if(pathTimer.getElapsedTimeSeconds()>0.7){
-                    follower.setMaxPower(0.5);
+                    follower.setMaxPower(0.8);
 
 
                 }
-                if (!follower.isBusy()) {
+                if (!follower.isBusy()||pathTimer.getElapsedTimeSeconds()>4) {
                     follower.setMaxPower(1);
 
-                    follower.followPath(thirdPickup2, true);
+                    follower.followPath(firstPickup2, true);
 //                    setActionState(0);
                     setPathState(8);
                 }
@@ -342,52 +338,41 @@ public class NearBlue extends OpMode {
 
             case 8:
 
-
-                if(pathTimer.getElapsedTimeSeconds()>2){
+                if (!follower.isBusy()) {
                     spindexer.stopIntake();
-                }
-                if (!follower.isBusy()&&spindexer.intakeStage==-1) {
-
                     spindexer.startOuttake();
 
                     setActionState(0);
-                    setPathState(9);
+                    setPathState(2);
                 }
                 break;
             case 9:
 
                 if (spindexer.outtakeStage==-1) {
-                    odoDist = 75;
-                    angle=55;
-                    testTimer.resetTimer();
-                    follower.followPath(firstPickup1, true);
-                    spindexer.startIntake();
+                    follower.followPath(endPath, true);
                     setActionState(0);
 
-                    setPathState(10);
+                    setPathState(13);
                 }
                 break;
             case 10:
-                if(pathTimer.getElapsedTimeSeconds()>1.6){
-                    follower.setMaxPower(0.5);
+                if(pathTimer.getElapsedTimeSeconds()>0.8){
+                    follower.setMaxPower(0.8);
                 }
 
                 if (!follower.isBusy()) {
-                    follower.setMaxPower(1);
-                    follower.followPath(firstPickup2, true);
+                    angle=22;
+                    follower.followPath(randomPickup5, true);
 
                     setActionState(0);
                     setPathState(11);
                 }
                 break;
             case 11:
-
-                if(pathTimer.getElapsedTimeSeconds()>0.6){
-                    spindexer.stopIntake();
-                }
                 if(!follower.isBusy()){
-                    testTimer.resetTimer();
-                    spindexer.startOuttake();
+                    follower.setMaxPower(1);
+                    angle=22;
+                    follower.followPath(randomPickup6,true);
 
                     setActionState(0);
                     setPathState(12);
@@ -395,14 +380,23 @@ public class NearBlue extends OpMode {
                 break;
             case 12:
 
-                if (spindexer.outtakeStage==-1) {
-
+                if (!follower.isBusy()) {
+//                    turret1.setPosition(Constant.TURRET_RIGHT_MAX-0.25*turretRange);
+                    spindexer.stopIntake();
+                    spindexer.startOuttake();
 
                     setPathState(13);
 
                 }
                 break;
             case 13:
+                if(spindexer.outtakeStage==-1){
+                    follower.followPath(endPath);
+                    setActionState(14);
+                }
+                break;
+            case 14:
+
                 break;
         }
     }
@@ -421,7 +415,7 @@ public class NearBlue extends OpMode {
         // These loop the movements of the robot, these must be called continuously in order to work
         follower.update();
         if(!targetMotif.equals("Null")&&spindexer.outtakeStage!=-1){
-            shooter.updateShootingParams(odoDist, 24, spindexer.outtakeStage != -1);
+            shooter.updateShootingParams(130, 20, spindexer.outtakeStage != -1);
             shooter.updateTurret(360-angle);//0 is left max
         }
         shooter.runShooter(spindexer.outtakeStage != -1);
@@ -441,10 +435,9 @@ public class NearBlue extends OpMode {
             }
         }
 
-
         Pose currentPose = follower.getPose();
-        Constant.AUTON_LAST_X = 103 - currentPose.getX();
-        Constant.AUTON_LAST_Y = 3 - currentPose.getY(); // close blue should be similar
+        Constant.AUTON_LAST_X = 100 - currentPose.getX();
+        Constant.AUTON_LAST_Y = 2.2 - currentPose.getY(); // close blue should be similar
         Constant.AUTON_LAST_HEADING_RAD = currentPose.getHeading() - Math.PI;
         Constant.AUTON_LAST_HEADING_DEG = Math.toDegrees(Constant.AUTON_LAST_HEADING_RAD);
 
@@ -458,10 +451,8 @@ public class NearBlue extends OpMode {
         telemetry.addData("Motif",targetMotif);
         telemetry.addData("path state", pathState);
         telemetry.addData("TargetColor",spindexer.targetColor);
-        telemetry.addData("maxPower",follower.getMaxPowerScaling());
+        telemetry.addData("opotimer",opmodeTimer.getElapsedTimeSeconds());
 
-
-        telemetry.addData("TestTimer",testTimer.getElapsedTimeSeconds());
 //        telemetry.addData("x", follower.getPose().getX());
 //        telemetry.addData("y", follower.getPose().getY());
 //        telemetry.addData("heading", follower.getPose().getHeading());
@@ -478,23 +469,22 @@ public class NearBlue extends OpMode {
         pathTimer = new Timer();
         opmodeTimer = new Timer();
         actionTimer = new Timer();
-        testTimer=new Timer();
 
         opmodeTimer.resetTimer();
 
         shooter = new Shooter(hardwareMap);
 //        drive = new MecanumDrive(hardwareMap);
         spindexer = new Spindexer(hardwareMap);
+        spindexer.setSpindexer(Constant.INTAKE_POS1);
 
 //        shooter.calculatedTargetVelocity = 1800;
-        shooter.setTurretPosition(1);
+        shooter.setTurretPosition(Constant.TURRET_MAX);
 //        shooter.setHoodPosition(Constant.HOOD_INIT);
         follower = Constants.createFollower(hardwareMap);
         buildPaths();
         follower.setStartingPose(initPos);
 //        drive.pinpoint.resetPosAndIMU();
     }
-
 
 
 
@@ -533,4 +523,3 @@ public class NearBlue extends OpMode {
 
 
 }
-

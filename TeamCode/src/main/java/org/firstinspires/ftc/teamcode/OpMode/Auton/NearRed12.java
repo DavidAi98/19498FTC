@@ -16,8 +16,8 @@ import org.firstinspires.ftc.teamcode.OpMode.TeleOp.SubSystem.Spindexer;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 
-@Autonomous(name = "NearRed")
-public class NearRed extends OpMode {
+@Autonomous(name = "RED Near (12 solo)", group = "03")
+public class NearRed12 extends OpMode {
 
     private Follower follower;
     private PathChain firstPickup1, firstPickup2, secondPickup1, secondPickup2, openRedGate2, firstPickupBreak1, firstPickupBreak2, endPath, secondPickupBreak1, secondPickupBreak2, pickup2ToGate, thirdPickup1, thirdPickup2,randomPickup1,randomPickup2,randomPickup3;
@@ -34,10 +34,10 @@ public class NearRed extends OpMode {
     public static Pose shooting2Pos = new Pose(84, 102, Math.toRadians(0));
 
 
-    private double odoDist =75;
+    private double odoDist =74;
 
 
-    private double angle = 40;
+    private double angle = 39;
     private Timer pathTimer, actionTimer, opmodeTimer;
 
     private int pathState,actionState;
@@ -45,8 +45,6 @@ public class NearRed extends OpMode {
     private Shooter shooter;
     private Spindexer spindexer;
     private String targetMotif = "Null";
-
-
 
 
 
@@ -190,7 +188,7 @@ public class NearRed extends OpMode {
                 break;
 
             case 99:
-                if(spindexer.intakeStage==-1&&pathTimer.getElapsedTimeSeconds()>0.5){
+                if(spindexer.intakeStage==-1&&pathTimer.getElapsedTimeSeconds()>1.2){
                     spindexer.startOuttake();
                     setPathState(2);
                 }
@@ -292,8 +290,8 @@ public class NearRed extends OpMode {
             case 9:
 
                 if (spindexer.outtakeStage==-1) {
-                    odoDist = 75;
-                    angle=55;
+                    odoDist = 74;
+                    angle=54.5;
                     follower.followPath(firstPickup1, true);
                     spindexer.startIntake();
                     setActionState(0);
@@ -319,7 +317,7 @@ public class NearRed extends OpMode {
                 if(pathTimer.getElapsedTimeSeconds()>0.6){
                     spindexer.stopIntake();
                 }
-                if(!follower.isBusy()){
+                if(!follower.isBusy()&&pathTimer.getElapsedTimeSeconds()>2.5){
                     spindexer.startOuttake();
 
                     setActionState(0);
@@ -414,6 +412,7 @@ public class NearRed extends OpMode {
         shooter = new Shooter(hardwareMap);
 //        drive = new MecanumDrive(hardwareMap);
         spindexer = new Spindexer(hardwareMap);
+        spindexer.setSpindexer(Constant.INTAKE_POS1);
 
 //        shooter.calculatedTargetVelocity = 1800;
         shooter.setTurretPosition(0.45);
