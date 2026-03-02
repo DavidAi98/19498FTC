@@ -32,7 +32,7 @@ public class Spindexer {
 
     private static final int[] priorityOrder = {2, 1, 3};
     private String motifLine = "";
-    private int autonColor = 1;
+    public int autonColor = 1;
     private boolean colorDetected;
     public int sensorInUse = 2;
 
@@ -222,8 +222,6 @@ public class Spindexer {
                 if (fireButton)        targetColor = "ANY";
                 else if (purpleButton) targetColor = "P";
                 else if (greenButton)  targetColor = "G";
-
-
 
 
                 // Fast leave to reduce runtime

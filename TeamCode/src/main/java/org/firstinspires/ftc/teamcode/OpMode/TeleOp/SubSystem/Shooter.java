@@ -28,7 +28,7 @@ public class Shooter {
     // Original tracking variables
     public double filteredAprilX, aprilx;
     public double lastKP, lastKI, lastKD;
-    String motif = "Null";
+    public String motif = "Null";
 
     public Shooter(HardwareMap hwMap) {
         leftShooter = hwMap.get(DcMotorEx.class, "LeftShooterMotor");
@@ -183,6 +183,7 @@ public class Shooter {
 
 
         LLResult result = limelight.getLatestResult();
+
         List<LLResultTypes.FiducialResult> aprils = result.getFiducialResults();
 
         if (!aprils.isEmpty()) {
@@ -210,6 +211,6 @@ public class Shooter {
         double currentVelo = leftShooter.getVelocity();
         double voltageComp = Constant.NOMINAL_VOLTAGE / battery.getVoltage();
         double error = Math.abs(currentVelo - calculatedTargetVelocity);
-        return calculatedTargetVelocity > 0 && (error < Constant.VELOCITY_TOLERANCE * (1/voltageComp) * (2200/currentVelo));
+        return calculatedTargetVelocity > 0 && (error < Constant.VELOCITY_TOLERANCE * (1/voltageComp) * Math.pow((2200/currentVelo),2));
     }
 }
