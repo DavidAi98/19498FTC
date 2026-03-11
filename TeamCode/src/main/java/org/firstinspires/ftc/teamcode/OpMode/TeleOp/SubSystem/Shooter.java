@@ -24,11 +24,12 @@ public class Shooter {
     private Limelight3A limelight;
 
     public double calculatedTargetVelocity, calculatedHoodAngle, calculatedTurretPos;
+    private double prevTargetVelocity = 0; // for rate-limiting RPM jumps
 
     // Original tracking variables
     public double filteredAprilX, aprilx;
     public double lastKP, lastKI, lastKD;
-    public String motif = "Null";
+    String motif = "Null";
 
     public Shooter(HardwareMap hwMap) {
         leftShooter = hwMap.get(DcMotorEx.class, "LeftShooterMotor");
@@ -71,7 +72,6 @@ public class Shooter {
     }
 
     public void updateTurret(double rawTurretAngle, double AUTON) {
-
         filteredAprilX += aprilx * 0.1 * AUTON;
         double turretHeading = rawTurretAngle + filteredAprilX;
 
@@ -86,9 +86,21 @@ public class Shooter {
         turret1.setPosition(calculatedTurretPos - Constant.TURRET_ANTIBACKLASH);
         turret2.setPosition(calculatedTurretPos + Constant.TURRET_ANTIBACKLASH);
     }
-    public void updateTurret(double rawTurretAngle) {
+    // movingScale: 0 = stationary (full limelight correction), 1 = fast (no correction).
+    public double movingScale = 0.0;
 
-        filteredAprilX += aprilx * 0.1;
+    public void updateTurret(double rawTurretAngle) {
+        filteredAprilX += aprilx * 0.1 * (1.0 - movingScale);
+
+        // Decay toward zero:
+        //   While moving (movingScale=1): fast decay — drains stale values quickly
+        double restDecay   = Constant.APRIL_REST_DECAY_RATE;    // slow bleed at rest
+        double movingDecay = Constant.APRIL_MOVING_DECAY_RATE;  // fast drain while moving
+        filteredAprilX *= (1.0 - restDecay - movingScale * (movingDecay - restDecay));
+
+        // Hard cap — even with decay, clamp to a sane correction range.
+        filteredAprilX = Math.max(-Constant.APRIL_MAX_DEG, Math.min(Constant.APRIL_MAX_DEG, filteredAprilX));
+
         double turretHeading = rawTurretAngle + filteredAprilX;
 
 
@@ -108,17 +120,27 @@ public class Shooter {
         Map.Entry<Double, double[]> low = Constant.SHOOTING_TABLE.floorEntry(distance);
         Map.Entry<Double, double[]> high = Constant.SHOOTING_TABLE.ceilingEntry(distance);
 
+        double rawTarget;
         if (low != null && high != null && !low.equals(high)) {
             double factor = (distance - low.getKey()) / (high.getKey() - low.getKey());
-            calculatedTargetVelocity = low.getValue()[0] + (high.getValue()[0] - low.getValue()[0]) * factor;
+            rawTarget = low.getValue()[0] + (high.getValue()[0] - low.getValue()[0]) * factor;
             calculatedHoodAngle = low.getValue()[1] + (high.getValue()[1] - low.getValue()[1]) * factor;
         } else if (low != null) {
-            calculatedTargetVelocity = low.getValue()[0];
+            rawTarget = low.getValue()[0];
             calculatedHoodAngle = low.getValue()[1];
         } else if (high != null) {
-            calculatedTargetVelocity = high.getValue()[0];
+            rawTarget = high.getValue()[0];
             calculatedHoodAngle = high.getValue()[1];
+        } else {
+            rawTarget = prevTargetVelocity;
         }
+
+        double step = rawTarget - prevTargetVelocity;
+        if (Math.abs(step) > Constant.MAX_RPM_STEP_PER_LOOP) {
+            rawTarget = prevTargetVelocity + Math.signum(step) * Constant.MAX_RPM_STEP_PER_LOOP;
+        }
+        calculatedTargetVelocity = rawTarget;
+        prevTargetVelocity = calculatedTargetVelocity;
 
         if (active) {
             double hoodServoPos = (Constant.HOOD_MAX - Constant.HOOD_INIT) / (45 - 25) * (calculatedHoodAngle - 25) + Constant.HOOD_INIT;
@@ -180,30 +202,21 @@ public class Shooter {
     }
 
     public String detectMotif() {
-
-
         LLResult result = limelight.getLatestResult();
 
+        if (result == null || !result.isValid()) return motif;
+
         List<LLResultTypes.FiducialResult> aprils = result.getFiducialResults();
+        if (aprils == null || aprils.isEmpty()) return motif;
 
-        if (!aprils.isEmpty()) {
-            for (LLResultTypes.FiducialResult april : aprils)
-                switch (april.getFiducialId()) {
-                    case 21:
-                        motif = "GPP";
-                        break;
-                    case 22:
-                        motif = "PGP";
-                        break;
-                    case 23:
-                        motif = "PPG";
-                        break;
-                }
-
+        for (LLResultTypes.FiducialResult april : aprils) {
+            switch (april.getFiducialId()) {
+                case 21: motif = "GPP"; break;
+                case 22: motif = "PGP"; break;
+                case 23: motif = "PPG"; break;
+            }
         }
         return motif;
-
-
     }
 
 
@@ -211,6 +224,6 @@ public class Shooter {
         double currentVelo = leftShooter.getVelocity();
         double voltageComp = Constant.NOMINAL_VOLTAGE / battery.getVoltage();
         double error = Math.abs(currentVelo - calculatedTargetVelocity);
-        return calculatedTargetVelocity > 0 && (error < Constant.VELOCITY_TOLERANCE * (1/voltageComp) * Math.pow((2200/currentVelo),2));
+        return calculatedTargetVelocity > 0 && (error < Constant.VELOCITY_TOLERANCE * (1/voltageComp) * (2200/currentVelo));
     }
 }
