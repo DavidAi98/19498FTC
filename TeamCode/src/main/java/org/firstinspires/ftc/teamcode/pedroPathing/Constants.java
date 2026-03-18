@@ -19,6 +19,7 @@ import org.firstinspires.ftc.teamcode.OpMode.TeleOp.SubSystem.Constant;
 public class Constants {
 
     public static FollowerConstants followerConstants = new FollowerConstants()
+
             .mass(11.75)
 
             .forwardZeroPowerAcceleration(-(26.229+27.65+24.63+25.40+24.45+24.17)/6
