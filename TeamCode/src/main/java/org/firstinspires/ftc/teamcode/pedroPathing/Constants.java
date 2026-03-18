@@ -26,8 +26,17 @@ public class Constants {
             .lateralZeroPowerAcceleration(-(62.82+62.44+60.00+62.87+59.70)/5)
 
             .translationalPIDFCoefficients(new PIDFCoefficients(0.39, 0.00001, 0.033, 0))//F: the motor trying to move but not move(sound); P: set correct line(vertical; D: more slowly back
+            .translationalPIDFSwitch(2)
+            .secondaryTranslationalPIDFCoefficients(new PIDFCoefficients(0,0,0,0))
+
             .headingPIDFCoefficients(new PIDFCoefficients(3, 0, 0.2, 0))//2.8,0.16
+            .headingPIDFSwitch(3)
+            .secondaryHeadingPIDFCoefficients(new PIDFCoefficients(0,0,0,0))
+
             .drivePIDFCoefficients(new FilteredPIDFCoefficients(0.025, 0.000001, 0.0027, 0.6, 0))//line test contains the t and h pidf while drive tuner not; keep the same f with forwardtunner
+            .drivePIDFSwitch(2)
+            .secondaryDrivePIDFCoefficients(new FilteredPIDFCoefficients(0.025, 0.000001, 0.0027, 0.6, 0))
+
             .centripetalScaling(0.0005);
 
     public static MecanumConstants driveConstants = new MecanumConstants()
@@ -40,7 +49,7 @@ public class Constants {
             .leftRearMotorDirection(DcMotorSimple.Direction.REVERSE)
             .rightFrontMotorDirection(DcMotorSimple.Direction.FORWARD)
             .rightRearMotorDirection(DcMotorSimple.Direction.FORWARD)
-            .xVelocity((80.23))
+            .xVelocity(80.23)
             .yVelocity(61.81) //(54.4996131236159 + 55.765637495386315 + 55.52764892578125 + 53.797435850609006) / 4
             .useBrakeModeInTeleOp(true)
             .useVoltageCompensation(true);

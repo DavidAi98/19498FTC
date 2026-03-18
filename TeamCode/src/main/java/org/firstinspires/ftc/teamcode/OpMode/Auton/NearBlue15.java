@@ -66,11 +66,6 @@ public class NearBlue15 extends OpMode {
 
 
 
-
-
-
-
-
     public void buildPaths() {
 
         preLoadShot = new Path(new BezierLine(initPos, shootingPos));
@@ -470,7 +465,6 @@ public class NearBlue15 extends OpMode {
                     follower.setMaxPower(0.7);
                 }
                 if (!follower.isBusy()) {
-
                     follower.setMaxPower(1);
                     angle=2.6;
                     follower.followPath(secondPickup2, true);
@@ -705,10 +699,7 @@ public class NearBlue15 extends OpMode {
 
         // These loop the movements of the robot, these must be called continuously in order to work
         follower.update();
-        if(!targetMotif.equals("Null")&&spindexer.outtakeStage!=-1){
-            shooter.updateShootingParams(odoDist, 20, spindexer.outtakeStage != -1);
-
-        }
+        shooter.updateShootingParams(odoDist, 20, spindexer.outtakeStage != -1);
 
         if(!targetMotif.equals("Null")&&ifCorrecting){
             shooter.updateTurret(angle);//0 is left max

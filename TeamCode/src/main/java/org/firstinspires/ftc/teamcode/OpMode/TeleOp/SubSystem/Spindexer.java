@@ -197,8 +197,6 @@ public class Spindexer {
         }
     }
 
-
-
     private void handleOuttakeLogic(boolean fireButton, boolean shooterReady, boolean purpleButton, boolean greenButton) {
         // Reduce runtime with return and setting IDLE state (-1)
         if (outtakeStage == -1 || (artifactCount == 0 && outtakeStage != 3)) {
