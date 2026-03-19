@@ -23,7 +23,7 @@ public class NearBlueTest extends OpMode {
 
     public static class Paths {
         public PathChain MoveToShootPreload;
-        public PathChain MoveToSecondRow;
+//        public PathChain MoveToSecondRow;
         public PathChain IntakeSecondRow;
         public PathChain ShootSecondRow;
         public PathChain MoveToGate;
@@ -36,33 +36,36 @@ public class NearBlueTest extends OpMode {
         public Paths(Follower follower) {
             MoveToShootPreload = follower.pathBuilder()
                     .addPath(new BezierLine(
-                            new Pose(32.729, 136.953),
-                            new Pose(58.100, 85.549)
+                            new Pose(31, 135),
+                            new Pose(52, 81.5)
                     ))
                     .setLinearHeadingInterpolation(Math.toRadians(-90), Math.toRadians(-90))
                     .build();
 
-            MoveToSecondRow = follower.pathBuilder()
-                    .addPath(new BezierCurve(
-                            new Pose(58.100, 85.549),
-                            new Pose(62.063, 57.007),
-                            new Pose(43.15496368038741, 59.499)
-                    ))
-                    .setLinearHeadingInterpolation(Math.toRadians(-90), Math.toRadians(180))
-                    .build();
+//            MoveToSecondRow = follower.pathBuilder()
+//                    .addPath(new BezierCurve(
+//                            new Pose(52, 81.5),
+//                            new Pose(54, 60),
+//                            new Pose(48, 60)
+//                    ))
+//                    .setLinearHeadingInterpolation(Math.toRadians(-90), Math.toRadians(180))
+//                    .build();
 
             IntakeSecondRow = follower.pathBuilder()
-                    .addPath(new BezierLine(
-                            new Pose(43.15496368038741, 59.499),
-                            new Pose(15.634, 59.475)
+                    .addPath(new BezierCurve(
+                            new Pose(52, 81.5),
+                            new Pose(52, 66),
+                            new Pose(49.5, 56.5),
+                            new Pose(50, 60),
+                            new Pose(15, 60)
                     ))
                     .setTangentHeadingInterpolation()
                     .build();
 
             ShootSecondRow = follower.pathBuilder()
                     .addPath(new BezierLine(
-                            new Pose(15.634, 59.475),
-                            new Pose(58.100, 85.549)
+                            new Pose(15, 60),
+                            new Pose(56, 82)
                     ))
                     .setTangentHeadingInterpolation()
                     .setReversed()
@@ -70,51 +73,52 @@ public class NearBlueTest extends OpMode {
 
             MoveToGate = follower.pathBuilder()
                     .addPath(new BezierCurve(
-                            new Pose(58.100, 85.549),
+                            new Pose(56, 82),
                             new Pose(42.241, 71.732),
-                            new Pose(18.153, 66.688)
+                            new Pose(19, 66.688)
                     ))
-                    .setLinearHeadingInterpolation(Math.toRadians(-151), Math.toRadians(170))
+                    .setLinearHeadingInterpolation(Math.toRadians(-151), Math.toRadians(180))
                     .build();
 
             MoveBack = follower.pathBuilder()
                     .addPath(new BezierLine(
-                            new Pose(18.153, 66.688),
+                            new Pose(19, 66.688),
                             new Pose(19, 64.081)
                     ))
-                    .setLinearHeadingInterpolation(Math.toRadians(170), Math.toRadians(170))
+                    .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
                     .build();
 
             GateIntake = follower.pathBuilder()
                     .addPath(new BezierCurve(
                             new Pose(20.931, 66.081),
                             new Pose(16.826, 57.282),
-                            new Pose(16.4, 55.574)
+                            new Pose(14, 52)
                     ))
-                    .setLinearHeadingInterpolation(Math.toRadians(170), Math.toRadians(130))
+                    .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(130))
                     .build();
 
             ShootIntaked = follower.pathBuilder()
                     .addPath(new BezierCurve(
-                            new Pose(11.983, 55.574),
+                            new Pose(14, 54),
                             new Pose(33.977, 67.562),
-                            new Pose(58.100, 85.549)
+                            new Pose(56, 82)
                     ))
-                    .setConstantHeadingInterpolation(Math.toRadians(180))
+                    .setTangentHeadingInterpolation()
+                    .setReversed()
                     .build();
 
             IntakeFirstRow = follower.pathBuilder()
                     .addPath(new BezierLine(
-                            new Pose(58.100, 85.549),
-                            new Pose(21, 83.598)
+                            new Pose(56, 82),
+                            new Pose(21, 83)
                     ))
                     .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
                     .build();
 
             ShootFirstRow = follower.pathBuilder()
                     .addPath(new BezierLine(
-                            new Pose(21, 83.598),
-                            new Pose(52.173, 110.530)
+                            new Pose(21, 83),
+                            new Pose(61.5, 103)
                     ))
                     .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
                     .build();
@@ -133,11 +137,11 @@ public class NearBlueTest extends OpMode {
     private Shooter   shooter;
     private Spindexer spindexer;
 
-    private double angle       = 40;
-    private double odoDist     = 70;
+    private double angle       = 50;
+    private double odoDist     = 65;
     private String targetMotif = "Null";
 
-    public static final Pose START_POS = new Pose(31.160032833282813, 136.08094169150246, Math.toRadians(-90));
+    public static final Pose START_POS = new Pose(31, 135, Math.toRadians(-90));
 
     // =========================================================================
     //  STATE MACHINE
@@ -157,15 +161,18 @@ public class NearBlueTest extends OpMode {
 
             // Wait for arrival + motif lock
             case 1:
-                if (!follower.isBusy() && !targetMotif.equals("Null")) {
+                if (opmodeTimer.getElapsedTimeSeconds() > 2) {
+                    targetMotif = "PPG";
+                    setPathState(2);
+                } else if (!follower.isBusy() && !targetMotif.equals("Null")) {
                     setPathState(2);
                 }
                 break;
 
             // Wait for preload to stage then fire
             case 2:
-                if (spindexer.intakeStage == -1 && pathTimer.getElapsedTimeSeconds() > 0.5) {
-                    angle = 40;
+                angle = 50;
+                if (spindexer.intakeStage == -1) { //&& pathTimer.getElapsedTimeSeconds() > 0.1) {
                     spindexer.startOuttake();
                     setPathState(3);
                 }
@@ -182,19 +189,20 @@ public class NearBlueTest extends OpMode {
 
             // Curve down to front of second row; start intake
             case 4:
-                follower.followPath(paths.MoveToSecondRow, true);
+                follower.followPath(paths.IntakeSecondRow, true);
                 spindexer.startIntake();
-                setPathState(5);
+                angle = 345;
+                setPathState(6);
                 break;
 
             // Wait to arrive at second row start, then sweep
-            case 5:
-                if (!follower.isBusy()) {
-                    angle = 340;
-                    follower.followPath(paths.IntakeSecondRow, true);
-                    setPathState(6);
-                }
-                break;
+//            case 5:
+//                if (!follower.isBusy()) {
+//                    angle = 345;
+//                    follower.followPath(paths.IntakeSecondRow, true);
+//                    setPathState(6);
+//                }
+//                break;
 
             // Sweep done OR intake full; stop intake and head back to shoot
             case 6:
@@ -240,7 +248,7 @@ public class NearBlueTest extends OpMode {
             // Nudge done; sweep gate arc
             case 12:
                 if (!follower.isBusy()) {
-                    angle = 315;
+                    angle = 350;
                     follower.followPath(paths.GateIntake, true);
                     setPathState(13);
                 }
@@ -248,7 +256,7 @@ public class NearBlueTest extends OpMode {
 
             // Intake until full or 2s timeout; stop intake and head to shoot
             case 13:
-                if (spindexer.intakeStage == -1 || pathTimer.getElapsedTimeSeconds() > 2) {
+                if (spindexer.intakeStage == -1 || pathTimer.getElapsedTimeSeconds() > 1.75) {
                     follower.followPath(paths.ShootIntaked, true);
                     setPathState(14);
                 }
@@ -297,7 +305,7 @@ public class NearBlueTest extends OpMode {
 
             // Intake until full or 2s timeout; stop intake and head to shoot
             case 23:
-                if (spindexer.intakeStage == -1 || pathTimer.getElapsedTimeSeconds() > 2) {
+                if (spindexer.intakeStage == -1 || pathTimer.getElapsedTimeSeconds() > 1.75) {
                     follower.followPath(paths.ShootIntaked, true);
                     setPathState(24);
                 }
@@ -307,7 +315,7 @@ public class NearBlueTest extends OpMode {
             case 24:
                 if (!follower.isBusy()) {
                     spindexer.stopIntake();
-                    angle = 315;
+                    angle = 350;
                     spindexer.startOuttake();
                     setPathState(25);
                 }
@@ -324,6 +332,7 @@ public class NearBlueTest extends OpMode {
 
             // Sweep across first row with intake on
             case 30:
+                odoDist = 60;
                 spindexer.startIntake();
                 follower.followPath(paths.IntakeFirstRow, true);
                 setPathState(31);
@@ -376,7 +385,7 @@ public class NearBlueTest extends OpMode {
         spindexer = new Spindexer(hardwareMap);
 
         spindexer.setSpindexer(Constant.INTAKE_POS1);
-        shooter.setTurretPosition(0.25);
+        shooter.setTurretPosition(0.3);
 
         follower = Constants.createFollower(hardwareMap);
         paths    = new Paths(follower);
