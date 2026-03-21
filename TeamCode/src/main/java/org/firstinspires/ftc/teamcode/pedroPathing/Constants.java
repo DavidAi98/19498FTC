@@ -38,7 +38,7 @@ public class Constants {
 
             .drivePIDFCoefficients(new FilteredPIDFCoefficients(0.05, 0, 0.003, 0.4, 0))//line test contains the t and h pidf while drive tuner not; keep the same f with forwardtunner
             .drivePIDFSwitch(28)
-            .secondaryDrivePIDFCoefficients(new FilteredPIDFCoefficients(0.03, 0, 0.006 , 0.4, 0))
+            .secondaryDrivePIDFCoefficients(new FilteredPIDFCoefficients(0.03, 0, 0.004 , 0.4, 0))
 
             .centripetalScaling(0.0005);
 

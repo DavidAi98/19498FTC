@@ -14,17 +14,17 @@ import org.firstinspires.ftc.teamcode.OpMode.TeleOp.SubSystem.Shooter;
 import org.firstinspires.ftc.teamcode.OpMode.TeleOp.SubSystem.Spindexer;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
-@Autonomous(name = "BLUE Test")
-public class NearBlueTest extends OpMode {
+
+@Autonomous(name = "RED Test")
+public class NearRedTest extends OpMode {
 
     // =========================================================================
     //  PATHS
     // =========================================================================
 
-    // Non-static so lambdas can access spindexer from the outer class
-    public class Paths {
+    public static class Paths {
         public PathChain MoveToShootPreload;
-        public PathChain MoveToSecondRow;
+        public PathChain IntakeSecondRow;
         public PathChain ShootSecondRow;
         public PathChain MoveToGate;
         public PathChain MoveBack;
@@ -34,94 +34,103 @@ public class NearBlueTest extends OpMode {
         public PathChain ShootFirstRow;
 
         public Paths(Follower follower) {
+
+            // Blue: (31,135)→(52,81.5) heading -90→-90
+            // Mirror X; -90° mirrors to -90° (unchanged)
             MoveToShootPreload = follower.pathBuilder()
                     .addPath(new BezierLine(
-                            new Pose(31, 135),
-                            new Pose(52, 81.5)
+                            new Pose(72, 135),   // 103-31
+                            new Pose(51, 81.5)   // 103-52
                     ))
                     .setLinearHeadingInterpolation(Math.toRadians(-90), Math.toRadians(-90))
-                    .addParametricCallback(0.75, () -> spindexer.stopIntake())
-                    .addParametricCallback(0.85, () -> fireAny())
                     .build();
 
-            MoveToSecondRow = follower.pathBuilder()
+            // Blue: (52,81.5) curve → (15,60)  tangentHeading
+            // Mirror X; tangent heading follows geometry automatically
+            IntakeSecondRow = follower.pathBuilder()
                     .addPath(new BezierCurve(
-                            new Pose(52.000, 81.500),
-                            new Pose(57.604, 57.275),
-                            new Pose(31.362, 62.304),
-                            new Pose(14.000, 60.000)
+                            new Pose(51, 81.5),           // 103-52
+                            new Pose(53.62, 65.65),       // 103-49.38
+                            new Pose(53.5, 56.5),         // 103-49.5
+                            new Pose(53, 60),             // 103-50
+                            new Pose(88, 60)              // 103-15
                     ))
                     .setTangentHeadingInterpolation()
                     .build();
 
+            // Blue: (15,60)→(56,82) tangent reversed
+            // Mirror X; tangent & reversed stay
             ShootSecondRow = follower.pathBuilder()
                     .addPath(new BezierLine(
-                            new Pose(14, 60),
-                            new Pose(56, 83)
+                            new Pose(88, 60),   // 103-15
+                            new Pose(47, 82)    // 103-56
                     ))
                     .setTangentHeadingInterpolation()
                     .setReversed()
-                    .addParametricCallback(0.8, () -> spindexer.stopIntake())
-                    .addParametricCallback(0.9, () -> fireAny())
                     .build();
 
+            // Blue: (56,82) curve → (19,66.688)  heading -151°→180°
+            // Mirror X; headings: 180°-(-151°)=-29°,  180°-180°=0°
             MoveToGate = follower.pathBuilder()
                     .addPath(new BezierCurve(
-                            new Pose(56, 83),
-                            new Pose(42.241, 71.732),
-                            new Pose(23, 67.988)
+                            new Pose(47, 82),             // 103-56
+                            new Pose(60.759, 71.732),     // 103-42.241
+                            new Pose(84, 66.688)          // 103-19
                     ))
-                    .setLinearHeadingInterpolation(Math.toRadians(-151), Math.toRadians(180))
+                    .setLinearHeadingInterpolation(Math.toRadians(-29), Math.toRadians(0))
                     .build();
 
+            // Blue: (19,66.688)→(19,64.081)  heading 180°→180°
+            // Mirror X; headings: 180°-180°=0°
             MoveBack = follower.pathBuilder()
                     .addPath(new BezierLine(
-                            new Pose(23, 67.988),
-                            new Pose(22, 64.081)
+                            new Pose(84, 66.688),   // 103-19
+                            new Pose(84, 64.081)    // 103-19
                     ))
-                    .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
+                    .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
                     .build();
 
+            // Blue: (20.931,66.081) curve → (14,52)  heading 180°→130°
+            // Mirror X; headings: 180°-180°=0°,  180°-130°=50°
             GateIntake = follower.pathBuilder()
                     .addPath(new BezierCurve(
-                            new Pose(22, 64.081),
-                            new Pose(16.826, 57.282),
-                            new Pose(14, 52)
+                            new Pose(82.069, 66.081),   // 103-20.931
+                            new Pose(86.174, 57.282),   // 103-16.826
+                            new Pose(89, 52)            // 103-14
                     ))
-                    .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(130))
+                    .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(50))
                     .build();
 
+            // Blue: (14,54) curve → (56,82)  tangent reversed
+            // Mirror X; tangent & reversed stay
             ShootIntaked = follower.pathBuilder()
                     .addPath(new BezierCurve(
-                            new Pose(14, 52),
-                            new Pose(33.977, 67.562),
-                            new Pose(56, 83)
+                            new Pose(89, 54),           // 103-14
+                            new Pose(69.023, 67.562),   // 103-33.977
+                            new Pose(47, 82)            // 103-56
                     ))
                     .setTangentHeadingInterpolation()
                     .setReversed()
-                    .setBrakingStrength(1.6)
-                    .setBrakingStart(0.25)
-                    .addParametricCallback(0.75, () -> spindexer.stopIntake())
-                    .addParametricCallback(0.85, () -> fireAny())
                     .build();
 
+            // Blue: (56,82)→(21,83)  heading 180°→180°
+            // Mirror X; headings: 180°-180°=0°
             IntakeFirstRow = follower.pathBuilder()
                     .addPath(new BezierLine(
-                            new Pose(56, 83),
-                            new Pose(21, 85)
+                            new Pose(47, 82),   // 103-56
+                            new Pose(82, 83)    // 103-21
                     ))
-                    .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
+                    .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
                     .build();
 
+            // Blue: (21,83)→(61.5,103)  heading 180°→180°
+            // Mirror X; headings: 180°-180°=0°
             ShootFirstRow = follower.pathBuilder()
                     .addPath(new BezierLine(
-                            new Pose(21, 85),
-                            new Pose(51, 115)
+                            new Pose(82, 83),    // 103-21
+                            new Pose(41.5, 103)  // 103-61.5
                     ))
-                    .setTangentHeadingInterpolation()
-                    .setReversed()
-                    .addParametricCallback(0.75, () -> spindexer.stopIntake())
-                    .addParametricCallback(0.85, () -> spindexer.startOuttake()) // pattern order
+                    .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
                     .build();
         }
     }
@@ -138,19 +147,14 @@ public class NearBlueTest extends OpMode {
     private Shooter   shooter;
     private Spindexer spindexer;
 
-    private double angle       = 50;
-    private double odoDist     = 64;
+    // Turret angles mirrored: 360 - blueAngle
+    // Blue default 50° → 310°
+    private double angle       = 310;
+    private double odoDist     = 65;
     private String targetMotif = "Null";
 
-    public static final Pose START_POS = new Pose(31, 135, Math.toRadians(-90));
-
-    // =========================================================================
-    //  HELPER — fire the next available ball regardless of color
-    // =========================================================================
-    private void fireAny() {
-        spindexer.targetColor = "ANY";
-        spindexer.startOuttake();
-    }
+    // Blue: (31, 135, -90°) → mirror X → (72, 135, -90°)
+    public static final Pose START_POS = new Pose(72, 135, Math.toRadians(-90));
 
     // =========================================================================
     //  STATE MACHINE
@@ -162,13 +166,12 @@ public class NearBlueTest extends OpMode {
             // ── PRELOAD ───────────────────────────────────────────────────────
 
             case 0:
-                follower.setMaxPower(1.0);
+                follower.setMaxPower(1);
                 follower.followPath(paths.MoveToShootPreload, true);
                 spindexer.startIntake();
                 setPathState(1);
                 break;
 
-            // Wait for arrival + motif lock (callbacks fire the preload)
             case 1:
                 if (opmodeTimer.getElapsedTimeSeconds() > 2) {
                     targetMotif = "PPG";
@@ -178,9 +181,16 @@ public class NearBlueTest extends OpMode {
                 }
                 break;
 
-            // Wait for preload outtake to finish (started by callback)
             case 2:
-                angle = 45;
+                // Blue 40° → mirror 320°
+                angle = 320;
+                if (spindexer.intakeStage == -1) {
+                    spindexer.startOuttake();
+                    setPathState(3);
+                }
+                break;
+
+            case 3:
                 if (spindexer.outtakeStage == -1) {
                     setPathState(4);
                 }
@@ -188,12 +198,11 @@ public class NearBlueTest extends OpMode {
 
             // ── SECOND ROW ───────────────────────────────────────────────────
 
-            // Drive + intake; ShootSecondRow callback fires on the way back
             case 4:
-                follower.followPath(paths.MoveToSecondRow, true);
+                follower.followPath(paths.IntakeSecondRow, true);
                 spindexer.startIntake();
-                angle = 345;
-                odoDist = 55;
+                // Blue 345° → mirror 15°
+                angle = 15;
                 setPathState(6);
                 break;
 
@@ -204,9 +213,16 @@ public class NearBlueTest extends OpMode {
                 }
                 break;
 
-            // Wait for outtake to finish (started by ShootSecondRow callback)
             case 7:
-                if (!follower.isBusy() && spindexer.outtakeStage == -1) {
+                if (!follower.isBusy()) {
+                    spindexer.stopIntake();
+                    spindexer.startOuttake();
+                    setPathState(8);
+                }
+                break;
+
+            case 8:
+                if (spindexer.outtakeStage == -1) {
                     setPathState(10);
                 }
                 break;
@@ -214,7 +230,6 @@ public class NearBlueTest extends OpMode {
             // ── GATE CYCLE 1 ─────────────────────────────────────────────────
 
             case 10:
-                odoDist = 64;
                 follower.followPath(paths.MoveToGate, true);
                 setPathState(11);
                 break;
@@ -229,13 +244,13 @@ public class NearBlueTest extends OpMode {
 
             case 12:
                 if (!follower.isBusy()) {
-                    angle = 345;
+                    // Blue 350° → mirror 10°
+                    angle = 10;
                     follower.followPath(paths.GateIntake, true);
                     setPathState(13);
                 }
                 break;
 
-            // ShootIntaked callbacks handle stopIntake + fireAny
             case 13:
                 if (spindexer.intakeStage == -1 || pathTimer.getElapsedTimeSeconds() > 1.75) {
                     follower.followPath(paths.ShootIntaked, true);
@@ -243,9 +258,16 @@ public class NearBlueTest extends OpMode {
                 }
                 break;
 
-            // Wait for path + outtake to finish
             case 14:
-                if (!follower.isBusy() && spindexer.outtakeStage == -1) {
+                if (!follower.isBusy()) {
+                    spindexer.stopIntake();
+                    spindexer.startOuttake();
+                    setPathState(15);
+                }
+                break;
+
+            case 15:
+                if (spindexer.outtakeStage == -1) {
                     setPathState(20);
                 }
                 break;
@@ -267,13 +289,11 @@ public class NearBlueTest extends OpMode {
 
             case 22:
                 if (!follower.isBusy()) {
-                    angle = 345;
                     follower.followPath(paths.GateIntake, true);
                     setPathState(23);
                 }
                 break;
 
-            // ShootIntaked callbacks handle stopIntake + fireAny
             case 23:
                 if (spindexer.intakeStage == -1 || pathTimer.getElapsedTimeSeconds() > 1.75) {
                     follower.followPath(paths.ShootIntaked, true);
@@ -281,9 +301,18 @@ public class NearBlueTest extends OpMode {
                 }
                 break;
 
-            // Wait for path + outtake to finish
             case 24:
-                if (!follower.isBusy() && spindexer.outtakeStage == -1) {
+                if (!follower.isBusy()) {
+                    spindexer.stopIntake();
+                    // Blue 350° → mirror 10°
+                    angle = 10;
+                    spindexer.startOuttake();
+                    setPathState(25);
+                }
+                break;
+
+            case 25:
+                if (spindexer.outtakeStage == -1) {
                     setPathState(26);
                 }
                 break;
@@ -305,13 +334,13 @@ public class NearBlueTest extends OpMode {
 
             case 28:
                 if (!follower.isBusy()) {
-                    angle = 345;
+                    // Blue 350° → mirror 10°
+                    angle = 10;
                     follower.followPath(paths.GateIntake, true);
                     setPathState(29);
                 }
                 break;
 
-            // ShootIntaked callbacks handle stopIntake + fireAny
             case 29:
                 if (spindexer.intakeStage == -1 || pathTimer.getElapsedTimeSeconds() > 1.75) {
                     follower.followPath(paths.ShootIntaked, true);
@@ -319,17 +348,24 @@ public class NearBlueTest extends OpMode {
                 }
                 break;
 
-            // Wait for path + outtake to finish
             case 30:
-                if (!follower.isBusy() && spindexer.outtakeStage == -1) {
+                if (!follower.isBusy()) {
+                    spindexer.stopIntake();
+                    spindexer.startOuttake();
+                    setPathState(31);
+                }
+                break;
+
+            case 31:
+                if (spindexer.outtakeStage == -1) {
                     setPathState(32);
                 }
                 break;
 
             // ── FIRST ROW ────────────────────────────────────────────────────
 
-            // ShootFirstRow callback handles stopIntake + fireAny
             case 32:
+                odoDist = 60;
                 spindexer.startIntake();
                 follower.followPath(paths.IntakeFirstRow, true);
                 setPathState(33);
@@ -337,17 +373,23 @@ public class NearBlueTest extends OpMode {
 
             case 33:
                 if (!follower.isBusy() || spindexer.intakeStage == -1) {
-                    spindexer.autonColor = 1; // reset so first row fires in pattern from start
                     follower.followPath(paths.ShootFirstRow, true);
-                    angle = 340;
-                    odoDist = 26;
+                    // Blue 300° → mirror 60°
+                    angle = 60;
                     setPathState(34);
                 }
                 break;
 
-            // Wait for path + outtake to finish
             case 34:
-                if (!follower.isBusy() && spindexer.outtakeStage == -1) {
+                if (!follower.isBusy()) {
+                    spindexer.stopIntake();
+                    spindexer.startOuttake();
+                    setPathState(35);
+                }
+                break;
+
+            case 35:
+                if (spindexer.outtakeStage == -1) {
                     setPathState(99);
                 }
                 break;
@@ -364,7 +406,7 @@ public class NearBlueTest extends OpMode {
 
     @Override
     public void init() {
-        Constant.ALLIANCE = "BLUE";
+        Constant.ALLIANCE = "RED";
 
         pathTimer   = new Timer();
         opmodeTimer = new Timer();
@@ -374,7 +416,8 @@ public class NearBlueTest extends OpMode {
         spindexer = new Spindexer(hardwareMap);
 
         spindexer.setSpindexer(Constant.INTAKE_POS1);
-        shooter.setTurretPosition(0.3);
+        // Blue init: 0.3 → mirror: 1.0 - 0.3 = 0.7
+        shooter.setTurretPosition(0.7);
 
         follower = Constants.createFollower(hardwareMap);
         paths    = new Paths(follower);
@@ -401,8 +444,9 @@ public class NearBlueTest extends OpMode {
 
         shooter.updateShootingParams(odoDist, 20, spindexer.outtakeStage != -1);
 
+        // Blue pre-motif: 40° → mirror 320°
         if (targetMotif.equals("Null")) {
-            shooter.updateTurret(100, 0);
+            shooter.updateTurret(320, 0);
         } else {
             shooter.updateTurret(angle, 0);
         }

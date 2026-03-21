@@ -114,7 +114,7 @@ public class Constant {
     // How many encoder ticks away from target still counts as "in slot".
     //   Artifacts not firing → INCREASE (spindexer settling slowly)
     //   Artifacts fire at wrong slot → DECREASE (too loose)
-    public static int OUTTAKE_TICK_TOLERANCE = 500;
+    public static int OUTTAKE_TICK_TOLERANCE = 450;
 
     // RPM error allowed before isReady() returns true and fires the ball.
     // Note: isReady() has a (2200/currentVelo)^2 term making this looser than it looks.

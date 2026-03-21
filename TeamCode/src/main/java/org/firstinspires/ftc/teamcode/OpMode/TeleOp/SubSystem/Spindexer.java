@@ -277,7 +277,7 @@ public class Spindexer {
                 }
 
                 // Waiting for Pivot to come down + Fast leave to reduce runtime
-                if (pivotTimer.milliseconds() < (artifactCount == 0 ? 3 * Constant.PIVOT_DOWN_TIMER : Constant.PIVOT_DOWN_TIMER)) {
+                if (pivotTimer.milliseconds() < (artifactCount == 0 ? 2 * Constant.PIVOT_DOWN_TIMER : Constant.PIVOT_DOWN_TIMER)) {
                     return;
                 }
 
@@ -525,7 +525,7 @@ public class Spindexer {
                 }
 
                 // Waiting for Pivot to come down + Fast leave to reduce runtime
-                if (pivotTimer.milliseconds() < (artifactCount == 0 ? 3*Constant.PIVOT_DOWN_TIMER : Constant.PIVOT_DOWN_TIMER)) {
+                if (pivotTimer.milliseconds() < (artifactCount == 0 ? 2 * Constant.PIVOT_DOWN_TIMER : Constant.PIVOT_DOWN_TIMER)) {
                     return;
                 }
 
