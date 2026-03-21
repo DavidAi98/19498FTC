@@ -214,7 +214,7 @@ public class CurrentNearBlue15 extends OpMode {
                 }
                 break;
 
-            // ── SECOND ROW
+            // SECOND ROW
 
             // Sweep second row with intake on
             case 10:
