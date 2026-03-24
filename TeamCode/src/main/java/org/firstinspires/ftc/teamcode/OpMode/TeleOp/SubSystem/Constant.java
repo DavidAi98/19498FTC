@@ -30,7 +30,7 @@ public class Constant {
     // FIELD COORDINATES (inches)
     // All fixed by game field — don't change.
     // -----------------------------------------------------------------------
-    public static double OFFCENTER_X       = 23.1 * 2;
+    public static double OFFCENTER_X       = 23.1 * 1;
     public static double GOAL_CENTER_X     = 124.272815 - OFFCENTER_X;
     public static double BLUE_GOAL_CENTER_Y = -125.287402;
     public static double RED_GOAL_CENTER_Y  =  125.287402;
@@ -114,7 +114,7 @@ public class Constant {
     // How many encoder ticks away from target still counts as "in slot".
     //   Artifacts not firing → INCREASE (spindexer settling slowly)
     //   Artifacts fire at wrong slot → DECREASE (too loose)
-    public static int OUTTAKE_TICK_TOLERANCE = 450;
+    public static int OUTTAKE_TICK_TOLERANCE = 400;
 
     // RPM error allowed before isReady() returns true and fires the ball.
     // Note: isReady() has a (2200/currentVelo)^2 term making this looser than it looks.
@@ -123,7 +123,7 @@ public class Constant {
 
     // How long pivot travels up before coming back down (ms).
     public static int PIVOT_UP_TIMER   = 85;
-    public static int PIVOT_DOWN_TIMER = 150;
+    public static int PIVOT_DOWN_TIMER = 160;
 
     // Milliseconds before spindexer gives up and retries if it can't reach position.
     //   Getting stuck often → INCREASE

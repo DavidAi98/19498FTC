@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 public class Spindexer {
+    public boolean noSort = false;
     public DcMotor spindexerEncoder, intake;
     public Servo spindexer1, spindexer2, leftPivot, rightPivot;
     public ColorSensor colorSensor1, colorSensor2;
@@ -464,10 +465,13 @@ public class Spindexer {
                 }
                 break;
 
+
             case 1: // Selection Logic: 2 -> 1 -> 3
 
                 int foundIndex = -1;
-                if(!targetColor.equals("ANY")){
+                if (noSort) {
+                    targetColor = "ANY";
+                } else {
                     targetColor = motif.substring(autonColor-1, autonColor);
                 }
 
@@ -511,7 +515,7 @@ public class Spindexer {
                     pivotTimer.reset();
                     outtakeStage = 3;
                     autonColor = autonColor%3+1;
-                    targetColor = "";
+                    targetColor = "NaN";
                 } else if (stateTimer.milliseconds() > Constant.ANTI_STUCK_TIMER && !inSlot) {
                     stateTimer.reset();
                     outtakeStage = 0;

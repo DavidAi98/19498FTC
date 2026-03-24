@@ -14,21 +14,19 @@ import org.firstinspires.ftc.teamcode.OpMode.TeleOp.SubSystem.Shooter;
 import org.firstinspires.ftc.teamcode.OpMode.TeleOp.SubSystem.Spindexer;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
-@Autonomous(name = "BLUE Test")
+@Autonomous(name = "BLUE \uD83D\uDD35 18 Coop (NOT Sorted)")
 public class NearBlueTest extends OpMode {
 
     // =========================================================================
     //  PATHS
     // =========================================================================
 
-    // Non-static so lambdas can access spindexer from the outer class
     public class Paths {
         public PathChain MoveToShootPreload;
         public PathChain MoveToSecondRow;
         public PathChain ShootSecondRow;
         public PathChain MoveToGate;
         public PathChain MoveBack;
-        public PathChain GateIntake;
         public PathChain ShootIntaked;
         public PathChain IntakeFirstRow;
         public PathChain ShootFirstRow;
@@ -37,54 +35,47 @@ public class NearBlueTest extends OpMode {
             MoveToShootPreload = follower.pathBuilder()
                     .addPath(new BezierLine(
                             new Pose(31, 135),
-                            new Pose(52, 81.5)
+                            new Pose(58, 76)
                     ))
                     .setLinearHeadingInterpolation(Math.toRadians(-90), Math.toRadians(-90))
-                    .addParametricCallback(0.75, () -> spindexer.stopIntake())
-                    .addParametricCallback(0.85, () -> fireAny())
                     .build();
 
             MoveToSecondRow = follower.pathBuilder()
                     .addPath(new BezierCurve(
-                            new Pose(52.000, 81.500),
-                            new Pose(57.604, 57.275),
-                            new Pose(31.362, 62.304),
-                            new Pose(14.000, 60.000)
+                            new Pose(58, 76),
+                            new Pose(58, 68),
+                            new Pose(47, 61),
+                            new Pose(13.000, 60.000)
                     ))
                     .setTangentHeadingInterpolation()
                     .build();
 
             ShootSecondRow = follower.pathBuilder()
                     .addPath(new BezierLine(
-                            new Pose(14, 60),
-                            new Pose(56, 83)
+                            new Pose(13, 60),
+                            new Pose(56, 80)
                     ))
                     .setTangentHeadingInterpolation()
                     .setReversed()
-                    .addParametricCallback(0.8, () -> spindexer.stopIntake())
-                    .addParametricCallback(0.9, () -> fireAny())
                     .build();
 
             MoveToGate = follower.pathBuilder()
                     .addPath(new BezierCurve(
-                            new Pose(56, 83),
-                            new Pose(42.241, 71.732),
-                            new Pose(23, 67.988)
+                            new Pose(56, 80),
+                            new Pose(31, 68),
+                            new Pose(21, 68)
                     ))
                     .setLinearHeadingInterpolation(Math.toRadians(-151), Math.toRadians(180))
                     .build();
 
             MoveBack = follower.pathBuilder()
                     .addPath(new BezierLine(
-                            new Pose(23, 67.988),
-                            new Pose(22, 64.081)
+                            new Pose(21, 68),
+                            new Pose(21, 64)
                     ))
                     .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
-                    .build();
-
-            GateIntake = follower.pathBuilder()
                     .addPath(new BezierCurve(
-                            new Pose(22, 64.081),
+                            new Pose(21, 64),
                             new Pose(16.826, 57.282),
                             new Pose(14, 52)
                     ))
@@ -95,19 +86,15 @@ public class NearBlueTest extends OpMode {
                     .addPath(new BezierCurve(
                             new Pose(14, 52),
                             new Pose(33.977, 67.562),
-                            new Pose(56, 83)
+                            new Pose(56, 80)
                     ))
                     .setTangentHeadingInterpolation()
                     .setReversed()
-                    .setBrakingStrength(1.6)
-                    .setBrakingStart(0.25)
-                    .addParametricCallback(0.75, () -> spindexer.stopIntake())
-                    .addParametricCallback(0.85, () -> fireAny())
                     .build();
 
             IntakeFirstRow = follower.pathBuilder()
                     .addPath(new BezierLine(
-                            new Pose(56, 83),
+                            new Pose(56, 80),
                             new Pose(21, 85)
                     ))
                     .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
@@ -120,8 +107,6 @@ public class NearBlueTest extends OpMode {
                     ))
                     .setTangentHeadingInterpolation()
                     .setReversed()
-                    .addParametricCallback(0.75, () -> spindexer.stopIntake())
-                    .addParametricCallback(0.85, () -> spindexer.startOuttake()) // pattern order
                     .build();
         }
     }
@@ -140,15 +125,12 @@ public class NearBlueTest extends OpMode {
 
     private double angle       = 50;
     private double odoDist     = 64;
-    private String targetMotif = "Null";
+    private String targetMotif = "PPG";
 
     public static final Pose START_POS = new Pose(31, 135, Math.toRadians(-90));
 
-    // =========================================================================
-    //  HELPER — fire the next available ball regardless of color
-    // =========================================================================
     private void fireAny() {
-        spindexer.targetColor = "ANY";
+        spindexer.noSort = true;
         spindexer.startOuttake();
     }
 
@@ -159,201 +141,218 @@ public class NearBlueTest extends OpMode {
     public void autonomousPathUpdate() {
         switch (pathState) {
 
-            // ── PRELOAD ───────────────────────────────────────────────────────
-
+            // ── STATE 0: Start preload path ───────────────────────────────────
             case 0:
+                angle = 48;
                 follower.setMaxPower(1.0);
                 follower.followPath(paths.MoveToShootPreload, true);
                 spindexer.startIntake();
                 setPathState(1);
                 break;
 
-            // Wait for arrival + motif lock (callbacks fire the preload)
+            // ── STATE 1: Wait for preload path, then fire ─────────────────────
             case 1:
-                if (opmodeTimer.getElapsedTimeSeconds() > 2) {
-                    targetMotif = "PPG";
-                    setPathState(2);
-                } else if (!follower.isBusy() && !targetMotif.equals("Null")) {
+                if (!follower.isBusy()) {
+                    spindexer.stopIntake();
+                    fireAny();
                     setPathState(2);
                 }
                 break;
 
-            // Wait for preload outtake to finish (started by callback)
+            // ── STATE 2: Wait for preload outtake to finish ───────────────────
             case 2:
-                angle = 45;
                 if (spindexer.outtakeStage == -1) {
-                    setPathState(4);
+                    setPathState(3);
                 }
                 break;
 
-            // ── SECOND ROW ───────────────────────────────────────────────────
-
-            // Drive + intake; ShootSecondRow callback fires on the way back
-            case 4:
+            // ── STATE 3: Drive to second row + intake ─────────────────────────
+            case 3:
                 follower.followPath(paths.MoveToSecondRow, true);
                 spindexer.startIntake();
                 angle = 345;
                 odoDist = 55;
-                setPathState(6);
+                setPathState(4);
                 break;
 
-            case 6:
+            // ── STATE 4: Wait for full intake or arrival, then drive to shoot ─
+            case 4:
                 if (!follower.isBusy() || spindexer.intakeStage == -1) {
                     follower.followPath(paths.ShootSecondRow, true);
+                    setPathState(5);
+                }
+                break;
+
+            // ── STATE 5: Wait for shoot path, then fire ───────────────────────
+            case 5:
+                if (!follower.isBusy()) {
+                    spindexer.stopIntake();
+                    fireAny();
+                    setPathState(6);
+                }
+                break;
+
+            // ── STATE 6: Wait for second row outtake to finish ────────────────
+            case 6:
+                if (spindexer.outtakeStage == -1) {
                     setPathState(7);
                 }
                 break;
 
-            // Wait for outtake to finish (started by ShootSecondRow callback)
+            // ── STATE 7: Drive to gate (gate cycle 1) ─────────────────────────
             case 7:
-                if (!follower.isBusy() && spindexer.outtakeStage == -1) {
+                odoDist = 70;
+                follower.followPath(paths.MoveToGate, true);
+                setPathState(8);
+                break;
+
+            // ── STATE 8: Wait for gate, start intake + drive back/intake path ─
+            case 8:
+                if (!follower.isBusy()) {
+                    spindexer.startIntake();
+                    follower.followPath(paths.MoveBack, true);
+                    setPathState(9);
+                }
+                break;
+
+            // ── STATE 9: Wait for intake or timeout, then shoot ───────────────
+            case 9:
+                if (spindexer.intakeStage == -1 || pathTimer.getElapsedTimeSeconds() > 1.75) {
+                    follower.followPath(paths.ShootIntaked, true);
                     setPathState(10);
                 }
                 break;
 
-            // ── GATE CYCLE 1 ─────────────────────────────────────────────────
-
+            // ── STATE 10: Wait for shoot path, then fire ──────────────────────
             case 10:
-                odoDist = 64;
-                follower.followPath(paths.MoveToGate, true);
-                setPathState(11);
+                if (!follower.isBusy()) {
+                    spindexer.stopIntake();
+                    fireAny();
+                    setPathState(11);
+                }
                 break;
 
+            // ── STATE 11: Wait for gate cycle 1 outtake to finish ────────────
             case 11:
-                if (!follower.isBusy()) {
-                    spindexer.startIntake();
-                    follower.followPath(paths.MoveBack, true);
+                if (spindexer.outtakeStage == -1) {
                     setPathState(12);
                 }
                 break;
 
+            // ── STATE 12: Drive to gate (gate cycle 2) ────────────────────────
             case 12:
-                if (!follower.isBusy()) {
-                    angle = 345;
-                    follower.followPath(paths.GateIntake, true);
-                    setPathState(13);
-                }
+                follower.followPath(paths.MoveToGate, true);
+                setPathState(13);
                 break;
 
-            // ShootIntaked callbacks handle stopIntake + fireAny
+            // ── STATE 13: Wait for gate, start intake + drive back/intake path
             case 13:
-                if (spindexer.intakeStage == -1 || pathTimer.getElapsedTimeSeconds() > 1.75) {
-                    follower.followPath(paths.ShootIntaked, true);
+                if (!follower.isBusy()) {
+                    spindexer.startIntake();
+                    follower.followPath(paths.MoveBack, true);
                     setPathState(14);
                 }
                 break;
 
-            // Wait for path + outtake to finish
+            // ── STATE 14: Wait for intake or timeout, then shoot ──────────────
             case 14:
-                if (!follower.isBusy() && spindexer.outtakeStage == -1) {
+                if (spindexer.intakeStage == -1 || pathTimer.getElapsedTimeSeconds() > 1.75) {
+                    follower.followPath(paths.ShootIntaked, true);
+                    setPathState(15);
+                }
+                break;
+
+            // ── STATE 15: Wait for shoot path, then fire ──────────────────────
+            case 15:
+                if (!follower.isBusy()) {
+                    spindexer.stopIntake();
+                    fireAny();
+                    setPathState(16);
+                }
+                break;
+
+            // ── STATE 16: Wait for gate cycle 2 outtake to finish ────────────
+            case 16:
+                if (spindexer.outtakeStage == -1) {
+                    setPathState(17);
+                }
+                break;
+
+            // ── STATE 17: Drive to gate (gate cycle 3) ────────────────────────
+            case 17:
+                follower.followPath(paths.MoveToGate, true);
+                setPathState(18);
+                break;
+
+            // ── STATE 18: Wait for gate, start intake + drive back/intake path
+            case 18:
+                if (!follower.isBusy()) {
+                    spindexer.startIntake();
+                    follower.followPath(paths.MoveBack, true);
+                    setPathState(19);
+                }
+                break;
+
+            // ── STATE 19: Wait for intake or timeout, then shoot ──────────────
+            case 19:
+                if (spindexer.intakeStage == -1 || pathTimer.getElapsedTimeSeconds() > 1.75) {
+                    follower.followPath(paths.ShootIntaked, true);
                     setPathState(20);
                 }
                 break;
 
-            // ── GATE CYCLE 2 ─────────────────────────────────────────────────
-
+            // ── STATE 20: Wait for shoot path, then fire ──────────────────────
             case 20:
-                follower.followPath(paths.MoveToGate, true);
-                setPathState(21);
+                if (!follower.isBusy()) {
+                    spindexer.stopIntake();
+                    fireAny();
+                    setPathState(21);
+                }
                 break;
 
+            // ── STATE 21: Wait for gate cycle 3 outtake to finish ────────────
             case 21:
-                if (!follower.isBusy()) {
-                    spindexer.startIntake();
-                    follower.followPath(paths.MoveBack, true);
+                if (spindexer.outtakeStage == -1) {
                     setPathState(22);
                 }
                 break;
 
+            // ── STATE 22: Drive to first row + intake ─────────────────────────
             case 22:
-                if (!follower.isBusy()) {
-                    angle = 345;
-                    follower.followPath(paths.GateIntake, true);
-                    setPathState(23);
-                }
+                spindexer.startIntake();
+                follower.followPath(paths.IntakeFirstRow, true);
+                setPathState(23);
                 break;
 
-            // ShootIntaked callbacks handle stopIntake + fireAny
+            // ── STATE 23: Wait for full intake or arrival, then drive to shoot
             case 23:
-                if (spindexer.intakeStage == -1 || pathTimer.getElapsedTimeSeconds() > 1.75) {
-                    follower.followPath(paths.ShootIntaked, true);
+                if (!follower.isBusy() || spindexer.intakeStage == -1) {
+                    spindexer.autonColor = 1;
+                    follower.followPath(paths.ShootFirstRow, true);
+                    angle = 340;
+                    odoDist = 26;
                     setPathState(24);
                 }
                 break;
 
-            // Wait for path + outtake to finish
+            // ── STATE 24: Wait for shoot path, then fire ──────────────────────
             case 24:
-                if (!follower.isBusy() && spindexer.outtakeStage == -1) {
+                if (!follower.isBusy()) {
+                    spindexer.stopIntake();
+                    fireAny();
+                    setPathState(25);
+                }
+                break;
+
+            // ── STATE 25: Wait for first row outtake to finish ────────────────
+            case 25:
+                if (spindexer.outtakeStage == -1) {
                     setPathState(26);
                 }
                 break;
 
-            // ── GATE CYCLE 3 ─────────────────────────────────────────────────
-
+            // ── STATE 26: DONE ────────────────────────────────────────────────
             case 26:
-                follower.followPath(paths.MoveToGate, true);
-                setPathState(27);
-                break;
-
-            case 27:
-                if (!follower.isBusy()) {
-                    spindexer.startIntake();
-                    follower.followPath(paths.MoveBack, true);
-                    setPathState(28);
-                }
-                break;
-
-            case 28:
-                if (!follower.isBusy()) {
-                    angle = 345;
-                    follower.followPath(paths.GateIntake, true);
-                    setPathState(29);
-                }
-                break;
-
-            // ShootIntaked callbacks handle stopIntake + fireAny
-            case 29:
-                if (spindexer.intakeStage == -1 || pathTimer.getElapsedTimeSeconds() > 1.75) {
-                    follower.followPath(paths.ShootIntaked, true);
-                    setPathState(30);
-                }
-                break;
-
-            // Wait for path + outtake to finish
-            case 30:
-                if (!follower.isBusy() && spindexer.outtakeStage == -1) {
-                    setPathState(32);
-                }
-                break;
-
-            // ── FIRST ROW ────────────────────────────────────────────────────
-
-            // ShootFirstRow callback handles stopIntake + fireAny
-            case 32:
-                spindexer.startIntake();
-                follower.followPath(paths.IntakeFirstRow, true);
-                setPathState(33);
-                break;
-
-            case 33:
-                if (!follower.isBusy() || spindexer.intakeStage == -1) {
-                    spindexer.autonColor = 1; // reset so first row fires in pattern from start
-                    follower.followPath(paths.ShootFirstRow, true);
-                    angle = 340;
-                    odoDist = 26;
-                    setPathState(34);
-                }
-                break;
-
-            // Wait for path + outtake to finish
-            case 34:
-                if (!follower.isBusy() && spindexer.outtakeStage == -1) {
-                    setPathState(99);
-                }
-                break;
-
-            // ── DONE ─────────────────────────────────────────────────────────
-            case 99:
                 break;
         }
     }
@@ -376,8 +375,10 @@ public class NearBlueTest extends OpMode {
         spindexer.setSpindexer(Constant.INTAKE_POS1);
         shooter.setTurretPosition(0.3);
 
+
         follower = Constants.createFollower(hardwareMap);
         paths    = new Paths(follower);
+        follower.breakFollowing();
         follower.setStartingPose(START_POS);
     }
 
@@ -394,19 +395,8 @@ public class NearBlueTest extends OpMode {
     public void loop() {
         follower.update();
 
-        // Poll every loop — never misses the motif
-        if (targetMotif.equals("Null")) {
-            targetMotif = shooter.detectMotif();
-        }
-
         shooter.updateShootingParams(odoDist, 20, spindexer.outtakeStage != -1);
-
-        if (targetMotif.equals("Null")) {
-            shooter.updateTurret(100, 0);
-        } else {
-            shooter.updateTurret(angle, 0);
-        }
-
+        shooter.updateTurret(angle, 0);
         shooter.runShooter(spindexer.outtakeStage != -1);
         spindexer.update(targetMotif, shooter.isReady());
 
@@ -415,9 +405,9 @@ public class NearBlueTest extends OpMode {
         // Slot visual
         StringBuilder slotVisual = new StringBuilder();
         for (int i = 0; i < 3; i++) {
-            if      (spindexer.slots[i] == null)                    slotVisual.append("⚪ ");
-            else if (spindexer.slots[i].getColor().equals("P"))     slotVisual.append("\uD83D\uDFE3 ");
-            else if (spindexer.slots[i].getColor().equals("G"))     slotVisual.append("\uD83D\uDFE2 ");
+            if      (spindexer.slots[i] == null)                slotVisual.append("⚪ ");
+            else if (spindexer.slots[i].getColor().equals("P")) slotVisual.append("\uD83D\uDFE3 ");
+            else if (spindexer.slots[i].getColor().equals("G")) slotVisual.append("\uD83D\uDFE2 ");
         }
 
         // Save pose for TeleOp hand-off
@@ -427,17 +417,12 @@ public class NearBlueTest extends OpMode {
         Constant.AUTON_LAST_HEADING_RAD = p.getHeading() - Math.PI;
         Constant.AUTON_LAST_HEADING_DEG = Math.toDegrees(Constant.AUTON_LAST_HEADING_RAD);
 
+        telemetry.addData("Encoder Reset",  spindexer.encoderResetDone);
         telemetry.addData("Slots",         slotVisual.toString());
         telemetry.addData("Path State",    pathState);
         telemetry.addData("Motif",         targetMotif);
-        telemetry.addData("Turret Angle",  angle);
         telemetry.addData("Intake Stage",  spindexer.intakeStage);
         telemetry.addData("Outtake Stage", spindexer.outtakeStage);
-        telemetry.addData("Velo Error",    "%.1f",
-                shooter.calculatedTargetVelocity - shooter.leftShooter.getVelocity());
-        telemetry.addData("Target Color",  spindexer.targetColor);
-        telemetry.addData("Max Power",     follower.getMaxPowerScaling());
-        telemetry.addData("Heading",       follower.getHeading());
         telemetry.update();
     }
 

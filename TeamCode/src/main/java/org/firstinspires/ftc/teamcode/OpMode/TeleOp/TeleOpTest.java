@@ -10,7 +10,7 @@ import org.firstinspires.ftc.teamcode.OpMode.TeleOp.SubSystem.Shooter;
 import org.firstinspires.ftc.teamcode.OpMode.TeleOp.SubSystem.Spindexer;
 import org.firstinspires.ftc.teamcode.OpMode.TeleOp.SubSystem.VirtualGoalSolver;
 
-@com.qualcomm.robotcore.eventloop.opmode.TeleOp(name = "Test")
+@com.qualcomm.robotcore.eventloop.opmode.TeleOp(name = "TeleOp (SOTM)", group = "00")
 public class TeleOpTest extends OpMode {
     private MecanumDrive drive;
     private Shooter shooter;

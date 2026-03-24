@@ -14,7 +14,7 @@ import org.firstinspires.ftc.teamcode.OpMode.TeleOp.SubSystem.Shooter;
 import org.firstinspires.ftc.teamcode.OpMode.TeleOp.SubSystem.Spindexer;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
-@Autonomous(name = "BLUE 15 Test")
+@Autonomous(name = "BLUE \uD83D\uDD35 15 Solo (Sorted)")
 public class CurrentNearBlue15 extends OpMode {
 
     // =========================================================================
@@ -49,7 +49,7 @@ public class CurrentNearBlue15 extends OpMode {
                             new Pose(52.000, 81.500),
                             new Pose(57.604, 57.275),
                             new Pose(31.362, 62.304),
-                            new Pose(14.000, 60.000)
+                            new Pose(16.000, 60.000)
                     ))
                     .setTangentHeadingInterpolation()
                     .build();
@@ -57,7 +57,7 @@ public class CurrentNearBlue15 extends OpMode {
             // Second row end → gate, no intake
             SecondRowToGate = follower.pathBuilder()
                     .addPath(new BezierLine(
-                            new Pose(14, 60),
+                            new Pose(16, 60),
                             new Pose(22, 69.688)
                     ))
                     .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
@@ -365,6 +365,7 @@ public class CurrentNearBlue15 extends OpMode {
         follower = Constants.createFollower(hardwareMap);
         paths    = new Paths(follower);
         follower.setStartingPose(START_POS);
+        spindexer.noSort = false;
     }
 
     @Override

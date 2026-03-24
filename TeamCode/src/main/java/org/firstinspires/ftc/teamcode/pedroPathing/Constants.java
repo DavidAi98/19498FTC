@@ -1,7 +1,7 @@
 package org.firstinspires.ftc.teamcode.pedroPathing;
 
-import com.pedropathing.control.FilteredPIDFCoefficients;
 import com.pedropathing.control.PIDFCoefficients;
+import com.pedropathing.control.PredictiveBrakingCoefficients;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.follower.FollowerConstants;
 import com.pedropathing.ftc.FollowerBuilder;
@@ -21,26 +21,10 @@ public class Constants {
     public static FollowerConstants followerConstants = new FollowerConstants()
 
             .mass(11.75)
-
-            .forwardZeroPowerAcceleration(-(26.229+27.65+24.63+25.40+24.45+24.17)/6
-            )
-            .lateralZeroPowerAcceleration(-(62.82+62.44+60.00+62.87+59.70)/5)
-
-//            .translationalPIDFCoefficients(new PIDFCoefficients(0.39, 0.00001, 0.033, 0))//F: the motor trying to move but not move(sound); P: set correct line(vertical; D: more slowly back
-            .translationalPIDFCoefficients(new PIDFCoefficients(0.4, 0, 0.05, 0))
-            .translationalPIDFSwitch(12)
-            .secondaryTranslationalPIDFCoefficients(new PIDFCoefficients(0.2,0,0.029,0.02))
-
-//            .headingPIDFCoefficients(new PIDFCoefficients(3, 0, 0.2, 0))//2.8,0.16
+            .predictiveBrakingCoefficients(new PredictiveBrakingCoefficients(0.3, (0.1347074244815349+0.13291104034736365)/2, (0.0017740197829300532+0.0017506199069809098)/2))
             .headingPIDFCoefficients(new PIDFCoefficients(3, 0, 0.18, 0))
             .headingPIDFSwitch(10)
-            .secondaryHeadingPIDFCoefficients(new PIDFCoefficients(2,0,0.15,0.015))
-
-            .drivePIDFCoefficients(new FilteredPIDFCoefficients(0.05, 0, 0.003, 0.4, 0))//line test contains the t and h pidf while drive tuner not; keep the same f with forwardtunner
-            .drivePIDFSwitch(28)
-            .secondaryDrivePIDFCoefficients(new FilteredPIDFCoefficients(0.03, 0, 0.004 , 0.4, 0))
-
-            .centripetalScaling(0.0005);
+            .secondaryHeadingPIDFCoefficients(new PIDFCoefficients(2,0,0.15,0.015));
 
     public static MecanumConstants driveConstants = new MecanumConstants()
             .maxPower(1)
@@ -76,7 +60,7 @@ public class Constants {
             0.5,
             0.009,
             10,
-            1,
+            0.5,
             10,
             1);//in the path constraints
 
