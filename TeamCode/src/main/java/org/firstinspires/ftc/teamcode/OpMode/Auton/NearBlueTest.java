@@ -25,7 +25,7 @@ public class NearBlueTest extends OpMode {
         public PathChain MoveToShootPreload;
         public PathChain MoveToSecondRow;
         public PathChain ShootSecondRow;
-        public PathChain MoveToGate;
+        public PathChain GateIntake;
         public PathChain MoveBack;
         public PathChain ShootIntaked;
         public PathChain IntakeFirstRow;
@@ -38,6 +38,8 @@ public class NearBlueTest extends OpMode {
                             new Pose(58, 76)
                     ))
                     .setLinearHeadingInterpolation(Math.toRadians(-90), Math.toRadians(-90))
+                    .addParametricCallback(0.7, () -> spindexer.stopIntake())
+                    .addParametricCallback(0.8, () -> fireAny())
                     .build();
 
             MoveToSecondRow = follower.pathBuilder()
@@ -59,27 +61,24 @@ public class NearBlueTest extends OpMode {
                     .setReversed()
                     .build();
 
-            MoveToGate = follower.pathBuilder()
+            GateIntake = follower.pathBuilder()
                     .addPath(new BezierCurve(
                             new Pose(56, 80),
                             new Pose(31, 68),
-                            new Pose(21, 68)
+                            new Pose(20, 68)
                     ))
-                    .setLinearHeadingInterpolation(Math.toRadians(-151), Math.toRadians(180))
-                    .build();
-
-            MoveBack = follower.pathBuilder()
+                    .setTangentHeadingInterpolation()
                     .addPath(new BezierLine(
-                            new Pose(21, 68),
-                            new Pose(21, 64)
+                            new Pose(20, 68),
+                            new Pose(20, 64)
                     ))
                     .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
                     .addPath(new BezierCurve(
-                            new Pose(21, 64),
+                            new Pose(20, 64),
                             new Pose(16.826, 57.282),
-                            new Pose(14, 52)
+                            new Pose(12, 52)
                     ))
-                    .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(130))
+                    .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(120))
                     .build();
 
             ShootIntaked = follower.pathBuilder()
@@ -107,6 +106,8 @@ public class NearBlueTest extends OpMode {
                     ))
                     .setTangentHeadingInterpolation()
                     .setReversed()
+                    .addParametricCallback(0.8, () -> spindexer.stopIntake())
+                    .addParametricCallback(0.9, () -> fireAny())
                     .build();
         }
     }
@@ -124,7 +125,7 @@ public class NearBlueTest extends OpMode {
     private Spindexer spindexer;
 
     private double angle       = 50;
-    private double odoDist     = 64;
+    private double odoDist     = 78;
     private String targetMotif = "PPG";
 
     public static final Pose START_POS = new Pose(31, 135, Math.toRadians(-90));
@@ -143,7 +144,7 @@ public class NearBlueTest extends OpMode {
 
             // ── STATE 0: Start preload path ───────────────────────────────────
             case 0:
-                angle = 48;
+                angle = 50;
                 follower.setMaxPower(1.0);
                 follower.followPath(paths.MoveToShootPreload, true);
                 spindexer.startIntake();
@@ -153,8 +154,6 @@ public class NearBlueTest extends OpMode {
             // ── STATE 1: Wait for preload path, then fire ─────────────────────
             case 1:
                 if (!follower.isBusy()) {
-                    spindexer.stopIntake();
-                    fireAny();
                     setPathState(2);
                 }
                 break;
@@ -171,7 +170,7 @@ public class NearBlueTest extends OpMode {
                 follower.followPath(paths.MoveToSecondRow, true);
                 spindexer.startIntake();
                 angle = 345;
-                odoDist = 55;
+                odoDist = 60;
                 setPathState(4);
                 break;
 
@@ -202,7 +201,7 @@ public class NearBlueTest extends OpMode {
             // ── STATE 7: Drive to gate (gate cycle 1) ─────────────────────────
             case 7:
                 odoDist = 70;
-                follower.followPath(paths.MoveToGate, true);
+                follower.followPath(paths.GateIntake, true);
                 setPathState(8);
                 break;
 
@@ -241,7 +240,7 @@ public class NearBlueTest extends OpMode {
 
             // ── STATE 12: Drive to gate (gate cycle 2) ────────────────────────
             case 12:
-                follower.followPath(paths.MoveToGate, true);
+                follower.followPath(paths.GateIntake, true);
                 setPathState(13);
                 break;
 
@@ -280,7 +279,7 @@ public class NearBlueTest extends OpMode {
 
             // ── STATE 17: Drive to gate (gate cycle 3) ────────────────────────
             case 17:
-                follower.followPath(paths.MoveToGate, true);
+                follower.followPath(paths.GateIntake, true);
                 setPathState(18);
                 break;
 
@@ -327,7 +326,6 @@ public class NearBlueTest extends OpMode {
             // ── STATE 23: Wait for full intake or arrival, then drive to shoot
             case 23:
                 if (!follower.isBusy() || spindexer.intakeStage == -1) {
-                    spindexer.autonColor = 1;
                     follower.followPath(paths.ShootFirstRow, true);
                     angle = 340;
                     odoDist = 26;
@@ -338,8 +336,6 @@ public class NearBlueTest extends OpMode {
             // ── STATE 24: Wait for shoot path, then fire ──────────────────────
             case 24:
                 if (!follower.isBusy()) {
-                    spindexer.stopIntake();
-                    fireAny();
                     setPathState(25);
                 }
                 break;
