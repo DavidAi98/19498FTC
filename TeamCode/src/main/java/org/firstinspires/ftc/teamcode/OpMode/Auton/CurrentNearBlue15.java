@@ -201,7 +201,7 @@ public class CurrentNearBlue15 extends OpMode {
             case 2:
                 angle = 50;
                 if (spindexer.intakeStage == -1) {
-                    spindexer.targetColor = "ANY";
+
                     spindexer.startOuttake();
                     setPathState(3);
                 }
@@ -209,8 +209,9 @@ public class CurrentNearBlue15 extends OpMode {
 
             case 3:
                 if (spindexer.outtakeStage == -1) {
-                    spindexer.autonColor = 1;
+
                     setPathState(10);
+
                 }
                 break;
 
