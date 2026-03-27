@@ -1,10 +1,13 @@
 package org.firstinspires.ftc.teamcode.OpMode.TeleOp.SubSystem;
 
 import androidx.annotation.NonNull;
+
+import com.qualcomm.hardware.rev.RevColorSensorV3;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -12,7 +15,8 @@ public class Spindexer {
     public boolean noSort = false;
     public DcMotor spindexerEncoder, intake;
     public Servo spindexer1, spindexer2, leftPivot, rightPivot;
-    public ColorSensor colorSensor1, colorSensor2;
+    public ColorSensor colorSensor2;
+    public RevColorSensorV3 colorSensor1;
 
     public Artifact[] slots = new Artifact[3];
     public int artifactCount = 0;
@@ -53,13 +57,14 @@ public class Spindexer {
         leftPivot = hwMap.get(Servo.class, "LeftPivot");
         rightPivot = hwMap.get(Servo.class, "RightPivot");
 
-        colorSensor1 = hwMap.get(ColorSensor.class, "colorSensor1");
-        colorSensor2 = hwMap.get(ColorSensor.class, "colorSensor2");
+        colorSensor1 = hwMap.get(RevColorSensorV3.class, "colorSensor1");
+        colorSensor2 = hwMap.get(RevColorSensorV3.class, "colorSensor2");
         spindexerEncoder = hwMap.get(DcMotor.class, "SpindexerEncoder");
 
         spindexerEncoder.setDirection(DcMotorSimple.Direction.REVERSE);
         leftPivot.setDirection(Servo.Direction.REVERSE);
 
+        NormalizedRGBA colors = colorSensor1.getNormalizedColors();
         setPivot(Constant.PIVOT_DOWN);
         intake.setPower(0);
     }
@@ -469,9 +474,9 @@ public class Spindexer {
             case 1: // Selection Logic: 2 -> 1 -> 3
 
                 int foundIndex = -1;
-                if (noSort) {
-                    targetColor = "ANY";
-                } else {
+                if(noSort){
+                    targetColor="ANY";
+                } else if(targetColor.equals("NaN")){
                     targetColor = motif.substring(autonColor-1, autonColor);
                 }
 
@@ -573,6 +578,7 @@ public class Spindexer {
         leftPivot.setPosition(p + 0.015);
         rightPivot.setPosition(p);
     }
+
     private boolean withinTarget(int targetTicks, int tickTolerance) {
         currentTicks = spindexerEncoder.getCurrentPosition();
         return Math.abs(currentTicks - targetTicks) <= tickTolerance;

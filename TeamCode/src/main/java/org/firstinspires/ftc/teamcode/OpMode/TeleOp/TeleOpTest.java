@@ -152,8 +152,7 @@ public class TeleOpTest extends OpMode {
         packet.put("velX raw",            drive.getRawVelX());
         packet.put("velY raw",            drive.getRawVelY());
         dashboard.sendTelemetryPacket(packet);
-
-        telemetry.addData("Spindexer Slots", slotVisual.toString());
+        spindexer.colorTelemetry();
         telemetry.addData("Field Centric",   FieldCentric);
         telemetry.addData("Alliance",        Constant.ALLIANCE);
         telemetry.addData("Motif",           motif);
