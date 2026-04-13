@@ -318,7 +318,9 @@ public class CurrentNearBlue15 extends OpMode {
     }
 
     @Override
-    public void init_loop() {}
+    public void init_loop() {
+
+    }
 
     @Override
     public void start() {
