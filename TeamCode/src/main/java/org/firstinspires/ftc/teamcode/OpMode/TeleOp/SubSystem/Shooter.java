@@ -90,7 +90,7 @@ public class Shooter {
     public double movingScale = 0.0;
 
     public void updateTurret(double rawTurretAngle) {
-        filteredAprilX += aprilx * 0.1 * (1.0 - movingScale);
+        filteredAprilX += aprilx * 0.8 * (1.0 - movingScale);
 
         // Decay toward zero:
         //   While moving (movingScale=1): fast decay — drains stale values quickly
@@ -175,7 +175,7 @@ public class Shooter {
             calculatedTargetVelocity = Constant.overwritenVelocity;
         }
 
-        double currentVelo = leftShooter.getVelocity();
+        double currentVelo = rightShooter.getVelocity();
         double voltageComp = Constant.NOMINAL_VOLTAGE / battery.getVoltage();
         double ff = ((Constant.kV * calculatedTargetVelocity) + Constant.kS) * voltageComp;
         double error = Math.abs(currentVelo - calculatedTargetVelocity);
@@ -185,7 +185,7 @@ public class Shooter {
         double totalPower = pidContribution + ff;
 
         totalPower = Math.max(0, Math.min(1.0, totalPower));
-        if (error > 0.1 * calculatedTargetVelocity) {
+        if (error > 0.1 * calculatedTargetVelocity && calculatedTargetVelocity > currentVelo) {
             leftShooter.setPower(1);
             rightShooter.setPower(1);
         } else {
@@ -221,7 +221,7 @@ public class Shooter {
 
 
     public boolean isReady() {
-        double currentVelo = leftShooter.getVelocity();
+        double currentVelo = rightShooter.getVelocity();
         double voltageComp = Constant.NOMINAL_VOLTAGE / battery.getVoltage();
         double error = Math.abs(currentVelo - calculatedTargetVelocity);
         return calculatedTargetVelocity > 0 && (error < Constant.VELOCITY_TOLERANCE * (1/voltageComp) * Math.pow((2200/currentVelo),2));

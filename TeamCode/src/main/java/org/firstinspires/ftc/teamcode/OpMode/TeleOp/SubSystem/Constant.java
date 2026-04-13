@@ -32,8 +32,8 @@ public class Constant {
     // -----------------------------------------------------------------------
     public static double OFFCENTER_X       = 23.1 * 1;
     public static double GOAL_CENTER_X     = 124.272815 - OFFCENTER_X;
-    public static double BLUE_GOAL_CENTER_Y = -125.287402;
-    public static double RED_GOAL_CENTER_Y  =  125.287402;
+    public static double BLUE_GOAL_CENTER_Y = -124.287402;
+    public static double RED_GOAL_CENTER_Y  =  124.287402;
     public static final double TURRET_OFFSET = 2.13320866;  // turret behind robot center
 
     // -----------------------------------------------------------------------
@@ -245,14 +245,14 @@ public class Constant {
     //   stable value = aprilx * 0.1 / REST_DECAY_RATE (e.g. 8° tag × 0.1 / 0.12 = 6.7°)
     //   Too low  → still drifts at rest
     //   Too high → limelight correction drains before it can help
-    public static double APRIL_REST_DECAY_RATE = 0.12;
+    public static double APRIL_REST_DECAY_RATE = 0.7;
 
     // How fast filteredAprilX drains while moving.
     // Prevents stale limelight data from holding the turret off-target after stopping.
     public static double APRIL_MOVING_DECAY_RATE = 0.25;
 
     // Hard cap on limelight correction (degrees). Limelight can never move turret beyond this.
-    public static double APRIL_MAX_DEG = 4.0;
+    public static double APRIL_MAX_DEG = 10;
 
     // Consecutive loops at zero velocity before limelight re-engages after stopping.
     // Limelight has 100–200ms pipeline latency — without this delay, stale data from

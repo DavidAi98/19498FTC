@@ -132,6 +132,7 @@ public class TeleOp extends OpMode {
 
         dashboard.sendTelemetryPacket(packet);
 
+
         telemetry.addData("Spindexer Slots", slotVisual.toString());
         telemetry.addData("Field Centric", FieldCentric);
         telemetry.addData("OpMode", Constant.ALLIANCE);

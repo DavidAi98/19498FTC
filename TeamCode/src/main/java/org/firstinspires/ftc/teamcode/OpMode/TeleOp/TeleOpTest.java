@@ -2,7 +2,9 @@ package org.firstinspires.ftc.teamcode.OpMode.TeleOp;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import com.qualcomm.hardware.rev.RevColorSensorV3;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 
 import org.firstinspires.ftc.teamcode.OpMode.TeleOp.SubSystem.Constant;
 import org.firstinspires.ftc.teamcode.OpMode.TeleOp.SubSystem.MecanumDrive;
@@ -18,6 +20,7 @@ public class TeleOpTest extends OpMode {
     private boolean FieldCentric = true;
     private FtcDashboard dashboard;
     private String motif = "Null";
+//    private RevColorSensorV3 colorSensor3, colorSensor4;
     private VirtualGoalSolver.ShotSolution lastSolution = null;
 
     @Override
@@ -27,10 +30,14 @@ public class TeleOpTest extends OpMode {
         spindexer = new Spindexer(hardwareMap);
         dashboard = FtcDashboard.getInstance();
         spindexer.onStart = true;
+//        colorSensor3 = hardwareMap.get(RevColorSensorV3.class, "colorSensor1");
+//        colorSensor4 = hardwareMap.get(RevColorSensorV3.class, "colorSensor2");
+
     }
 
     @Override
     public void loop() {
+//        NormalizedRGBA colors = colorSensor1.getNormalizedColors();
         // 1. DRIVE & UTILITY
         drive.update(Constant.GOAL_CENTER_X, Constant.ALLIANCE.equalsIgnoreCase("RED") ? Constant.RED_GOAL_CENTER_Y : Constant.BLUE_GOAL_CENTER_Y);
         drive.drive(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x, FieldCentric);
@@ -137,7 +144,7 @@ public class TeleOpTest extends OpMode {
 
         // 6. TELEMETRY
         TelemetryPacket packet = new TelemetryPacket();
-        packet.put("current velocity",    shooter.leftShooter.getVelocity());
+        packet.put("current velocity",    shooter.rightShooter.getVelocity());
         packet.put("target velocity",     shooter.calculatedTargetVelocity);
         packet.put("isReady",             shooter.isReady());
         packet.put("real dist (in)",      drive.distanceToGoal());
@@ -152,7 +159,10 @@ public class TeleOpTest extends OpMode {
         packet.put("velX raw",            drive.getRawVelX());
         packet.put("velY raw",            drive.getRawVelY());
         dashboard.sendTelemetryPacket(packet);
-        spindexer.colorTelemetry();
+        telemetry.addData("Spindexer Slots", slotVisual.toString());
+//        telemetry.addData("rgb2: ", colorSensor4.red()+ " " + colorSensor4.blue() + " " + colorSensor4.green());
+//        telemetry.addData("rgb1: ", colorSensor3.red()+ " " + colorSensor3.blue() + " " + colorSensor3.green());
+        telemetry.addData("Veloity ", shooter.rightShooter.getVelocity());
         telemetry.addData("Field Centric",   FieldCentric);
         telemetry.addData("Alliance",        Constant.ALLIANCE);
         telemetry.addData("Motif",           motif);
@@ -161,7 +171,7 @@ public class TeleOpTest extends OpMode {
         telemetry.addData("Outtake Stage",   spindexer.outtakeStage);
         telemetry.addData("Shooter Ready",   shooter.isReady());
         telemetry.addData("Robot Heading",   "%.2f", drive.headingDeg);
-        telemetry.addData("Velo Error",      "%.1f", shooter.calculatedTargetVelocity - shooter.leftShooter.getVelocity());
+        telemetry.addData("Velo Error",      "%.1f", shooter.calculatedTargetVelocity - shooter.rightShooter.getVelocity());
         telemetry.addData("Real Dist (in)",  "%.2f", drive.distanceToGoal());
         telemetry.addData("Eff Dist (in)",   "%.2f", lastSolution.effectiveDistInch);
         telemetry.addData("Moving Scale",    "%.2f", shooter.movingScale);
@@ -170,6 +180,12 @@ public class TeleOpTest extends OpMode {
         telemetry.addData("filteredAprilX",  shooter.filteredAprilX);
         telemetry.addData("Drive Pos",       "X=%.1f  Y=%.1f", drive.botX, drive.botY);
         telemetry.addData("Turret Pos",      "X=%.1f  Y=%.1f", drive.turretX, drive.turretY);
+
+        telemetry.addData("CS2 Blue",        spindexer.colorSensor2.blue());
+        telemetry.addData("CS2 Green",       spindexer.colorSensor2.green());
+        telemetry.addData("CS2 Sum (B+G)",   spindexer.colorSensor2.blue() + spindexer.colorSensor2.green());
+        telemetry.addData("CS2 Gap (B-G)",   spindexer.colorSensor2.blue() - spindexer.colorSensor2.green());
+
         telemetry.update();
     }
 }
