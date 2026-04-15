@@ -72,9 +72,9 @@ public class Shooter {
     }
 
     public void updateTurret(double rawTurretAngle, double AUTON) {
-        filteredAprilX += aprilx * 0.1 * AUTON;
-        double turretHeading = rawTurretAngle + filteredAprilX;
 
+        filteredAprilX += aprilx * 0.2 * AUTON;
+        double turretHeading = rawTurretAngle + filteredAprilX;
 
         // Normalize 0-360
         turretHeading = ((turretHeading % 360) + 360) % 360;
@@ -86,11 +86,12 @@ public class Shooter {
         turret1.setPosition(calculatedTurretPos - Constant.TURRET_ANTIBACKLASH);
         turret2.setPosition(calculatedTurretPos + Constant.TURRET_ANTIBACKLASH);
     }
-    // movingScale: 0 = stationary (full limelight correction), 1 = fast (no correction).
+
+    // movingScale: 0 = stationary (full limelight correction), 1 = fast (no correction)
     public double movingScale = 0.0;
 
     public void updateTurret(double rawTurretAngle) {
-        filteredAprilX += aprilx * 0.8 * (1.0 - movingScale);
+        filteredAprilX += 2 * aprilx * (1.0 - movingScale);
 
         // Decay toward zero:
         //   While moving (movingScale=1): fast decay — drains stale values quickly
@@ -102,7 +103,6 @@ public class Shooter {
         filteredAprilX = Math.max(-Constant.APRIL_MAX_DEG, Math.min(Constant.APRIL_MAX_DEG, filteredAprilX));
 
         double turretHeading = rawTurretAngle + filteredAprilX;
-
 
         // Normalize 0-360
         turretHeading = ((turretHeading % 360) + 360) % 360;

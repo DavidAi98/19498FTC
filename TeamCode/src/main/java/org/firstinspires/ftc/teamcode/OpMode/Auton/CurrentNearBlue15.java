@@ -14,7 +14,7 @@ import org.firstinspires.ftc.teamcode.OpMode.TeleOp.SubSystem.Shooter;
 import org.firstinspires.ftc.teamcode.OpMode.TeleOp.SubSystem.Spindexer;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
-@Autonomous(name = "Old blue 15")
+@Autonomous(name = "Current blue 15")
 public class CurrentNearBlue15 extends OpMode {
 
     public class Paths {
@@ -44,14 +44,14 @@ public class CurrentNearBlue15 extends OpMode {
                             new Pose(52.000, 81.500),
                             new Pose(57.604, 57.275),
                             new Pose(31.362, 62.304),
-                            new Pose(13.5, 60.000)
+                            new Pose(12, 60.000)
                     ))
                     .setTangentHeadingInterpolation()
                     .build();
 
             SecondRowToGate = follower.pathBuilder()
                     .addPath(new BezierCurve(
-                            new Pose(13.5, 60),
+                            new Pose(12, 60),
                             new Pose(30, 58),
                             new Pose(20, 73)
                     ))
@@ -73,21 +73,19 @@ public class CurrentNearBlue15 extends OpMode {
                     .addPath(new BezierCurve(
                             new Pose(56, 84),
                             new Pose(35.000, 55),
-                            new Pose(13.5, 59)
+                            new Pose(12, 59)
                     ))
                     .setConstantHeadingInterpolation(Math.toRadians(138))
                     .build();
 
             ShootGate = follower.pathBuilder()
                     .addPath(new BezierCurve(
-                            new Pose(13.5, 59),
+                            new Pose(12, 59),
                             new Pose(33.977, 60),
                             new Pose(56, 83)
                     ))
                     .setTangentHeadingInterpolation()
                     .setReversed()
-                    .setBrakingStrength(1.6)
-                    .setBrakingStart(0.25)
                     .addParametricCallback(0.7, () -> spindexer.stopIntake())
                     .addParametricCallback(0.8, () -> spindexer.startOuttake())
                     .build();
@@ -201,7 +199,6 @@ public class CurrentNearBlue15 extends OpMode {
                 break;
 
             case 12:
-                spindexer.stopIntake();
                 if (!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 2.0) {
                     follower.followPath(paths.GateToShoot, true);
                     setPathState(13);
@@ -209,6 +206,7 @@ public class CurrentNearBlue15 extends OpMode {
                 break;
 
             case 13:
+                spindexer.stopIntake();
                 if (!follower.isBusy() && spindexer.outtakeStage == -1) {
                     setPathState(20);
                 }
@@ -219,7 +217,7 @@ public class CurrentNearBlue15 extends OpMode {
             case 20:
                 follower.followPath(paths.GateIntake, true);
                 spindexer.startIntake(); // called once here, not in a loop
-                angle = 12;
+                angle = 8;
                 setPathState(21);
                 break;
 
@@ -232,7 +230,7 @@ public class CurrentNearBlue15 extends OpMode {
 
             // Stay at gate for 2 seconds (or leave early if full)
             case 22:
-                if (spindexer.intakeStage == -1 || pathTimer.getElapsedTimeSeconds() > 2.0) {
+                if (spindexer.intakeStage == -1 || pathTimer.getElapsedTimeSeconds() > 2.5) {
                     follower.followPath(paths.ShootGate, true);
                     setPathState(23);
                 }

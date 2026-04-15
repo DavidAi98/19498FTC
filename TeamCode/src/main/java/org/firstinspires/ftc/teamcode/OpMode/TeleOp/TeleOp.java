@@ -67,6 +67,7 @@ public class TeleOp extends OpMode {
 //        if (gamepad1.rightStickButtonWasPressed()) {
 //            Constant.ALLIANCE = Constant.ALLIANCE.equalsIgnoreCase("RED") ? "BLUE" : "RED";
 //        }
+
         // change color sensor
         if (gamepad1.dpadRightWasPressed()) {
             spindexer.resetTimer.reset();
@@ -89,7 +90,7 @@ public class TeleOp extends OpMode {
         // 3. INTAKE/OUTTAKE CONTROL
         if (gamepad1.rightBumperWasPressed()) {
             if (spindexer.intakeStage == -1) spindexer.startIntake();
-            else spindexer.stopIntake(); //hello rizzlers
+            else spindexer.stopIntake();
         }
         if (gamepad1.yWasPressed() || gamepad2.yWasPressed()) {
             if (spindexer.outtakeStage == -1) spindexer.startOuttake();

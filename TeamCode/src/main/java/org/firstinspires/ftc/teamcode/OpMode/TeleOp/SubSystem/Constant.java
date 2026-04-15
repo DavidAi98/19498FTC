@@ -66,7 +66,7 @@ public class Constant {
     //   Too high → overshoots when you stop suddenly
     //   Too low  → trails behind while moving
     //   Watch "lookahead deg" on Dashboard — should read 2–5° while strafing fast
-    public static double TURRET_LOOKAHEAD_SEC = 0.12;
+    public static double TURRET_LOOKAHEAD_SEC = 0.1;
 
     // Hard cap on turret angular rate for the lookahead term (deg/s).
     // Prevents blowup if turretOmega spikes at mid-range. Rarely hits this.
@@ -109,17 +109,17 @@ public class Constant {
     // TIMERS & TOLERANCES
     // -----------------------------------------------------------------------
     public static int INVERSE_TIMER         = 1000;
-    public static int INTAKE_TICK_TOLERANCE = 650;
+    public static int INTAKE_TICK_TOLERANCE = 300;
 
     // How many encoder ticks away from target still counts as "in slot".
     //   Artifacts not firing → INCREASE (spindexer settling slowly)
     //   Artifacts fire at wrong slot → DECREASE (too loose)
-    public static int OUTTAKE_TICK_TOLERANCE = 400;
+    public static int OUTTAKE_TICK_TOLERANCE = 450;
 
     // RPM error allowed before isReady() returns true and fires the ball.
     // Note: isReady() has a (2200/currentVelo)^2 term making this looser than it looks.
     //   Balls firing before shooter is up to speed → DECREASE (try 60–80)
-    public static int VELOCITY_TOLERANCE = 150;
+    public static int VELOCITY_TOLERANCE = 125;
 
     // How long pivot travels up before coming back down (ms).
     public static int PIVOT_UP_TIMER   = 85;
@@ -245,7 +245,7 @@ public class Constant {
     //   stable value = aprilx * 0.1 / REST_DECAY_RATE (e.g. 8° tag × 0.1 / 0.12 = 6.7°)
     //   Too low  → still drifts at rest
     //   Too high → limelight correction drains before it can help
-    public static double APRIL_REST_DECAY_RATE = 0.7;
+    public static double APRIL_REST_DECAY_RATE = 0.9;
 
     // How fast filteredAprilX drains while moving.
     // Prevents stale limelight data from holding the turret off-target after stopping.

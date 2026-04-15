@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.OpMode.TeleOp.SubSystem;
 
+import android.graphics.Color;
+
 import androidx.annotation.NonNull;
 
 import com.qualcomm.hardware.lynx.LynxI2cDeviceSynch;
@@ -9,8 +11,10 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import android.graphics.Color;
 
 public class Spindexer {
+    public float[] HSV = new float[3];;
     public boolean noSort = false;
     public DcMotor spindexerEncoder, intake;
     public Servo spindexer1, spindexer2, leftPivot, rightPivot;
@@ -143,24 +147,22 @@ public class Spindexer {
         switch (intakeStage) {
             case 1:
                 if (sensorInUse == 2) {
-                    int b2 = colorSensor2.blue();
-                    int g2 = colorSensor2.green();
-                    int gap = b2 - g2;
+                    Color.RGBToHSV(colorSensor2.red(), colorSensor2.green(), colorSensor2.blue(), HSV);
+                    float hue = HSV[0];
 
-                    colorDetected = artifactCount < 3 && b2 > CS2_BLUE_THRESHOLD;
+                    colorDetected = artifactCount < 3;
 
                     if (skipSlot) {
                         // FIX: skipSlot bypasses the gap ambiguity check.
                         // Use gap reading if it's clear, otherwise default to "P".
-                        if      (gap > 200)  color = "P";
-                        else if (gap < -1000) color = "G";
-                        else                 color = "P"; // ambiguous — default purple
+                        if  (hue > 160 && hue < 210) color = "P";
+                        else  color = "P";
                         slots[Index - 1] = new Artifact(color, getOuttakePos(Index));
                         artifactCount++;
                         intakeStage = (artifactCount < 3) ? 2 : -1;
                     } else if (colorDetected) {
-                        if      (gap > 200)  color = "P";
-                        else if (gap < -1000) color = "G";
+                        if      (hue > 165 && hue < 210 && HSV[2] > 10)  color = "P";
+                        else if (hue > 100 && hue < 165 && HSV[2] > 15) color = "G";
                         else return; // ambiguous reading — wait for stable detection
                         slots[Index - 1] = new Artifact(color, getOuttakePos(Index));
                         artifactCount++;
@@ -198,11 +200,14 @@ public class Spindexer {
 
             case 3:
                 targetTicks = getIntakeTick(Index);
-                if (stateTimer.milliseconds() > 150) {
+                boolean inSlot = withinTarget(targetTicks, Constant.INTAKE_TICK_TOLERANCE);
+                if (inSlot) {
+                    // Start detecting again
                     intakeStage = 1;
                 } else if (stateTimer.milliseconds() > Constant.ANTI_STUCK_TIMER) {
                     resetTimer.reset();
                     encoderResetDone = false;
+                    intake.setPower(-1);
                 }
                 break;
         }
@@ -318,36 +323,45 @@ public class Spindexer {
 
         switch (intakeStage) {
             case 1:
-                int b2 = colorSensor2.blue();
-                int g2 = colorSensor2.green();
-                int gap = b2 - g2;
-                boolean colorDetected = artifactCount < 3 && b2 > CS2_BLUE_THRESHOLD;
+                Color.RGBToHSV(colorSensor2.red(), colorSensor2.green(), colorSensor2.blue(), HSV);
+                float hue = HSV[0];
+                colorDetected = artifactCount < 3;
 
                 if (colorDetected) {
-                    if      (gap > 200)  color = "P";
-                    else if (gap < -1000) color = "G";
-                    else                 color = "P";
+                    if (hue > 165 && hue < 210 && HSV[2] > 10)  color = "P";
+                    else if (hue > 100 && hue < 165 && HSV[2] > 15) color = "G";
+                    else return;
+
                     slots[Index - 1] = new Artifact(color, getOuttakePos(Index));
                     artifactCount++;
-                    intakeStage = (artifactCount < 3) ? 2 : -1;
+
+                    // FIX: Always go to stage 2 to finish the rotation/logic
+                    // unless you truly want to stop everything immediately.
+                    intakeStage = 2;
                 }
                 break;
 
             case 2:
-                Index++;
-                if (Index > 3) Index = 1;
-                setSpindexer(getIntakePos(Index));
-                stateTimer.reset();
-                intakeStage = 3;
+                if (artifactCount >= 3) {
+                    intakeStage = -1; // Stop here if full
+                } else {
+                    Index++;
+                    if (Index > 3) Index = 1;
+                    setSpindexer(getIntakePos(Index));
+                    stateTimer.reset();
+                    intakeStage = 3;
+                }
                 break;
 
             case 3:
                 targetTicks = getIntakeTick(Index);
-                if (stateTimer.milliseconds() > 150) {
+                boolean inSlot = withinTarget(targetTicks, Constant.INTAKE_TICK_TOLERANCE);
+                if (inSlot) {
                     intakeStage = 1;
                 } else if (stateTimer.milliseconds() > Constant.ANTI_STUCK_TIMER) {
                     resetTimer.reset();
                     encoderResetDone = false;
+                    intake.setPower(-1);
                 }
                 break;
         }

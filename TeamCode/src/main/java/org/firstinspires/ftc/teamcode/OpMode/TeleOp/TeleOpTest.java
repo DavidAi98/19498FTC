@@ -164,6 +164,9 @@ public class TeleOpTest extends OpMode {
 //        telemetry.addData("rgb1: ", colorSensor3.red()+ " " + colorSensor3.blue() + " " + colorSensor3.green());
         telemetry.addData("Veloity ", shooter.rightShooter.getVelocity());
         telemetry.addData("Field Centric",   FieldCentric);
+        telemetry.addData("Hue", spindexer.HSV[0]);
+        telemetry.addData("Sat", spindexer.HSV[1]);
+        telemetry.addData("Value", spindexer.HSV[2]);
         telemetry.addData("Alliance",        Constant.ALLIANCE);
         telemetry.addData("Motif",           motif);
         telemetry.addData("Sensor in use",   spindexer.sensorInUse);
