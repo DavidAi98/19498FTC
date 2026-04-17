@@ -22,6 +22,7 @@ public class TeleOpTest extends OpMode {
     private String motif = "Null";
 //    private RevColorSensorV3 colorSensor3, colorSensor4;
     private VirtualGoalSolver.ShotSolution lastSolution = null;
+    public static double virtualGoalAngle;
 
     @Override
     public void init() {
@@ -51,7 +52,9 @@ public class TeleOpTest extends OpMode {
         // Dpad Up:     Shoot by motif (press once to start, hold to keep running)
         // Dpad Left:   Disable color sensor (if both dead)
         // Dpad Right:  Swap color sensor
-
+        if (gamepad1.left_bumper && gamepad1.right_bumper && gamepad1.left_stick_button && gamepad1.right_stick_button) {
+            Constant.ALLIANCE = Constant.ALLIANCE.equalsIgnoreCase("RED") ? "BLUE" : "RED";
+        }
         if (gamepad1.aWasPressed()) {
             FieldCentric = !FieldCentric;
         }
@@ -93,7 +96,7 @@ public class TeleOpTest extends OpMode {
         shooter.movingScale = Math.max(speedScale, settleScale);
 
         // Lookahead: pre-aims ahead of virtual goal angular velocity to beat servo lag.
-        double virtualGoalAngle = drive.angleToPoint(lastSolution.virtGoalX, lastSolution.virtGoalY);
+        virtualGoalAngle = drive.angleToPoint(lastSolution.virtGoalX, lastSolution.virtGoalY);
         double lookaheadDeg = Math.toDegrees(lastSolution.turretOmegaRad) * Constant.TURRET_LOOKAHEAD_SEC;
 
         // Use REAL distance for RPM/hood — not effectiveDistInch.
@@ -160,10 +163,10 @@ public class TeleOpTest extends OpMode {
         packet.put("velY raw",            drive.getRawVelY());
         dashboard.sendTelemetryPacket(packet);
         telemetry.addData("Spindexer Slots", slotVisual.toString());
+        telemetry.addData("Field Centric",   FieldCentric);
 //        telemetry.addData("rgb2: ", colorSensor4.red()+ " " + colorSensor4.blue() + " " + colorSensor4.green());
 //        telemetry.addData("rgb1: ", colorSensor3.red()+ " " + colorSensor3.blue() + " " + colorSensor3.green());
         telemetry.addData("Veloity ", shooter.rightShooter.getVelocity());
-        telemetry.addData("Field Centric",   FieldCentric);
         telemetry.addData("Hue", spindexer.HSV[0]);
         telemetry.addData("Sat", spindexer.HSV[1]);
         telemetry.addData("Value", spindexer.HSV[2]);
@@ -172,22 +175,24 @@ public class TeleOpTest extends OpMode {
         telemetry.addData("Sensor in use",   spindexer.sensorInUse);
         telemetry.addData("Intake Stage",    spindexer.intakeStage);
         telemetry.addData("Outtake Stage",   spindexer.outtakeStage);
-        telemetry.addData("Shooter Ready",   shooter.isReady());
+//        telemetry.addData("Shooter Ready",   shooter.isReady());
         telemetry.addData("Robot Heading",   "%.2f", drive.headingDeg);
         telemetry.addData("Velo Error",      "%.1f", shooter.calculatedTargetVelocity - shooter.rightShooter.getVelocity());
-        telemetry.addData("Real Dist (in)",  "%.2f", drive.distanceToGoal());
-        telemetry.addData("Eff Dist (in)",   "%.2f", lastSolution.effectiveDistInch);
-        telemetry.addData("Moving Scale",    "%.2f", shooter.movingScale);
-        telemetry.addData("target ticks",    spindexer.targetTicks);
-        telemetry.addData("current ticks",   spindexer.spindexerEncoder.getCurrentPosition());
+//        telemetry.addData("Real Dist (in)",  "%.2f", drive.distanceToGoal());
+//        telemetry.addData("Eff Dist (in)",   "%.2f", lastSolution.effectiveDistInch);
+//        telemetry.addData("Moving Scale",    "%.2f", shooter.movingScale);
+//        telemetry.addData("target ticks",    spindexer.targetTicks);
+//        telemetry.addData("current ticks",   spindexer.spindexerEncoder.getCurrentPosition());
+        telemetry.addData("x Vel", MecanumDrive.getRawVelX());
+        telemetry.addData("y Vel", MecanumDrive.getRawVelY());
         telemetry.addData("filteredAprilX",  shooter.filteredAprilX);
         telemetry.addData("Drive Pos",       "X=%.1f  Y=%.1f", drive.botX, drive.botY);
         telemetry.addData("Turret Pos",      "X=%.1f  Y=%.1f", drive.turretX, drive.turretY);
-
-        telemetry.addData("CS2 Blue",        spindexer.colorSensor2.blue());
-        telemetry.addData("CS2 Green",       spindexer.colorSensor2.green());
-        telemetry.addData("CS2 Sum (B+G)",   spindexer.colorSensor2.blue() + spindexer.colorSensor2.green());
-        telemetry.addData("CS2 Gap (B-G)",   spindexer.colorSensor2.blue() - spindexer.colorSensor2.green());
+//
+//        telemetry.addData("CS2 Blue",        spindexer.colorSensor2.blue());
+//        telemetry.addData("CS2 Green",       spindexer.colorSensor2.green());
+//        telemetry.addData("CS2 Sum (B+G)",   spindexer.colorSensor2.blue() + spindexer.colorSensor2.green());
+//        telemetry.addData("CS2 Gap (B-G)",   spindexer.colorSensor2.blue() - spindexer.colorSensor2.green());
 
         telemetry.update();
     }

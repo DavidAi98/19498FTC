@@ -84,8 +84,7 @@ public class CurrentNearBlue15 extends OpMode {
                             new Pose(33.977, 60),
                             new Pose(56, 83)
                     ))
-                    .setTangentHeadingInterpolation()
-                    .setReversed()
+                    .setLinearHeadingInterpolation(Math.toRadians(138), Math.toRadians(225))
                     .addParametricCallback(0.7, () -> spindexer.stopIntake())
                     .addParametricCallback(0.8, () -> spindexer.startOuttake())
                     .build();
@@ -107,8 +106,8 @@ public class CurrentNearBlue15 extends OpMode {
                     ))
                     .setTangentHeadingInterpolation()
                     .setReversed()
-                    .addParametricCallback(0.7, () -> spindexer.stopIntake())
-                    .addParametricCallback(0.8, () -> spindexer.startOuttake())
+                    .addParametricCallback(0.8, () -> spindexer.stopIntake())
+                    .addParametricCallback(0.9, () -> spindexer.startOuttake())
                     .build();
 
             IntakeFirstRow = follower.pathBuilder()
@@ -248,8 +247,8 @@ public class CurrentNearBlue15 extends OpMode {
             case 30:
                 spindexer.startIntake();
                 follower.followPath(paths.MoveToThirdRow, true);
-                angle = 5;
-                odoDist = 70;
+                angle = 1;
+                odoDist = 65;
                 setPathState(31);
                 break;
 
@@ -271,8 +270,8 @@ public class CurrentNearBlue15 extends OpMode {
             case 40:
                 spindexer.startIntake();
                 follower.followPath(paths.IntakeFirstRow, true);
-                angle = 335;
-                odoDist = 18;
+                angle = 340;
+                odoDist = 15;
                 setPathState(41);
                 break;
 
@@ -337,7 +336,7 @@ public class CurrentNearBlue15 extends OpMode {
         shooter.updateShootingParams(odoDist, 20, spindexer.outtakeStage != -1);
 
         if (targetMotif.equals("Null")) {
-            shooter.updateTurret(100, 0);
+            shooter.updateTurret(110, 0);
         } else {
             shooter.updateTurret(angle, 0);
         }
@@ -355,8 +354,8 @@ public class CurrentNearBlue15 extends OpMode {
         }
 
         Pose p = follower.getPose();
-        Constant.AUTON_LAST_X           = 103 - p.getX();
-        Constant.AUTON_LAST_Y           =   3 - p.getY();
+        Constant.AUTON_LAST_X           = 113.5 - p.getX();
+        Constant.AUTON_LAST_Y           =   8 - p.getY();
         Constant.AUTON_LAST_HEADING_RAD = p.getHeading() - Math.PI;
         Constant.AUTON_LAST_HEADING_DEG = Math.toDegrees(Constant.AUTON_LAST_HEADING_RAD);
 

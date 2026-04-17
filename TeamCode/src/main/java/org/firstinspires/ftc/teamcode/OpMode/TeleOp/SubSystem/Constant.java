@@ -66,7 +66,7 @@ public class Constant {
     //   Too high → overshoots when you stop suddenly
     //   Too low  → trails behind while moving
     //   Watch "lookahead deg" on Dashboard — should read 2–5° while strafing fast
-    public static double TURRET_LOOKAHEAD_SEC = 0.1;
+    public static double TURRET_LOOKAHEAD_SEC = 0.125;
 
     // Hard cap on turret angular rate for the lookahead term (deg/s).
     // Prevents blowup if turretOmega spikes at mid-range. Rarely hits this.
@@ -109,7 +109,7 @@ public class Constant {
     // TIMERS & TOLERANCES
     // -----------------------------------------------------------------------
     public static int INVERSE_TIMER         = 1000;
-    public static int INTAKE_TICK_TOLERANCE = 300;
+    public static int INTAKE_TICK_TOLERANCE = 200;
 
     // How many encoder ticks away from target still counts as "in slot".
     //   Artifacts not firing → INCREASE (spindexer settling slowly)
@@ -119,11 +119,11 @@ public class Constant {
     // RPM error allowed before isReady() returns true and fires the ball.
     // Note: isReady() has a (2200/currentVelo)^2 term making this looser than it looks.
     //   Balls firing before shooter is up to speed → DECREASE (try 60–80)
-    public static int VELOCITY_TOLERANCE = 125;
+    public static int VELOCITY_TOLERANCE = 120;
 
     // How long pivot travels up before coming back down (ms).
     public static int PIVOT_UP_TIMER   = 85;
-    public static int PIVOT_DOWN_TIMER = 160;
+    public static int PIVOT_DOWN_TIMER = 150;
 
     // Milliseconds before spindexer gives up and retries if it can't reach position.
     //   Getting stuck often → INCREASE
@@ -149,8 +149,8 @@ public class Constant {
         SHOOTING_TABLE.put(110.0, new double[]{1840, 45});
         SHOOTING_TABLE.put(120.0, new double[]{1940, 45});
         SHOOTING_TABLE.put(130.0, new double[]{2020, 45});
-        SHOOTING_TABLE.put(140.0, new double[]{2080, 45});
-        SHOOTING_TABLE.put(150.0, new double[]{2160, 45});
+        SHOOTING_TABLE.put(140.0, new double[]{2100, 45});
+        SHOOTING_TABLE.put(150.0, new double[]{2180, 45});
     }
 
     // -----------------------------------------------------------------------
@@ -200,7 +200,7 @@ public class Constant {
     // Seconds from fire command to ball physically leaving the shooter.
     // Includes pivot travel and feed time.
     //   Stationary shots accurate but moving shots slightly off → adjust this
-    public static double BALL_TRANSFER_TIME = 0.3;
+    public static double BALL_TRANSFER_TIME = 0.325; // was 0.3
 
     // -----------------------------------------------------------------------
     // RPM RATE LIMITER
@@ -252,7 +252,7 @@ public class Constant {
     public static double APRIL_MOVING_DECAY_RATE = 0.25;
 
     // Hard cap on limelight correction (degrees). Limelight can never move turret beyond this.
-    public static double APRIL_MAX_DEG = 10;
+    public static double APRIL_MAX_DEG = 30;
 
     // Consecutive loops at zero velocity before limelight re-engages after stopping.
     // Limelight has 100–200ms pipeline latency — without this delay, stale data from

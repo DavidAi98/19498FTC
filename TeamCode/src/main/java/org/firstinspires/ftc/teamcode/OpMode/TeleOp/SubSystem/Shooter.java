@@ -13,6 +13,8 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 
+import org.firstinspires.ftc.teamcode.OpMode.TeleOp.TeleOpTest;
+
 import java.util.List;
 import java.util.Map;
 
@@ -91,18 +93,20 @@ public class Shooter {
     public double movingScale = 0.0;
 
     public void updateTurret(double rawTurretAngle) {
-        filteredAprilX += 2 * aprilx * (1.0 - movingScale);
+        if (Math.abs(MecanumDrive.getRawVelX()) < 5 && Math.abs(MecanumDrive.getRawVelY()) < 5) {
+            filteredAprilX += aprilx * 0.1;
+        }
 
         // Decay toward zero:
         //   While moving (movingScale=1): fast decay — drains stale values quickly
         double restDecay   = Constant.APRIL_REST_DECAY_RATE;    // slow bleed at rest
         double movingDecay = Constant.APRIL_MOVING_DECAY_RATE;  // fast drain while moving
-        filteredAprilX *= (1.0 - restDecay - movingScale * (movingDecay - restDecay));
+        double SOTMfactor = (1.0 - restDecay - movingScale * (movingDecay - restDecay));
 
         // Hard cap — even with decay, clamp to a sane correction range.
         filteredAprilX = Math.max(-Constant.APRIL_MAX_DEG, Math.min(Constant.APRIL_MAX_DEG, filteredAprilX));
 
-        double turretHeading = rawTurretAngle + filteredAprilX;
+        double turretHeading = rawTurretAngle + filteredAprilX + SOTMfactor;
 
         // Normalize 0-360
         turretHeading = ((turretHeading % 360) + 360) % 360;

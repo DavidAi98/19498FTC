@@ -21,7 +21,7 @@ public class MecanumDrive {
     public double headingDeg, headingRad;
     public boolean resetingPos = false;
     public double velX, velY, omega;
-    private double rawVelX, rawVelY, rawOmega; // unfiltered, for telemetry
+    private static double rawVelX, rawVelY, rawOmega; // unfiltered, for telemetry
     private double prevHeadingRad = 0;
     private ElapsedTime loopTimer = new ElapsedTime(); // for omega derivation
     private double prevRawVelX = 0, prevRawVelY = 0; // for velocity extrapolation
@@ -143,8 +143,8 @@ public class MecanumDrive {
     }
 
     // Raw (unfiltered) velocity for telemetry — compare to velX/Y to see filter effect
-    public double getRawVelX() { return rawVelX; }
-    public double getRawVelY() { return rawVelY; }
+    public static double getRawVelX() { return rawVelX; }
+    public static double getRawVelY() { return rawVelY; }
     public double getRawOmega() { return rawOmega; }
 
     // Same angle formula as angleToGoal() but aimed at an arbitrary field position.

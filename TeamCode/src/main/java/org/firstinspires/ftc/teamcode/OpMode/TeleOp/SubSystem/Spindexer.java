@@ -11,10 +11,9 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import android.graphics.Color;
 
 public class Spindexer {
-    public float[] HSV = new float[3];;
+    public float[] HSV = new float[3];
     public boolean noSort = false;
     public DcMotor spindexerEncoder, intake;
     public Servo spindexer1, spindexer2, leftPivot, rightPivot;
@@ -83,7 +82,7 @@ public class Spindexer {
             artifactCount = 0;
             Index = 1;
             setSpindexer(Constant.INTAKE_POS1);
-            if (resetTimer.milliseconds() >= 2 * Constant.ANTI_STUCK_TIMER) {
+            if (resetTimer.milliseconds() >= 3 * Constant.ANTI_STUCK_TIMER) {
                 spindexerEncoder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                 spindexerEncoder.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
                 intake.setPower(0);
@@ -161,7 +160,7 @@ public class Spindexer {
                         artifactCount++;
                         intakeStage = (artifactCount < 3) ? 2 : -1;
                     } else if (colorDetected) {
-                        if      (hue > 165 && hue < 210 && HSV[2] > 10)  color = "P";
+                        if      (hue > 165 && hue < 210 && HSV[2] > 15)  color = "P";
                         else if (hue > 100 && hue < 165 && HSV[2] > 15) color = "G";
                         else return; // ambiguous reading — wait for stable detection
                         slots[Index - 1] = new Artifact(color, getOuttakePos(Index));
@@ -249,6 +248,7 @@ public class Spindexer {
                 if (foundIndex != -1) {
                     nearestIndex = foundIndex;
                     nearestPos = getOuttakePos(nearestIndex);
+                    lastPos = nearestPos;
                     setSpindexer(nearestPos);
                     stateTimer.reset();
                     outtakeStage = 2;
@@ -260,6 +260,7 @@ public class Spindexer {
             case 2:
                 targetTicks = getOuttakeTick(nearestIndex);
                 boolean inSlot = withinTarget(targetTicks, Constant.OUTTAKE_TICK_TOLERANCE);
+                boolean notStuck = withinTarget(targetTicks, Constant.OUTTAKE_TICK_TOLERANCE-200);
                 if (inSlot && shooterReady) {
                     slots[nearestIndex - 1] = null;
                     artifactCount--;
@@ -267,7 +268,7 @@ public class Spindexer {
                     pivotTimer.reset();
                     outtakeStage = 3;
                     targetColor = "NaN";
-                } else if (stateTimer.milliseconds() > Constant.ANTI_STUCK_TIMER && !inSlot) {
+                } else if (stateTimer.milliseconds() > Constant.ANTI_STUCK_TIMER && !notStuck) {
                     stateTimer.reset();
                     outtakeStage = 0;
                 }
@@ -328,7 +329,7 @@ public class Spindexer {
                 colorDetected = artifactCount < 3;
 
                 if (colorDetected) {
-                    if (hue > 165 && hue < 210 && HSV[2] > 10)  color = "P";
+                    if (hue > 165 && hue < 210 && HSV[2] > 15)  color = "P";
                     else if (hue > 100 && hue < 165 && HSV[2] > 15) color = "G";
                     else return;
 
