@@ -2,9 +2,7 @@ package org.firstinspires.ftc.teamcode.OpMode.TeleOp;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
-import com.qualcomm.hardware.rev.RevColorSensorV3;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 
 import org.firstinspires.ftc.teamcode.OpMode.TeleOp.SubSystem.Constant;
 import org.firstinspires.ftc.teamcode.OpMode.TeleOp.SubSystem.MecanumDrive;
@@ -13,14 +11,13 @@ import org.firstinspires.ftc.teamcode.OpMode.TeleOp.SubSystem.Spindexer;
 import org.firstinspires.ftc.teamcode.OpMode.TeleOp.SubSystem.VirtualGoalSolver;
 
 @com.qualcomm.robotcore.eventloop.opmode.TeleOp(name = "TeleOp (SOTM)", group = "00")
-public class TeleOpTest extends OpMode {
+public class TeleOpSOTM extends OpMode {
     private MecanumDrive drive;
     private Shooter shooter;
     private Spindexer spindexer;
     private boolean FieldCentric = true;
     private FtcDashboard dashboard;
     private String motif = "Null";
-//    private RevColorSensorV3 colorSensor3, colorSensor4;
     private VirtualGoalSolver.ShotSolution lastSolution = null;
     public static double virtualGoalAngle;
 
@@ -31,9 +28,6 @@ public class TeleOpTest extends OpMode {
         spindexer = new Spindexer(hardwareMap);
         dashboard = FtcDashboard.getInstance();
         spindexer.onStart = true;
-//        colorSensor3 = hardwareMap.get(RevColorSensorV3.class, "colorSensor1");
-//        colorSensor4 = hardwareMap.get(RevColorSensorV3.class, "colorSensor2");
-
     }
 
     @Override
@@ -52,6 +46,7 @@ public class TeleOpTest extends OpMode {
         // Dpad Up:     Shoot by motif (press once to start, hold to keep running)
         // Dpad Left:   Disable color sensor (if both dead)
         // Dpad Right:  Swap color sensor
+
         if (gamepad1.left_bumper && gamepad1.right_bumper && gamepad1.left_stick_button && gamepad1.right_stick_button) {
             Constant.ALLIANCE = Constant.ALLIANCE.equalsIgnoreCase("RED") ? "BLUE" : "RED";
         }

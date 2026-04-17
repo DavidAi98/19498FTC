@@ -160,7 +160,7 @@ public class Spindexer {
                         artifactCount++;
                         intakeStage = (artifactCount < 3) ? 2 : -1;
                     } else if (colorDetected) {
-                        if      (hue > 165 && hue < 210 && HSV[2] > 15)  color = "P";
+                        if      (hue > 165 && hue < 210 && HSV[2] > 10)  color = "P";
                         else if (hue > 100 && hue < 165 && HSV[2] > 15) color = "G";
                         else return; // ambiguous reading — wait for stable detection
                         slots[Index - 1] = new Artifact(color, getOuttakePos(Index));
@@ -329,7 +329,7 @@ public class Spindexer {
                 colorDetected = artifactCount < 3;
 
                 if (colorDetected) {
-                    if (hue > 165 && hue < 210 && HSV[2] > 15)  color = "P";
+                    if (hue > 165 && hue < 210 && HSV[2] > 10)  color = "P";
                     else if (hue > 100 && hue < 165 && HSV[2] > 15) color = "G";
                     else return;
 
