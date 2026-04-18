@@ -154,16 +154,16 @@ public class TeleOpSOTM extends OpMode {
         packet.put("robot speed (in/s)",  speed);
         packet.put("velX filtered",       drive.velX);
         packet.put("velY filtered",       drive.velY);
-        packet.put("velX raw",            drive.getRawVelX());
-        packet.put("velY raw",            drive.getRawVelY());
+//        packet.put("velX raw",            drive.getRawVelX());
+//        packet.put("velY raw",            drive.getRawVelY());
         dashboard.sendTelemetryPacket(packet);
         telemetry.addData("Spindexer Slots", slotVisual.toString());
         telemetry.addData("Field Centric",   FieldCentric);
+        telemetry.addData("Distance",  "%.2f", drive.distanceToGoal());
 //        telemetry.addData("rgb2: ", colorSensor4.red()+ " " + colorSensor4.blue() + " " + colorSensor4.green());
 //        telemetry.addData("rgb1: ", colorSensor3.red()+ " " + colorSensor3.blue() + " " + colorSensor3.green());
-        telemetry.addData("Veloity ", shooter.rightShooter.getVelocity());
         telemetry.addData("Hue", spindexer.HSV[0]);
-        telemetry.addData("Sat", spindexer.HSV[1]);
+//        telemetry.addData("Sat", spindexer.HSV[1]);
         telemetry.addData("Value", spindexer.HSV[2]);
         telemetry.addData("brightness",spindexer.brightness);
         telemetry.addData("Alliance",        Constant.ALLIANCE);
@@ -173,6 +173,7 @@ public class TeleOpSOTM extends OpMode {
         telemetry.addData("Outtake Stage",   spindexer.outtakeStage);
 //        telemetry.addData("Shooter Ready",   shooter.isReady());
         telemetry.addData("Robot Heading",   "%.2f", drive.headingDeg);
+        telemetry.addData("Veloity ", shooter.rightShooter.getVelocity());
         telemetry.addData("Velo Error",      "%.1f", shooter.calculatedTargetVelocity - shooter.rightShooter.getVelocity());
 //        telemetry.addData("Real Dist (in)",  "%.2f", drive.distanceToGoal());
 //        telemetry.addData("Eff Dist (in)",   "%.2f", lastSolution.effectiveDistInch);
@@ -183,7 +184,7 @@ public class TeleOpSOTM extends OpMode {
         telemetry.addData("y Vel", MecanumDrive.getRawVelY());
         telemetry.addData("filteredAprilX",  shooter.filteredAprilX);
         telemetry.addData("Drive Pos",       "X=%.1f  Y=%.1f", drive.botX, drive.botY);
-        telemetry.addData("Turret Pos",      "X=%.1f  Y=%.1f", drive.turretX, drive.turretY);
+//        telemetry.addData("Turret Pos",      "X=%.1f  Y=%.1f", drive.turretX, drive.turretY);
 //
 //        telemetry.addData("CS2 Blue",        spindexer.colorSensor2.blue());
 //        telemetry.addData("CS2 Green",       spindexer.colorSensor2.green());

@@ -24,6 +24,7 @@ public class Spindexer {
     // revColorSensor = backup sensor (CS1, old simple threshold)
     public RevColorSensorV3 revColorSensor;
     public RevColorSensorV3 brushlandColorSensor;
+    private boolean inSlot;
 
     public Artifact[] slots = new Artifact[3];
     public int artifactCount = 0;
@@ -33,6 +34,8 @@ public class Spindexer {
     private ElapsedTime pivotTimer = new ElapsedTime();
     private ElapsedTime inverseTimer = new ElapsedTime();
     public ElapsedTime resetTimer = new ElapsedTime();
+    private  ElapsedTime colorTimer = new ElapsedTime();
+    private boolean potentialBallDetected = false;
     private boolean intakeDone = false;
     public boolean encoderResetDone = false;
 
@@ -147,31 +150,45 @@ public class Spindexer {
 
         switch (intakeStage) {
             case 1:
+                targetTicks = getIntakeTick(Index);
+                inSlot = withinTarget(targetTicks, Constant.INTAKE_TICK_TOLERANCE);
+                if (!inSlot) {
+                    return;
+                }
                 if (sensorInUse == 2) {
                     brightness = brushlandColorSensor.alpha();
                     NormalizedRGBA colors = brushlandColorSensor.getNormalizedColors();
                     Color.colorToHSV(colors.toColor(), HSV);
+
                     float hue = HSV[0];
 
-                    colorDetected = artifactCount < 3;
+                    // 1. GATEKEEPER: Is something physically there and is it vivid?
+                    boolean currentlySeeingBall = (brightness > 2000);
 
-                    if (skipSlot) {
-                        // FIX: skipSlot bypasses the gap ambiguity check.
-                        // Use gap reading if it's clear, otherwise default to "P".
-                        if  (hue > 160 && hue < 210) color = "P";
-                        else  color = "P";
-                        slots[Index - 1] = new Artifact(color, getOuttakePos(Index));
-                        artifactCount++;
-                        intakeStage = (artifactCount < 3) ? 2 : -1;
-                    } else if (colorDetected) {
-                        if      (hue > 165 && hue < 210 && brightness > 2000)  color = "P";
-                        else if (hue > 100 && hue < 165 && brightness > 3000) color = "G";
-                        else return; // ambiguous reading — wait for stable detection
-                        slots[Index - 1] = new Artifact(color, getOuttakePos(Index));
-                        artifactCount++;
-                        intakeStage = (artifactCount < 3) ? 2 : -1;
+                    if (currentlySeeingBall || skipSlot) {
+                        if (!potentialBallDetected) {
+                            colorTimer.reset(); // Start timing the "stable" detection
+                            potentialBallDetected = true;
+                        }
+
+                        // 2. STABILITY CHECK
+                        if (colorTimer.milliseconds() > 25 || skipSlot) {
+                            if (skipSlot) {
+                                color = "P";
+                            } else if (hue > 165 && hue < 210 && brightness > 2500) {
+                                color = "P";
+                            } else if (hue > 100 && hue < 165) {
+                                color = "G";
+                            } else {
+                                return; // Bright/Vivid but wrong color
+                            }
+
+                            slots[Index - 1] = new Artifact(color, getOuttakePos(Index));
+                            artifactCount++;
+                            potentialBallDetected = false; // Reset for next slot
+                            intakeStage = (artifactCount < 3) ? 2 : -1;
+                        }
                     }
-
                 } else if (sensorInUse == 1) {
                     // CS1 — backup sensor, old logic
                     colorDetected = artifactCount < 3 && revColorSensor.blue() >= 150;
@@ -180,15 +197,8 @@ public class Spindexer {
                         slots[Index - 1] = new Artifact(color, getOuttakePos(Index));
                         artifactCount++;
                         intakeStage = (artifactCount < 3) ? 2 : -1;
-                    }
-
-                } else {
-                    // sensorInUse == -1, disabled
-                    if (skipSlot) {
-                        color = "P";
-                        slots[Index - 1] = new Artifact(color, getOuttakePos(Index));
-                        artifactCount++;
-                        intakeStage = (artifactCount < 3) ? 2 : -1;
+                    } else {
+                        potentialBallDetected = false; // Lost contact, reset timer
                     }
                 }
                 break;
@@ -203,7 +213,7 @@ public class Spindexer {
 
             case 3:
                 targetTicks = getIntakeTick(Index);
-                boolean inSlot = withinTarget(targetTicks, Constant.INTAKE_TICK_TOLERANCE);
+                inSlot = withinTarget(targetTicks, Constant.INTAKE_TICK_TOLERANCE);
                 if (inSlot) {
                     // Start detecting again
                     intakeStage = 1;
@@ -328,23 +338,37 @@ public class Spindexer {
 
         switch (intakeStage) {
             case 1:
-                Color.RGBToHSV(brushlandColorSensor.red(), brushlandColorSensor.green(), brushlandColorSensor.blue(), HSV);
+                brightness = brushlandColorSensor.alpha();
+                NormalizedRGBA colors = brushlandColorSensor.getNormalizedColors();
+                Color.colorToHSV(colors.toColor(), HSV);
+
                 float hue = HSV[0];
-                colorDetected = artifactCount < 3;
 
-                if (colorDetected) {
-                    if (hue > 165 && hue < 210 && HSV[2] > 10)  color = "P";
-                    else if (hue > 100 && hue < 165 && HSV[2] > 15) color = "G";
-                    else return;
+                // 1. GATEKEEPER: Is something physically there and is it vivid?
+                boolean currentlySeeingBall = (brightness > 2000);
 
-                    slots[Index - 1] = new Artifact(color, getOuttakePos(Index));
-                    artifactCount++;
+                if (currentlySeeingBall) {
+                    if (!potentialBallDetected) {
+                        colorTimer.reset(); // Start timing the "stable" detection
+                        potentialBallDetected = true;
+                    }
 
-                    // FIX: Always go to stage 2 to finish the rotation/logic
-                    // unless you truly want to stop everything immediately.
-                    intakeStage = 2;
+                    // 2. STABILITY CHECK
+                    if (colorTimer.milliseconds() > 25) {
+                        if (hue > 165 && hue < 210 && brightness > 2500) {
+                            color = "P";
+                        } else if (hue > 100 && hue < 165) {
+                            color = "G";
+                        } else {
+                            return; // Bright/Vivid but wrong color
+                        }
+
+                        slots[Index - 1] = new Artifact(color, getOuttakePos(Index));
+                        artifactCount++;
+                        potentialBallDetected = false; // Reset for next slot
+                        intakeStage = (artifactCount < 3) ? 2 : -1;
+                    }
                 }
-                break;
 
             case 2:
                 if (artifactCount >= 3) {
