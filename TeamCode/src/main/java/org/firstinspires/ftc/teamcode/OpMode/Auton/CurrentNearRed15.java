@@ -134,7 +134,7 @@ public class CurrentNearRed15 extends OpMode {
     private Follower  follower;
     private Paths     paths;
     private Timer     pathTimer, opmodeTimer;
-    private int       pathState;
+    private int      pathState;
 
     private Shooter   shooter;
     private Spindexer spindexer;
