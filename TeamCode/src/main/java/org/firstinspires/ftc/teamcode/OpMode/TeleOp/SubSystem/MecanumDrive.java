@@ -51,15 +51,15 @@ public class MecanumDrive {
         pinpoint.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.FORWARD, GoBildaPinpointDriver.EncoderDirection.FORWARD);
         pinpoint.setYawScalar(Constant.ODO_YAW_SCALAR);
 
-        pinpoint.setPosition(new Pose2D(DistanceUnit.INCH, Constant.AUTON_LAST_X, Constant.AUTON_LAST_Y, AngleUnit.RADIANS, Constant.AUTON_LAST_HEADING_RAD));
+        pinpoint.setPosition(new Pose2D(DistanceUnit.INCH, Constant.AUTON_LAST_X+2.5 , Constant.AUTON_LAST_Y - 2.5, AngleUnit.RADIANS, Constant.AUTON_LAST_HEADING_RAD));
     }
 
     public void update(double targetX, double targetY) {
         // elementry pos
         pinpoint.update();
         pos = pinpoint.getPosition();
-        botX = pos.getX(DistanceUnit.INCH);
-        botY = pos.getY(DistanceUnit.INCH);
+        botX = pos.getX(DistanceUnit.INCH) - Constant.MAGIC_OFFSET * Math.cos(headingRad);
+        botY = pos.getY(DistanceUnit.INCH) + Constant.MAGIC_OFFSET * Math.cos(headingRad);
         headingRad = pos.getHeading(AngleUnit.RADIANS);
         headingDeg = Math.toDegrees(headingRad);
 
@@ -112,7 +112,7 @@ public class MecanumDrive {
 
         // reset pos
         if (resetingPos) {
-            pinpoint.setPosition(new Pose2D(DistanceUnit.INCH, 0, 0, AngleUnit.RADIANS, 0));
+            pinpoint.setPosition(new Pose2D(DistanceUnit.INCH, -2.5, -2.5, AngleUnit.RADIANS, 0));
             resetingPos = false;
         }
     }

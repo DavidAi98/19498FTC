@@ -25,6 +25,7 @@ public class Constant {
     public static final double ODO_X_OFFSET = 121.271;      // strafe pod, mm from center
     public static final double ODO_Y_OFFSET = -60;          // forward pod, mm from center
     public static final double ODO_YAW_SCALAR = 1.000861242911554; // heading drift correction
+    public static final double MAGIC_OFFSET = 2.5;
 
     // -----------------------------------------------------------------------
     // FIELD COORDINATES (inches)
@@ -32,8 +33,8 @@ public class Constant {
     // -----------------------------------------------------------------------
     public static double OFFCENTER_X       = 23.1 * 1;
     public static double GOAL_CENTER_X     = 124.272815 - OFFCENTER_X;
-    public static double BLUE_GOAL_CENTER_Y = -124.287402;
-    public static double RED_GOAL_CENTER_Y  =  124.287402;
+    public static double BLUE_GOAL_CENTER_Y = -126.287402;
+    public static double RED_GOAL_CENTER_Y  =  126.287402;
     public static final double TURRET_OFFSET = 2.13320866;  // turret behind robot center
 
     // -----------------------------------------------------------------------
@@ -245,7 +246,7 @@ public class Constant {
     //   stable value = aprilx * 0.1 / REST_DECAY_RATE (e.g. 8° tag × 0.1 / 0.12 = 6.7°)
     //   Too low  → still drifts at rest
     //   Too high → limelight correction drains before it can help
-    public static double APRIL_REST_DECAY_RATE = 0.9;
+    public static double APRIL_REST_DECAY_RATE = 1.2;
 
     // How fast filteredAprilX drains while moving.
     // Prevents stale limelight data from holding the turret off-target after stopping.

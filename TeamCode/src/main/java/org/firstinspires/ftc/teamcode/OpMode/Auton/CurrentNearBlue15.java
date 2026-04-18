@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.teamcode.OpMode.TeleOp.SubSystem.Constant;
+import org.firstinspires.ftc.teamcode.OpMode.TeleOp.SubSystem.MecanumDrive;
 import org.firstinspires.ftc.teamcode.OpMode.TeleOp.SubSystem.Shooter;
 import org.firstinspires.ftc.teamcode.OpMode.TeleOp.SubSystem.Spindexer;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
@@ -135,6 +136,8 @@ public class CurrentNearBlue15 extends OpMode {
     private Paths     paths;
     private Timer     pathTimer, opmodeTimer;
     private int       pathState;
+    public MecanumDrive drive;
+
 
     private Shooter   shooter;
     private Spindexer spindexer;
@@ -229,7 +232,8 @@ public class CurrentNearBlue15 extends OpMode {
 
             // Stay at gate for 2 seconds (or leave early if full)
             case 22:
-                if (spindexer.intakeStage == -1 || pathTimer.getElapsedTimeSeconds() > 2.5) {
+                if (pathTimer.getElapsedTimeSeconds() > 1.5 && // guard against first-tick exit
+                        (spindexer.intakeStage == -1 || pathTimer.getElapsedTimeSeconds() > 2.5)) {
                     follower.followPath(paths.ShootGate, true);
                     setPathState(23);
                 }
@@ -270,7 +274,7 @@ public class CurrentNearBlue15 extends OpMode {
             case 40:
                 spindexer.startIntake();
                 follower.followPath(paths.IntakeFirstRow, true);
-                angle = 340;
+                angle = 336;
                 odoDist = 15;
                 setPathState(41);
                 break;
@@ -370,6 +374,7 @@ public class CurrentNearBlue15 extends OpMode {
                 shooter.calculatedTargetVelocity - shooter.leftShooter.getVelocity());
         telemetry.addData("Target Color",  spindexer.targetColor);
         telemetry.addData("Max Power",     follower.getMaxPowerScaling());
+        telemetry.addData("Drive Pos",       "X=%.1f  Y=%.1f", p.getX(), p.getY());
         telemetry.addData("Heading",       follower.getHeading());
         telemetry.update();
     }
