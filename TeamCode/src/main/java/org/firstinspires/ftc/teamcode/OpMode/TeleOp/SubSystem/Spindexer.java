@@ -9,19 +9,21 @@ import com.qualcomm.hardware.rev.RevColorSensorV3;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 public class Spindexer {
+    public int brightness;
     public float[] HSV = new float[3];
     public boolean noSort = false;
     public DcMotor spindexerEncoder, intake;
     public Servo spindexer1, spindexer2, leftPivot, rightPivot;
 
-    // colorSensor2 = main sensor (CS2, new blue-threshold + gap detection)
-    // colorSensor1 = backup sensor (CS1, old simple threshold)
-    public RevColorSensorV3 colorSensor1;
-    public RevColorSensorV3 colorSensor2;
+    // brushlandColorSensor = main sensor (CS2, new blue-threshold + gap detection)
+    // revColorSensor = backup sensor (CS1, old simple threshold)
+    public RevColorSensorV3 revColorSensor;
+    public RevColorSensorV3 brushlandColorSensor;
 
     public Artifact[] slots = new Artifact[3];
     public int artifactCount = 0;
@@ -61,9 +63,9 @@ public class Spindexer {
         spindexer2 = hwMap.get(Servo.class, "spindexer2");
         leftPivot = hwMap.get(Servo.class, "LeftPivot");
         rightPivot = hwMap.get(Servo.class, "RightPivot");
-        colorSensor1 = hwMap.get(RevColorSensorV3.class, "colorSensor1");
-        colorSensor2 = hwMap.get(RevColorSensorV3.class, "colorSensor2");
-        ((LynxI2cDeviceSynch) colorSensor2.getDeviceClient()).setBusSpeed(LynxI2cDeviceSynch.BusSpeed.FAST_400K);
+        revColorSensor = hwMap.get(RevColorSensorV3.class, "colorSensor1");
+        brushlandColorSensor = hwMap.get(RevColorSensorV3.class, "colorSensor2");
+        ((LynxI2cDeviceSynch) brushlandColorSensor.getDeviceClient()).setBusSpeed(LynxI2cDeviceSynch.BusSpeed.FAST_400K);
         spindexerEncoder = hwMap.get(DcMotor.class, "SpindexerEncoder");
         spindexerEncoder.setDirection(DcMotorSimple.Direction.REVERSE);
         leftPivot.setDirection(Servo.Direction.REVERSE);
@@ -146,7 +148,9 @@ public class Spindexer {
         switch (intakeStage) {
             case 1:
                 if (sensorInUse == 2) {
-                    Color.RGBToHSV(colorSensor2.red(), colorSensor2.green(), colorSensor2.blue(), HSV);
+                    brightness = brushlandColorSensor.alpha();
+                    NormalizedRGBA colors = brushlandColorSensor.getNormalizedColors();
+                    Color.colorToHSV(colors.toColor(), HSV);
                     float hue = HSV[0];
 
                     colorDetected = artifactCount < 3;
@@ -160,8 +164,8 @@ public class Spindexer {
                         artifactCount++;
                         intakeStage = (artifactCount < 3) ? 2 : -1;
                     } else if (colorDetected) {
-                        if      (hue > 165 && hue < 210 && HSV[2] > 10)  color = "P";
-                        else if (hue > 100 && hue < 165 && HSV[2] > 15) color = "G";
+                        if      (hue > 165 && hue < 210 && brightness > 2000)  color = "P";
+                        else if (hue > 100 && hue < 165 && brightness > 3000) color = "G";
                         else return; // ambiguous reading — wait for stable detection
                         slots[Index - 1] = new Artifact(color, getOuttakePos(Index));
                         artifactCount++;
@@ -170,9 +174,9 @@ public class Spindexer {
 
                 } else if (sensorInUse == 1) {
                     // CS1 — backup sensor, old logic
-                    colorDetected = artifactCount < 3 && colorSensor1.blue() >= 150;
+                    colorDetected = artifactCount < 3 && revColorSensor.blue() >= 150;
                     if (colorDetected || skipSlot) {
-                        color = (colorSensor1.blue() >= colorSensor1.green()) ? "P" : "G";
+                        color = (revColorSensor.blue() >= revColorSensor.green()) ? "P" : "G";
                         slots[Index - 1] = new Artifact(color, getOuttakePos(Index));
                         artifactCount++;
                         intakeStage = (artifactCount < 3) ? 2 : -1;
@@ -324,7 +328,7 @@ public class Spindexer {
 
         switch (intakeStage) {
             case 1:
-                Color.RGBToHSV(colorSensor2.red(), colorSensor2.green(), colorSensor2.blue(), HSV);
+                Color.RGBToHSV(brushlandColorSensor.red(), brushlandColorSensor.green(), brushlandColorSensor.blue(), HSV);
                 float hue = HSV[0];
                 colorDetected = artifactCount < 3;
 

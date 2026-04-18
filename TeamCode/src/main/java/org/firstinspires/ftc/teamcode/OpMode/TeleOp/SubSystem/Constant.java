@@ -108,7 +108,7 @@ public class Constant {
     // -----------------------------------------------------------------------
     // TIMERS & TOLERANCES
     // -----------------------------------------------------------------------
-    public static int INVERSE_TIMER         = 1000;
+    public static int INVERSE_TIMER         = 900;
     public static int INTAKE_TICK_TOLERANCE = 150;
 
     // How many encoder ticks away from target still counts as "in slot".

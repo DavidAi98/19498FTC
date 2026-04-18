@@ -9,7 +9,7 @@ import org.firstinspires.ftc.teamcode.OpMode.TeleOp.SubSystem.MecanumDrive;
 import org.firstinspires.ftc.teamcode.OpMode.TeleOp.SubSystem.Shooter;
 import org.firstinspires.ftc.teamcode.OpMode.TeleOp.SubSystem.Spindexer;
 
-@com.qualcomm.robotcore.eventloop.opmode.TeleOp(name = "TeleOp", group = "01")
+@com.qualcomm.robotcore.eventloop.opmode.TeleOp(name = "TeleOp", group = "03")
 public class TeleOp extends OpMode {
     private MecanumDrive drive;
     private Shooter shooter;

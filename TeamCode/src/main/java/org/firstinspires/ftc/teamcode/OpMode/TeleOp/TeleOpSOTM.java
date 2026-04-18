@@ -165,6 +165,7 @@ public class TeleOpSOTM extends OpMode {
         telemetry.addData("Hue", spindexer.HSV[0]);
         telemetry.addData("Sat", spindexer.HSV[1]);
         telemetry.addData("Value", spindexer.HSV[2]);
+        telemetry.addData("brightness",spindexer.brightness);
         telemetry.addData("Alliance",        Constant.ALLIANCE);
         telemetry.addData("Motif",           motif);
         telemetry.addData("Sensor in use",   spindexer.sensorInUse);

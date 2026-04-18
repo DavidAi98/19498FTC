@@ -10,7 +10,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.OpMode.TeleOp.SubSystem.Constant;
 
-@TeleOp(name = "pinpointCalibration", group="02")
+@TeleOp(name = "pinpointCalibration", group="01")
 public class PinPointCalibration extends OpMode {
     public GoBildaPinpointDriver pinpoint;
     public ElapsedTime calibrateTimer = new ElapsedTime();

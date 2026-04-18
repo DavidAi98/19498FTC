@@ -25,7 +25,7 @@ import org.firstinspires.ftc.teamcode.OpMode.TeleOp.SubSystem.Constant;
 import java.util.List;
 
 @Config
-@TeleOp(name = "Shooter Tuner (BLUE)", group="03")
+@TeleOp(name = "Shooter Tuner (BLUE)", group="99")
 public class ShooterTunerTeleOp extends OpMode {
 
     // ================= DASHBOARD TUNING =================
