@@ -338,6 +338,12 @@ public class Spindexer {
 
         switch (intakeStage) {
             case 1:
+                targetTicks = getIntakeTick(Index);
+                inSlot = withinTarget(targetTicks, Constant.INTAKE_TICK_TOLERANCE);
+                if (!inSlot) {
+                    return;
+                }
+
                 brightness = brushlandColorSensor.alpha();
                 NormalizedRGBA colors = brushlandColorSensor.getNormalizedColors();
                 Color.colorToHSV(colors.toColor(), HSV);
@@ -369,6 +375,7 @@ public class Spindexer {
                         intakeStage = (artifactCount < 3) ? 2 : -1;
                     }
                 }
+                break;
 
             case 2:
                 if (artifactCount >= 3) {
