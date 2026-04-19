@@ -143,7 +143,7 @@ public class CurrentNearRed15 extends OpMode {
                             new BezierLine(
                                     new Pose(86.000, 81.500),
 
-                                    new Pose(123.500, 81.500)
+                                    new Pose(124, 81.500)
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
 
@@ -151,7 +151,7 @@ public class CurrentNearRed15 extends OpMode {
 
             ShootFirstRow = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(123.500, 81.500),
+                                    new Pose(124, 81.500),
 
                                     new Pose(94.000, 111.000)
                             )

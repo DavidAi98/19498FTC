@@ -15,7 +15,7 @@ import org.firstinspires.ftc.teamcode.OpMode.TeleOp.SubSystem.Spindexer;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 @Autonomous(name = "BLUE 18")
-public class NearBlueTest extends OpMode {
+public class Blue18 extends OpMode {
 
     // =========================================================================
     //  PATHS
