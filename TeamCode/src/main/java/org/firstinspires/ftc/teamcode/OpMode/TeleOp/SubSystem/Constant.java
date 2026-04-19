@@ -89,22 +89,23 @@ public class Constant {
     // SPINDEXER SERVO POSITIONS
     // Hardware-specific — don't change without re-measuring.
     // -----------------------------------------------------------------------
-    public static double INTAKE_POS1  = 0.014;
-    public static double INTAKE_POS2  = 0.1525;
-    public static double INTAKE_POS3  = 0.2925;
-    public static double OUTTAKE_POS1 = 0.221;
-    public static double OUTTAKE_POS2 = 0.361;
-    public static double OUTTAKE_POS3 = 0.0825;
+    public static double INTAKE_POS1  = 0.014; // a
+    public static double INTAKE_POS2  = 0.1525;//(b-a)(2/5)+a
+    public static double INTAKE_POS3  = 0.2925;//(b-a)(4/5)+a
+    public static double OUTTAKE_POS1 = 0.221;//(b-a)(3/5)+a
+    public static double OUTTAKE_POS2 = 0.361; // b
+    public static double OUTTAKE_POS3 = 0.0825; //(b-a)(1/5)+a
 
     // -----------------------------------------------------------------------
     // ENCODER TICK VALUES — fixed by hardware gearing, don't change
     // -----------------------------------------------------------------------
-    public static final int OUTTAKE_POS1_TICK = 1365 * 3;
-    public static final int OUTTAKE_POS2_TICK = 1365 * 5;
-    public static final int OUTTAKE_POS3_TICK = 1365;
+    public static final int HALF_SLOT_TICK = 1365;
+    public static final int OUTTAKE_POS1_TICK = HALF_SLOT_TICK * 3;
+    public static final int OUTTAKE_POS2_TICK = HALF_SLOT_TICK * 5;
+    public static final int OUTTAKE_POS3_TICK = HALF_SLOT_TICK;
     public static final int INTAKE_POS1_TICK  = 0;
-    public static final int INTAKE_POS2_TICK  = 1365 * 2;
-    public static final int INTAKE_POS3_TICK  = 1365 * 4;
+    public static final int INTAKE_POS2_TICK  = HALF_SLOT_TICK * 2;
+    public static final int INTAKE_POS3_TICK  = HALF_SLOT_TICK * 4;
 
     // -----------------------------------------------------------------------
     // TIMERS & TOLERANCES

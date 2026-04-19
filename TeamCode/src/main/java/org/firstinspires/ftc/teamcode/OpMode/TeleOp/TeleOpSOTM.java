@@ -179,7 +179,7 @@ public class TeleOpSOTM extends OpMode {
 //        telemetry.addData("Eff Dist (in)",   "%.2f", lastSolution.effectiveDistInch);
 //        telemetry.addData("Moving Scale",    "%.2f", shooter.movingScale);
 //        telemetry.addData("target ticks",    spindexer.targetTicks);
-//        telemetry.addData("current ticks",   spindexer.spindexerEncoder.getCurrentPosition());
+        telemetry.addData("current ticks",   spindexer.spindexerEncoder.getCurrentPosition());
         telemetry.addData("x Vel", MecanumDrive.getRawVelX());
         telemetry.addData("y Vel", MecanumDrive.getRawVelY());
         telemetry.addData("filteredAprilX",  shooter.filteredAprilX);
