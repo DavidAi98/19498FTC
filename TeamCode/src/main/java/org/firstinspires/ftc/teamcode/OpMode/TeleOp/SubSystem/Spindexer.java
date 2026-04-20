@@ -51,14 +51,7 @@ public class Spindexer {
     private boolean colorDetected;
 
     public int sensorInUse = 2;
-
-    private String[][] shootMatrix = {
-            {"acb", "bac", "cba"}, // GPP
-            {"bac", "cba", "acb"}, // PGP
-            {"cba", "acb", "bac"}  // PPG
-    };
-    public boolean onStart;
-    private static final int CS2_BLUE_THRESHOLD = 2300;
+    public boolean onStart = true;
 
     public Spindexer(@NonNull HardwareMap hwMap) {
         intake = hwMap.get(DcMotor.class, "IntakeMotor");
@@ -92,13 +85,8 @@ public class Spindexer {
                 spindexerEncoder.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
                 intake.setPower(0);
                 encoderResetDone = true;
-                onStart = false;
-            } else if (resetTimer.milliseconds() >= Constant.ANTI_STUCK_TIMER) {
-                if (!onStart) {
-                    intake.setPower(-1);
-                } else {
-                    intake.setPower(0);
-                }
+            } else {
+                intake.setPower(-1);
             }
         }
     }

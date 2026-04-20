@@ -27,7 +27,11 @@ public class TeleOpSOTM extends OpMode {
         shooter = new Shooter(hardwareMap);
         spindexer = new Spindexer(hardwareMap);
         dashboard = FtcDashboard.getInstance();
-        spindexer.onStart = true;
+    }
+
+    @Override
+    public void start() {
+        spindexer.encoderResetDone = false;
     }
 
     @Override
