@@ -14,8 +14,8 @@ import org.firstinspires.ftc.teamcode.OpMode.TeleOp.SubSystem.Shooter;
 import org.firstinspires.ftc.teamcode.OpMode.TeleOp.SubSystem.Spindexer;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
-@Autonomous(name = "Current red 15")
-public class CurrentNearRed15 extends OpMode {
+@Autonomous(name = "Red 18")
+public class Red18 extends OpMode {
 
 
     public class Paths {
@@ -184,7 +184,7 @@ public class CurrentNearRed15 extends OpMode {
             // ── PRELOAD ───────────────────────────────────────────────────────
 
             case 0:
-                follower.setMaxPower(0.9);
+                follower.setMaxPower(1.0);
                 follower.followPath(paths.MoveToShootPreload, true);
                 spindexer.startIntake();
                 setPathState(1);
@@ -231,7 +231,7 @@ public class CurrentNearRed15 extends OpMode {
                 break;
 
             case 12:
-                if (!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 2.5) {
+                if (!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 2) {
                     follower.followPath(paths.GateToShoot, true);
                     setPathState(13);
                 }
@@ -262,7 +262,7 @@ public class CurrentNearRed15 extends OpMode {
 
             // Stay at gate for 2 seconds (or leave early if full)
             case 22:
-                if (spindexer.intakeStage == -1 || pathTimer.getElapsedTimeSeconds() > 3) {
+                if (spindexer.intakeStage == -1 || pathTimer.getElapsedTimeSeconds() > 2.5) {
                     follower.followPath(paths.ShootGate, true);
                     setPathState(23);
                 }
@@ -271,9 +271,42 @@ public class CurrentNearRed15 extends OpMode {
             // ShootGate callbacks handle stopIntake + startOuttake automatically
             case 23:
                 if (!follower.isBusy() && spindexer.outtakeStage == -1) {
+                    setPathState(50);
+                }
+                break;
+
+            // ── GATE INTAKE 2 ───────────────────────────────────────────────────
+
+            case 50:
+                follower.followPath(paths.GateIntake, true);
+                spindexer.startIntake(); // called once here, not in a loop
+                setPathState(51);
+                spindexer.noSort = false;
+                spindexer.autonColor = 1;
+                break;
+
+            // Wait for robot to finish the gate path
+            case 51:
+                if (!follower.isBusy()) {
+                    setPathState(52);
+                }
+                break;
+
+            // Stay at gate for 2 seconds (or leave early if full)
+            case 52:
+                if (spindexer.intakeStage == -1 || pathTimer.getElapsedTimeSeconds() > 3) {
+                    follower.followPath(paths.ShootGate, true);
+                    setPathState(53);
+                }
+                break;
+
+            // ShootGate callbacks handle stopIntake + startOuttake automatically
+            case 53:
+                if (!follower.isBusy() && spindexer.outtakeStage == -1) {
                     setPathState(30);
                 }
                 break;
+
 
             // ── THIRD ROW ─────────────────────────────────────────────────────
 
@@ -344,7 +377,7 @@ public class CurrentNearRed15 extends OpMode {
         follower = Constants.createFollower(hardwareMap);
         paths    = new Paths(follower);
         follower.setStartingPose(START_POS);
-        spindexer.noSort = false;
+        spindexer.noSort = true;
     }
 
     @Override

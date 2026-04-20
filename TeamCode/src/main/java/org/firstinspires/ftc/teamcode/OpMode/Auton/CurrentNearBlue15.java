@@ -35,9 +35,9 @@ public class CurrentNearBlue15 extends OpMode {
         public Paths(Follower follower) {
             MoveToShootPreload = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(113.000, 135.000+3).mirror(144),
+                                    new Pose(31.000, 135.000),
 
-                                    new Pose(86.000, 82.000+3).mirror(144)
+                                    new Pose(57, 84)
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(270), Math.toRadians(270))
 
@@ -45,35 +45,35 @@ public class CurrentNearBlue15 extends OpMode {
 
             IntakeSecondRow = follower.pathBuilder().addPath(
                             new BezierCurve(
-                                    new Pose(86.000, 82.000+3).mirror(144),
-                                    new Pose(86.000, 66.000).mirror(144),
-                                    new Pose(90.000, 60.000).mirror(144),
-                                    new Pose(94, 56.000+3).mirror(144)
+                                    new Pose(57, 84),
+                                    new Pose(58.000, 66.000),
+                                    new Pose(54.000, 60.000),
+                                    new Pose(50, 59.000)
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(270), Math.toRadians(180))
                     .addPath(
                             new BezierLine(
-                                    new Pose(94, 56.000+3).mirror(144),
+                                    new Pose(50, 59.000),
 
-                                    new Pose(131.000, 56.000+3).mirror(144)
+                                    new Pose(13.000, 59.000)
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
                     .build();
 
             SecondRowToGate = follower.pathBuilder().addPath(
                             new BezierCurve(
-                                    new Pose(131.000, 56.000+3).mirror(144),
-                                    new Pose(116.012, 55.907).mirror(144),
-                                    new Pose(124.200, 64.000+4.5).mirror(144)
+                                    new Pose(13.000, 59.000),
+                                    new Pose(27.988, 55.907),
+                                    new Pose(20, 71.5)
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
+                    ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(183))
                     .build();
 
             GateToShoot = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(124.200, 64.000+4.5).mirror(144),
+                                    new Pose(20, 71.5),
 
-                                    new Pose(86.000, 78.000+3).mirror(144)
+                                    new Pose(57, 84)
                             )
                     ).setTangentHeadingInterpolation()
                     .setReversed()
@@ -82,27 +82,27 @@ public class CurrentNearBlue15 extends OpMode {
 
             GateIntake = follower.pathBuilder().addPath(
                             new BezierCurve(
-                                    new Pose(86.000, 78.000+3).mirror(144),
-                                    new Pose(102, 64).mirror(144),
+                                    new Pose(57, 84),
+                                    new Pose(42, 64),
 
-                                    new Pose(124, 60+5).mirror(144)
+                                    new Pose(20, 65)
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
                     .addPath(
                             new BezierLine(
-                                    new Pose(124, 60+5).mirror(144),
+                                    new Pose(20, 65),
 
-                                    new Pose(131.500, 56.0+5).mirror(144)
+                                    new Pose(12, 59)
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(140))
+                    ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(138))
                     .build();
 
 
             ShootGate = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(131.500, 56.00+5).mirror(144),
+                                    new Pose(12, 59),
 
-                                    new Pose(86.000, 78.00+3).mirror(144)
+                                    new Pose(57, 84)
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(270), Math.toRadians(180))
                     .addParametricCallback(0.7, () -> spindexer.stopIntake())
@@ -111,17 +111,17 @@ public class CurrentNearBlue15 extends OpMode {
 
             MoveToThirdRow = follower.pathBuilder().addPath(
                             new BezierCurve(
-                                    new Pose(86.000, 78.000+3).mirror(144),
-                                    new Pose(86.000, 46.000).mirror(144),
-                                    new Pose(92.000, 38.000).mirror(144),
-                                    new Pose(99.000, 36.000+3).mirror(144)
+                                    new Pose(57, 84),
+                                    new Pose(58.000, 46.000),
+                                    new Pose(52.000, 38.000),
+                                    new Pose(45.000, 39.000)
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
                     .addPath(
                             new BezierLine(
-                                    new Pose(99.000, 36.000+3).mirror(144),
+                                    new Pose(45.000, 39.000),
 
-                                    new Pose(132.000, 32.000+3).mirror(144)
+                                    new Pose(12.500, 36.000)
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
                     .build();
@@ -129,9 +129,9 @@ public class CurrentNearBlue15 extends OpMode {
 
             ShootThirdRow = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(132.000, 32.000+3).mirror(144),
+                                    new Pose(12.500, 36.000),
 
-                                    new Pose(86.000, 81.500+3).mirror(144)
+                                    new Pose(57, 84)
                             )
                     ).setTangentHeadingInterpolation()
                     .setReversed()
@@ -141,21 +141,22 @@ public class CurrentNearBlue15 extends OpMode {
 
             IntakeFirstRow = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(86.000, 81.500+3).mirror(144),
+                                    new Pose(57, 84),
 
-                                    new Pose(123.500, 81.500+2).mirror(144)
+                                    new Pose(20.500, 84)
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
+                    ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
 
                     .build();
 
             ShootFirstRow = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(123.500, 81.500+2).mirror(144),
+                                    new Pose(20.500, 84),
 
-                                    new Pose(94.000, 111.000+3).mirror(144)
+                                    new Pose(51, 115)
                             )
                     ).setTangentHeadingInterpolation()
+                    .setReversed()
                     .addParametricCallback(0.75, () -> spindexer.stopIntake())
                     .addParametricCallback(0.85, () -> spindexer.startOuttake())
                     .build();
