@@ -90,11 +90,11 @@ public class Constant {
     // Hardware-specific — don't change without re-measuring.
     // -----------------------------------------------------------------------
     public static double INTAKE_POS1  = 0.014; // a
-    public static double INTAKE_POS2  = 0.1525;//(b-a)(2/5)+a
-    public static double INTAKE_POS3  = 0.2925;//(b-a)(4/5)+a
-    public static double OUTTAKE_POS1 = 0.221;//(b-a)(3/5)+a
+    public static double INTAKE_POS2  = 0.1528;//(b-a)(2/5)+a
+    public static double INTAKE_POS3  = 0.2916;//(b-a)(4/5)+a
+    public static double OUTTAKE_POS1 = 0.2211;//(b-a)(3/5)+a
     public static double OUTTAKE_POS2 = 0.361; // b
-    public static double OUTTAKE_POS3 = 0.0825; //(b-a)(1/5)+a
+    public static double OUTTAKE_POS3 = 0.0834; //(b-a)(1/5)+a
 
     // -----------------------------------------------------------------------
     // ENCODER TICK VALUES — fixed by hardware gearing, don't change

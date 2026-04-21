@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.OpMode.Auton;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.BezierCurve;
 import com.pedropathing.geometry.BezierLine;
+import com.pedropathing.geometry.BezierPoint;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathChain;
 import com.pedropathing.util.Timer;
@@ -26,8 +27,6 @@ public class CurrentNearBlue15 extends OpMode {
         public PathChain GateIntake;
         public PathChain ShootGate;
         public PathChain MoveToThirdRow;
-        public PathChain Path13;
-        public PathChain Path14;
         public PathChain ShootThirdRow;
         public PathChain IntakeFirstRow;
         public PathChain ShootFirstRow;
@@ -46,8 +45,8 @@ public class CurrentNearBlue15 extends OpMode {
             IntakeSecondRow = follower.pathBuilder().addPath(
                             new BezierCurve(
                                     new Pose(57, 84),
-                                    new Pose(58.000, 66.000),
-                                    new Pose(54.000, 60.000),
+                                    new Pose(58.000, 62),
+                                    new Pose(56.000, 60.000),
                                     new Pose(50, 59.000)
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(270), Math.toRadians(180))
@@ -63,16 +62,16 @@ public class CurrentNearBlue15 extends OpMode {
             SecondRowToGate = follower.pathBuilder().addPath(
                             new BezierCurve(
                                     new Pose(13.000, 59.000),
-                                    new Pose(27.988, 55.907),
-                                    new Pose(20, 71.5)
+                                    new Pose(27.988, 53.907),
+                                    new Pose(20, 73)
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(183))
                     .build();
 
             GateToShoot = follower.pathBuilder().addPath(
-                            new BezierLine(
-                                    new Pose(20, 71.5),
-
+                            new BezierCurve(
+                                    new Pose(20, 73),
+                                    new Pose(30, 70),
                                     new Pose(57, 84)
                             )
                     ).setTangentHeadingInterpolation()
@@ -85,14 +84,14 @@ public class CurrentNearBlue15 extends OpMode {
                                     new Pose(57, 84),
                                     new Pose(42, 64),
 
-                                    new Pose(20, 65)
+                                    new Pose(20, 64.5)
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
                     .addPath(
                             new BezierLine(
-                                    new Pose(20, 65),
+                                    new Pose(20, 64.5),
 
-                                    new Pose(12, 59)
+                                    new Pose(16, 62)
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(138))
                     .build();
@@ -100,11 +99,12 @@ public class CurrentNearBlue15 extends OpMode {
 
             ShootGate = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(12, 59),
+                                    new Pose(16, 62),
 
                                     new Pose(57, 84)
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(270), Math.toRadians(180))
+                    ).setTangentHeadingInterpolation()
+                    .setReversed()
                     .addParametricCallback(0.7, () -> spindexer.stopIntake())
                     .addParametricCallback(0.8, () -> spindexer.startOuttake())
                     .build();
@@ -166,14 +166,14 @@ public class CurrentNearBlue15 extends OpMode {
 
     private Follower  follower;
     private Paths     paths;
-    private Timer     pathTimer, opmodeTimer;
+    private Timer     pathTimer, opmodeTimer, intakeTimer;
     private int      pathState;
 
     private Shooter   shooter;
     private Spindexer spindexer;
 
     private double angle       = 44;
-    private double odoDist     = 64;
+    private double odoDist     = 66;
     private String targetMotif = "Null";
 
     public static final Pose START_POS = new Pose(31, 135, Math.toRadians(270));
@@ -249,7 +249,7 @@ public class CurrentNearBlue15 extends OpMode {
             case 20:
                 follower.followPath(paths.GateIntake, true);
                 spindexer.startIntake(); // called once here, not in a loop
-                angle = 8;
+                angle = 345;
                 setPathState(21);
                 break;
 
@@ -257,12 +257,13 @@ public class CurrentNearBlue15 extends OpMode {
             case 21:
                 if (!follower.isBusy()) {
                     setPathState(22);
+                    intakeTimer.resetTimer();
                 }
                 break;
 
             // Stay at gate for 2 seconds (or leave early if full)
             case 22:
-                if (spindexer.intakeStage == -1 || pathTimer.getElapsedTimeSeconds() > 3) {
+                if (spindexer.artifactCount == 3 || intakeTimer.getElapsedTimeSeconds() > 2.5) {
                     follower.followPath(paths.ShootGate, true);
                     setPathState(23);
                 }
@@ -271,6 +272,7 @@ public class CurrentNearBlue15 extends OpMode {
             // ShootGate callbacks handle stopIntake + startOuttake automatically
             case 23:
                 if (!follower.isBusy() && spindexer.outtakeStage == -1) {
+                    follower.followPath(paths.MoveToThirdRow, true);
                     setPathState(30);
                 }
                 break;
@@ -279,17 +281,16 @@ public class CurrentNearBlue15 extends OpMode {
 
             case 30:
                 spindexer.startIntake();
-                follower.followPath(paths.MoveToThirdRow, true);
                 angle = 1;
                 odoDist = 65;
-                setPathState(31);
+                if (!follower.isBusy()) {
+                    setPathState(31);
+                }
                 break;
 
             case 31:
-                if (!follower.isBusy() || spindexer.intakeStage == -1) {
-                    follower.followPath(paths.ShootThirdRow, true);
-                    setPathState(32);
-                }
+                follower.followPath(paths.ShootThirdRow, true);
+                setPathState(32);
                 break;
 
             case 32:
@@ -334,6 +335,7 @@ public class CurrentNearBlue15 extends OpMode {
         pathTimer   = new Timer();
         opmodeTimer = new Timer();
         opmodeTimer.resetTimer();
+        intakeTimer = new Timer();
 
         shooter   = new Shooter(hardwareMap);
         spindexer = new Spindexer(hardwareMap);
@@ -355,6 +357,7 @@ public class CurrentNearBlue15 extends OpMode {
     @Override
     public void start() {
         opmodeTimer.resetTimer();
+        intakeTimer.resetTimer();
         setPathState(0);
     }
 
@@ -394,11 +397,13 @@ public class CurrentNearBlue15 extends OpMode {
 
         telemetry.addData("Slots",         slotVisual.toString());
         telemetry.addData("Path State",    pathState);
+        telemetry.addData("Intake Stage",  spindexer.intakeStage);
+        telemetry.addData("Outtake Stage", spindexer.outtakeStage);
+        
+        telemetry.addData("Path Busy", follower.isBusy());
         telemetry.addData("Motif",         targetMotif);
         telemetry.addData("Turret Angle",  angle);
         telemetry.addData("Odo Dist",      odoDist);
-        telemetry.addData("Intake Stage",  spindexer.intakeStage);
-        telemetry.addData("Outtake Stage", spindexer.outtakeStage);
         telemetry.addData("Velo Error",    "%.1f",
                 shooter.calculatedTargetVelocity - shooter.leftShooter.getVelocity());
         telemetry.addData("Target Color",  spindexer.targetColor);
