@@ -85,7 +85,7 @@ public class Spindexer {
                 spindexerEncoder.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
                 intake.setPower(0);
                 encoderResetDone = true;
-            } else {
+            } else if (resetTimer.milliseconds() >= 2* Constant.ANTI_STUCK_TIMER){
                 intake.setPower(-1);
             }
         }
@@ -151,7 +151,7 @@ public class Spindexer {
                     float hue = HSV[0];
 
                     // 1. GATEKEEPER: Is something physically there and is it vivid?
-                    boolean currentlySeeingBall = (brightness > 2000);
+                    boolean currentlySeeingBall = (brightness > 2500);
 
                     if (currentlySeeingBall || skipSlot) {
                         if (!potentialBallDetected) {
@@ -163,7 +163,7 @@ public class Spindexer {
                         if (colorTimer.milliseconds() > 25 || skipSlot) {
                             if (skipSlot) {
                                 color = "P";
-                            } else if (hue > 165 && hue < 210 && brightness > 2500) {
+                            } else if (hue > 165 && hue < 210 && brightness > 3000) {
                                 color = "P";
                             } else if (hue > 100 && hue < 165) {
                                 color = "G";
@@ -312,6 +312,8 @@ public class Spindexer {
                 encoderResetDone = true;
             } else if (resetTimer.milliseconds() >= Constant.ANTI_STUCK_TIMER) {
                 intake.setPower(-1);
+            } else {
+                intake.setPower(0);
             }
         }
     }
@@ -339,7 +341,7 @@ public class Spindexer {
                 float hue = HSV[0];
 
                 // 1. GATEKEEPER: Is something physically there and is it vivid?
-                boolean currentlySeeingBall = (brightness > 2000);
+                boolean currentlySeeingBall = (brightness > 2500);
 
                 if (currentlySeeingBall) {
                     if (!potentialBallDetected) {
@@ -349,7 +351,7 @@ public class Spindexer {
 
                     // 2. STABILITY CHECK
                     if (colorTimer.milliseconds() > 25) {
-                        if (hue > 165 && hue < 210 && brightness > 2500) {
+                        if (hue > 165 && hue < 210 && brightness > 3000) {
                             color = "P";
                         } else if (hue > 100 && hue < 165) {
                             color = "G";

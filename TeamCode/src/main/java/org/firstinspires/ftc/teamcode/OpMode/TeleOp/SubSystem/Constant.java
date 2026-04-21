@@ -22,10 +22,9 @@ public class Constant {
     // DRIVE & ODOMETRY
     // Physical pod positions — don't change without remeasuring hardware.
     // -----------------------------------------------------------------------
-    public static final double ODO_X_OFFSET = 121.271;      // strafe pod, mm from center
-    public static final double ODO_Y_OFFSET = -60;          // forward pod, mm from center
+    public static final double ODO_X_OFFSET = 60;      // strafe pod, mm from center
+    public static final double ODO_Y_OFFSET = -121.271;          // forward pod, mm from center
     public static final double ODO_YAW_SCALAR = 1.000861242911554; // heading drift correction
-    public static final double MAGIC_OFFSET = 2.5;
 
     // -----------------------------------------------------------------------
     // FIELD COORDINATES (inches)
@@ -92,7 +91,7 @@ public class Constant {
     public static double INTAKE_POS1  = 0.014; // a
     public static double INTAKE_POS2  = 0.1528;//(b-a)(2/5)+a
     public static double INTAKE_POS3  = 0.2916;//(b-a)(4/5)+a
-    public static double OUTTAKE_POS1 = 0.2211;//(b-a)(3/5)+a
+    public static double OUTTAKE_POS1 = 0.2222;//(b-a)(3/5)+a
     public static double OUTTAKE_POS2 = 0.361; // b
     public static double OUTTAKE_POS3 = 0.0834; //(b-a)(1/5)+a
 
@@ -111,7 +110,7 @@ public class Constant {
     // TIMERS & TOLERANCES
     // -----------------------------------------------------------------------
     public static int INVERSE_TIMER         = 900;
-    public static int INTAKE_TICK_TOLERANCE = 350;
+    public static int INTAKE_TICK_TOLERANCE = 450;
 
     // How many encoder ticks away from target still counts as "in slot".
     //   Artifacts not firing → INCREASE (spindexer settling slowly)

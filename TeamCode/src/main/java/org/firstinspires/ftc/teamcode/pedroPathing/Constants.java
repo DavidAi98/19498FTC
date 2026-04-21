@@ -47,8 +47,8 @@ public class Constants {
 
 
     public static PinpointConstants localizerConstants = new PinpointConstants()
-            .forwardPodY(4.7744488)
-            .strafePodX(-2.3622047)
+            .forwardPodY(2.3622047) //4.7744488
+            .strafePodX(-4.7744488) //-2.3622047
             .yawScalar(Constant.ODO_YAW_SCALAR)
             .distanceUnit(DistanceUnit.INCH)
             .hardwareMapName("pinpoint")
