@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.OpMode.Auton;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.BezierCurve;
 import com.pedropathing.geometry.BezierLine;
+import com.pedropathing.geometry.BezierPoint;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathChain;
 import com.pedropathing.util.Timer;
@@ -14,10 +15,10 @@ import org.firstinspires.ftc.teamcode.OpMode.TeleOp.SubSystem.Shooter;
 import org.firstinspires.ftc.teamcode.OpMode.TeleOp.SubSystem.Spindexer;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
-@Autonomous(name = "Current red 15")
+@Autonomous(name = "\uD83D\uDD34 15 SORTED")
 public class CurrentNearRed15 extends OpMode {
 
-
+    private double mirror_length = 140.5;
     public class Paths {
         public PathChain MoveToShootPreload;
         public PathChain IntakeSecondRow;
@@ -26,8 +27,6 @@ public class CurrentNearRed15 extends OpMode {
         public PathChain GateIntake;
         public PathChain ShootGate;
         public PathChain MoveToThirdRow;
-        public PathChain Path13;
-        public PathChain Path14;
         public PathChain ShootThirdRow;
         public PathChain IntakeFirstRow;
         public PathChain ShootFirstRow;
@@ -35,9 +34,9 @@ public class CurrentNearRed15 extends OpMode {
         public Paths(Follower follower) {
             MoveToShootPreload = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(113.000, 135.000),
+                                    new Pose(31.000, 135.000).mirror(mirror_length),
 
-                                    new Pose(86.000, 82.000)
+                                    new Pose(58.789, 77.292).mirror(mirror_length)
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(-90), Math.toRadians(-90))
 
@@ -45,120 +44,116 @@ public class CurrentNearRed15 extends OpMode {
 
             IntakeSecondRow = follower.pathBuilder().addPath(
                             new BezierCurve(
-                                    new Pose(86.000, 82.000),
-                                    new Pose(86.000, 66.000),
-                                    new Pose(90.000, 60.000),
-                                    new Pose(94, 56.000)
+                                    new Pose(58.789, 77.292).mirror(mirror_length),
+                                    new Pose(56.658, 59.540).mirror(mirror_length),
+                                    new Pose(41, 59.5).mirror(mirror_length)
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(-90), Math.toRadians(0))
                     .addPath(
                             new BezierLine(
-                                    new Pose(94, 56.000),
+                                    new Pose(41, 59.5).mirror(mirror_length),
 
-                                    new Pose(131.000, 56.000)
+                                    new Pose(10, 59.5).mirror(mirror_length)
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
                     .build();
 
             SecondRowToGate = follower.pathBuilder().addPath(
                             new BezierCurve(
-                                    new Pose(131.000, 56.000),
-                                    new Pose(116.012, 55.907),
-                                    new Pose(124.200, 64.000)
+                                    new Pose(10, 59.5).mirror(mirror_length),
+                                    new Pose(26.870, 63.746).mirror(mirror_length),
+                                    new Pose(15, 69.199).mirror(mirror_length)
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
+                    ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(5))
                     .build();
 
             GateToShoot = follower.pathBuilder().addPath(
-                            new BezierLine(
-                                    new Pose(124.200, 64.000),
-
-                                    new Pose(86.000, 78.000)
+                            new BezierCurve(
+                                    new Pose(15, 69.199).mirror(mirror_length),
+                                    new Pose(37.379, 69.553).mirror(mirror_length),
+                                    new Pose(58.789, 77.068).mirror(mirror_length)
                             )
-                    ).setTangentHeadingInterpolation()
-                    .setReversed()
+                    ).setLinearHeadingInterpolation(Math.toRadians(5), Math.toRadians(0))
                     .addParametricCallback(0.9, () -> { spindexer.stopIntake(); spindexer.startOuttake(); })
                     .build();
 
             GateIntake = follower.pathBuilder().addPath(
                             new BezierCurve(
-                                    new Pose(86.000, 78.000),
-                                    new Pose(102, 64),
-
-                                    new Pose(124, 60)
+                                    new Pose(58.789, 77.068).mirror(mirror_length),
+                                    new Pose(42.000, 64.000).mirror(mirror_length),
+                                    new Pose(15, 66.5).mirror(mirror_length)
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
                     .addPath(
                             new BezierLine(
-                                    new Pose(124, 60),
+                                    new Pose(15, 66.5).mirror(mirror_length),
 
-                                    new Pose(131.500, 56.0)
+                                    new Pose(12.2, 62.7).mirror(mirror_length)
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(40))
+                    ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(38))
                     .build();
-
 
             ShootGate = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(131.500, 56.00),
+                                    new Pose(12.2, 62.7).mirror(mirror_length),
 
-                                    new Pose(86.000, 78.00)
+                                    new Pose(58.565, 76.845).mirror(mirror_length)
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(210), Math.toRadians(210))
+                    ).setTangentHeadingInterpolation()
+                    .setReversed()
                     .addParametricCallback(0.7, () -> spindexer.stopIntake())
                     .addParametricCallback(0.8, () -> spindexer.startOuttake())
                     .build();
 
             MoveToThirdRow = follower.pathBuilder().addPath(
                             new BezierCurve(
-                                    new Pose(86.000, 78.000),
-                                    new Pose(86.000, 46.000),
-                                    new Pose(92.000, 38.000),
-                                    new Pose(99.000, 36.000)
+                                    new Pose(58.565, 76.845).mirror(mirror_length),
+                                    new Pose(58.000, 46.000).mirror(mirror_length),
+                                    new Pose(52.000, 38.000).mirror(mirror_length),
+                                    new Pose(48, 38).mirror(mirror_length)
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(270), Math.toRadians(180))
+                    ).setLinearHeadingInterpolation(Math.toRadians(270), Math.toRadians(0))
                     .addPath(
                             new BezierLine(
-                                    new Pose(99.000, 36.000),
+                                    new Pose(48, 38).mirror(mirror_length),
 
-                                    new Pose(131.000, 32.000)
+                                    new Pose(10.5, 38).mirror(mirror_length)
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
+                    ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
                     .build();
-
 
             ShootThirdRow = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(132.000, 32.000),
+                                    new Pose(10.5, 38).mirror(mirror_length),
 
-                                    new Pose(86.000, 81.500)
+                                    new Pose(58.565, 77.292).mirror(mirror_length)
                             )
                     ).setTangentHeadingInterpolation()
                     .setReversed()
-                    .addParametricCallback(0.8, () -> spindexer.stopIntake())
-                    .addParametricCallback(0.9, () -> spindexer.startOuttake())
+                    .addParametricCallback(0.7, () -> spindexer.stopIntake())
+                    .addParametricCallback(0.8, () -> spindexer.startOuttake())
                     .build();
 
             IntakeFirstRow = follower.pathBuilder().addPath(
-                            new BezierLine(
-                                    new Pose(86.000, 81.500),
-
-                                    new Pose(124, 81.500)
+                            new BezierCurve(
+                                    new Pose(58.565, 77.292).mirror(mirror_length),
+                                    new Pose(48.911, 85.447).mirror(mirror_length),
+                                    new Pose(16, 83.553).mirror(mirror_length)
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
+                    ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
 
                     .build();
 
             ShootFirstRow = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(124, 81.500),
+                                    new Pose(16, 83.553).mirror(mirror_length),
 
-                                    new Pose(94.000, 111.000)
+                                    new Pose(48.764, 113.435).mirror(mirror_length)
                             )
                     ).setTangentHeadingInterpolation()
                     .setReversed()
-                    .addParametricCallback(0.75, () -> spindexer.stopIntake())
-                    .addParametricCallback(0.85, () -> spindexer.startOuttake())
+                    .addParametricCallback(0.8, () -> spindexer.stopIntake())
+                    .addParametricCallback(0.9, () -> spindexer.startOuttake())
                     .build();
         }
     }
@@ -166,17 +161,17 @@ public class CurrentNearRed15 extends OpMode {
 
     private Follower  follower;
     private Paths     paths;
-    private Timer     pathTimer, opmodeTimer;
+    private Timer     pathTimer, opmodeTimer, intakeTimer;
     private int      pathState;
 
     private Shooter   shooter;
     private Spindexer spindexer;
 
     private double angle       = 130;
-    private double odoDist     = 64;
+    private double odoDist     = 69;
     private String targetMotif = "Null";
 
-    public static final Pose START_POS = new Pose(31, 135, Math.toRadians(-90)).mirror();
+    public final Pose START_POS = new Pose(31, 135, Math.toRadians(-90)).mirror(mirror_length);
 
     public void autonomousPathUpdate() {
         switch (pathState) {
@@ -191,8 +186,8 @@ public class CurrentNearRed15 extends OpMode {
                 break;
 
             case 1:
+
                 if (opmodeTimer.getElapsedTimeSeconds() > 2) {
-                    targetMotif = "PGP";
                     setPathState(2);
                 } else if (!follower.isBusy() && !targetMotif.equals("Null")) {
                     setPathState(2);
@@ -200,7 +195,7 @@ public class CurrentNearRed15 extends OpMode {
                 break;
 
             case 2:
-                if (spindexer.intakeStage == -1) {
+                if (spindexer.intakeStage == -1 || pathTimer.getElapsedTimeSeconds() > 2.0) {
                     spindexer.stopIntake();
                     spindexer.startOuttake();
                     setPathState(3);
@@ -218,8 +213,8 @@ public class CurrentNearRed15 extends OpMode {
             case 10:
                 follower.followPath(paths.IntakeSecondRow, true);
                 spindexer.startIntake();
-                angle = 200;
-                odoDist = 64;
+                angle = 220;
+                odoDist = 76;
                 setPathState(11);
                 break;
 
@@ -238,7 +233,6 @@ public class CurrentNearRed15 extends OpMode {
                 break;
 
             case 13:
-                spindexer.stopIntake();
                 if (!follower.isBusy() && spindexer.outtakeStage == -1) {
                     setPathState(20);
                 }
@@ -248,8 +242,8 @@ public class CurrentNearRed15 extends OpMode {
 
             case 20:
                 follower.followPath(paths.GateIntake, true);
-                spindexer.startIntake(); // called once here, not in a loop
-                angle = 185;
+                spindexer.startIntake();
+                angle = 220;
                 setPathState(21);
                 break;
 
@@ -257,12 +251,13 @@ public class CurrentNearRed15 extends OpMode {
             case 21:
                 if (!follower.isBusy()) {
                     setPathState(22);
+                    intakeTimer.resetTimer();
                 }
                 break;
 
             // Stay at gate for 2 seconds (or leave early if full)
             case 22:
-                if (spindexer.intakeStage == -1 || pathTimer.getElapsedTimeSeconds() > 3) {
+                if (spindexer.artifactCount == 3 || intakeTimer.getElapsedTimeSeconds() > 2.5) {
                     follower.followPath(paths.ShootGate, true);
                     setPathState(23);
                 }
@@ -271,6 +266,8 @@ public class CurrentNearRed15 extends OpMode {
             // ShootGate callbacks handle stopIntake + startOuttake automatically
             case 23:
                 if (!follower.isBusy() && spindexer.outtakeStage == -1) {
+                    follower.followPath(paths.MoveToThirdRow, true);
+                    spindexer.startIntake();
                     setPathState(30);
                 }
                 break;
@@ -278,38 +275,40 @@ public class CurrentNearRed15 extends OpMode {
             // ── THIRD ROW ─────────────────────────────────────────────────────
 
             case 30:
-                spindexer.startIntake();
-                follower.followPath(paths.MoveToThirdRow, true);
-                angle = 175;
-                odoDist = 65;
-                setPathState(31);
-                break;
-
-            case 31:
-                if (!follower.isBusy() || spindexer.intakeStage == -1) {
+                angle = 180;
+                odoDist = 72;
+                if (!follower.isBusy()) {
                     follower.followPath(paths.ShootThirdRow, true);
-                    setPathState(32);
+                    setPathState(31);
                 }
                 break;
 
-            case 32:
+            case 31:
                 if (!follower.isBusy() && spindexer.outtakeStage == -1) {
+                    follower.followPath(paths.IntakeFirstRow, true);
+                    spindexer.startIntake();
                     setPathState(40);
                 }
                 break;
 
+//            case 32:
+//                if (spindexer.artifactCount == 0) {
+//                    follower.followPath(paths.IntakeFirstRow, true);
+//                    spindexer.startIntake();
+//                    setPathState(40);
+//                }
+//                break;
+
             // ── FIRST ROW ─────────────────────────────────────────────────────
 
             case 40:
-                spindexer.startIntake();
-                follower.followPath(paths.IntakeFirstRow, true);
-                angle = 188;
-                odoDist = 12;
+                angle = 193;
+                odoDist = 15;
                 setPathState(41);
                 break;
 
             case 41:
-                if (!follower.isBusy() || spindexer.intakeStage == -1) {
+                if (!follower.isBusy()) {
                     follower.followPath(paths.ShootFirstRow, true);
                     setPathState(42);
                 }
@@ -333,7 +332,7 @@ public class CurrentNearRed15 extends OpMode {
 
         pathTimer   = new Timer();
         opmodeTimer = new Timer();
-        opmodeTimer.resetTimer();
+        intakeTimer = new Timer();
 
         shooter   = new Shooter(hardwareMap);
         spindexer = new Spindexer(hardwareMap);
@@ -355,6 +354,7 @@ public class CurrentNearRed15 extends OpMode {
     @Override
     public void start() {
         opmodeTimer.resetTimer();
+        intakeTimer.resetTimer();
         setPathState(0);
     }
 
@@ -389,20 +389,24 @@ public class CurrentNearRed15 extends OpMode {
         Pose p = follower.getPose();
         Constant.AUTON_LAST_X           = 113.5 - p.getX();
         Constant.AUTON_LAST_Y           =   8 - p.getY();
-        Constant.AUTON_LAST_HEADING_RAD = p.getHeading();
+        Constant.AUTON_LAST_HEADING_RAD = p.getHeading() - Math.PI;
         Constant.AUTON_LAST_HEADING_DEG = Math.toDegrees(Constant.AUTON_LAST_HEADING_RAD);
 
         telemetry.addData("Slots",         slotVisual.toString());
+        telemetry.addData("artifactCount", spindexer.artifactCount);
         telemetry.addData("Path State",    pathState);
+        telemetry.addData("Intake Stage",  spindexer.intakeStage);
+        telemetry.addData("Outtake Stage", spindexer.outtakeStage);
+
+        telemetry.addData("Path Busy", follower.isBusy());
         telemetry.addData("Motif",         targetMotif);
         telemetry.addData("Turret Angle",  angle);
         telemetry.addData("Odo Dist",      odoDist);
-        telemetry.addData("Intake Stage",  spindexer.intakeStage);
-        telemetry.addData("Outtake Stage", spindexer.outtakeStage);
         telemetry.addData("Velo Error",    "%.1f",
                 shooter.calculatedTargetVelocity - shooter.leftShooter.getVelocity());
         telemetry.addData("Target Color",  spindexer.targetColor);
         telemetry.addData("Max Power",     follower.getMaxPowerScaling());
+        telemetry.addData("Drive Pos",       "X=%.1f  Y=%.1f", p.getX(), p.getY());
         telemetry.addData("Heading",       follower.getHeading());
         telemetry.update();
     }
