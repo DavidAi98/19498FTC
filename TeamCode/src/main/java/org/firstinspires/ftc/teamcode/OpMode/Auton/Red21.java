@@ -60,14 +60,6 @@ public class Red21 extends OpMode {
                     ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
                     .build();
 
-//            SecondRowToGate = follower.pathBuilder().addPath(
-//                            new BezierCurve(
-//                                    new Pose(131.000, 56.000),
-//                                    new Pose(116.012, 55.907),
-//                                    new Pose(124.200, 64.000)
-//                            )
-//                    ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
-//                    .build();
 
             SecondRowToShoot = follower.pathBuilder().addPath(
                             new BezierLine(

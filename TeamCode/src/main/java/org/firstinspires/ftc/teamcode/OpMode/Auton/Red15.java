@@ -87,14 +87,14 @@ public class Red15 extends OpMode {
                             new BezierLine(
                                     new Pose(15, 66).mirror(mirror_length),
 
-                                    new Pose(12.2, 61.5).mirror(mirror_length)
+                                    new Pose(12, 61.5).mirror(mirror_length)
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(35))
                     .build();
 
             ShootGate = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(12.2, 61.5).mirror(mirror_length),
+                                    new Pose(12, 61.5).mirror(mirror_length),
 
                                     new Pose(58.565, 76.845).mirror(mirror_length)
                             )

@@ -286,6 +286,7 @@ public class Blue18 extends OpMode {
 
             case 23:
                 follower.followPath(paths.GateIntake, true);
+                spindexer.noSort = false;
                 spindexer.startIntake();
                 setPathState(24);
                 break;
@@ -392,7 +393,7 @@ public class Blue18 extends OpMode {
         follower = Constants.createFollower(hardwareMap);
         paths    = new Paths(follower);
         follower.setStartingPose(START_POS);
-        spindexer.noSort = false;
+        spindexer.noSort = true;
     }
 
     @Override
