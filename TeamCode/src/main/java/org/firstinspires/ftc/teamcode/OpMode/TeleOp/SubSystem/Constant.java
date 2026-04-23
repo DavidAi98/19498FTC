@@ -110,7 +110,7 @@ public class Constant {
     // TIMERS & TOLERANCES
     // -----------------------------------------------------------------------
     public static int INVERSE_TIMER         = 900;
-    public static int INTAKE_TICK_TOLERANCE = 300;
+    public static int INTAKE_TICK_TOLERANCE = 600;
 
     // How many encoder ticks away from target still counts as "in slot".
     //   Artifacts not firing → INCREASE (spindexer settling slowly)

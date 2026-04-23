@@ -151,7 +151,7 @@ public class Spindexer {
                     float hue = HSV[0];
 
                     // 1. GATEKEEPER: Is something physically there and is it vivid?
-                    boolean currentlySeeingBall = (brightness > 1500);
+                    boolean currentlySeeingBall = (brightness > 2000);
 
                     if (currentlySeeingBall || skipSlot) {
                         if (!potentialBallDetected) {
@@ -163,7 +163,7 @@ public class Spindexer {
                         if (colorTimer.milliseconds() > 25 || skipSlot) {
                             if (skipSlot) {
                                 color = "P";
-                            } else if (hue > 165 && hue < 210 && brightness > 2000) {
+                            } else if (hue > 165 && hue < 210) {
                                 color = "P";
                             } else if (hue > 100 && hue < 165) {
                                 color = "G";
@@ -341,7 +341,7 @@ public class Spindexer {
                 float hue = HSV[0];
 
                 // 1. GATEKEEPER: Is something physically there and is it vivid?
-                boolean currentlySeeingBall = (brightness > 1500);
+                boolean currentlySeeingBall = (brightness > 2000);
 
                 if (currentlySeeingBall) {
                     if (!potentialBallDetected) {
@@ -351,7 +351,7 @@ public class Spindexer {
 
                     // 2. STABILITY CHECK
                     if (colorTimer.milliseconds() > 25) {
-                        if (hue > 165 && hue < 210 && brightness > 2000) {
+                        if (hue > 165 && hue < 210) {
                             color = "P";
                         } else if (hue > 100 && hue < 165) {
                             color = "G";

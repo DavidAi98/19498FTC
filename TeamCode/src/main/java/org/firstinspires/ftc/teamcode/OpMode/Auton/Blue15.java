@@ -3,7 +3,6 @@
     import com.pedropathing.follower.Follower;
     import com.pedropathing.geometry.BezierCurve;
     import com.pedropathing.geometry.BezierLine;
-    import com.pedropathing.geometry.BezierPoint;
     import com.pedropathing.geometry.Pose;
     import com.pedropathing.paths.PathChain;
     import com.pedropathing.util.Timer;
@@ -16,7 +15,7 @@
     import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
     @Autonomous(name = "\uD83D\uDD35 15 SORTED")
-    public class CurrentNearBlue15 extends OpMode {
+    public class Blue15 extends OpMode {
 
 
         public class Paths {

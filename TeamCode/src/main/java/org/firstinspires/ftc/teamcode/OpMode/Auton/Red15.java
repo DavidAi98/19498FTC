@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode.OpMode.Auton;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.BezierCurve;
 import com.pedropathing.geometry.BezierLine;
-import com.pedropathing.geometry.BezierPoint;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathChain;
 import com.pedropathing.util.Timer;
@@ -16,9 +15,9 @@ import org.firstinspires.ftc.teamcode.OpMode.TeleOp.SubSystem.Spindexer;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 @Autonomous(name = "\uD83D\uDD34 15 SORTED")
-public class CurrentNearRed15 extends OpMode {
+public class Red15 extends OpMode {
 
-    private double mirror_length = 140.5;
+    private double mirror_length = 139.5;
     public class Paths {
         public PathChain MoveToShootPreload;
         public PathChain IntakeSecondRow;
@@ -62,14 +61,14 @@ public class CurrentNearRed15 extends OpMode {
                             new BezierCurve(
                                     new Pose(10, 59.5).mirror(mirror_length),
                                     new Pose(26.870, 63.746).mirror(mirror_length),
-                                    new Pose(15, 69.199).mirror(mirror_length)
+                                    new Pose(15.8, 69.199).mirror(mirror_length)
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(5))
                     .build();
 
             GateToShoot = follower.pathBuilder().addPath(
                             new BezierCurve(
-                                    new Pose(15, 69.199).mirror(mirror_length),
+                                    new Pose(15.8, 69.199).mirror(mirror_length),
                                     new Pose(37.379, 69.553).mirror(mirror_length),
                                     new Pose(58.789, 77.068).mirror(mirror_length)
                             )
@@ -81,21 +80,21 @@ public class CurrentNearRed15 extends OpMode {
                             new BezierCurve(
                                     new Pose(58.789, 77.068).mirror(mirror_length),
                                     new Pose(42.000, 64.000).mirror(mirror_length),
-                                    new Pose(15, 66.5).mirror(mirror_length)
+                                    new Pose(15, 66).mirror(mirror_length)
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
                     .addPath(
                             new BezierLine(
-                                    new Pose(15, 66.5).mirror(mirror_length),
+                                    new Pose(15, 66).mirror(mirror_length),
 
-                                    new Pose(12.2, 62.7).mirror(mirror_length)
+                                    new Pose(12.2, 61.5).mirror(mirror_length)
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(38))
+                    ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(35))
                     .build();
 
             ShootGate = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(12.2, 62.7).mirror(mirror_length),
+                                    new Pose(12.2, 61.5).mirror(mirror_length),
 
                                     new Pose(58.565, 76.845).mirror(mirror_length)
                             )
@@ -109,22 +108,22 @@ public class CurrentNearRed15 extends OpMode {
                             new BezierCurve(
                                     new Pose(58.565, 76.845).mirror(mirror_length),
                                     new Pose(58.000, 46.000).mirror(mirror_length),
-                                    new Pose(52.000, 38.000).mirror(mirror_length),
-                                    new Pose(48, 38).mirror(mirror_length)
+                                    new Pose(52.000, 37.5).mirror(mirror_length),
+                                    new Pose(48, 37.5).mirror(mirror_length)
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(270), Math.toRadians(0))
                     .addPath(
                             new BezierLine(
-                                    new Pose(48, 38).mirror(mirror_length),
+                                    new Pose(48, 37.5).mirror(mirror_length),
 
-                                    new Pose(10.5, 38).mirror(mirror_length)
+                                    new Pose(10.5, 37.5).mirror(mirror_length)
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
                     .build();
 
             ShootThirdRow = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(10.5, 38).mirror(mirror_length),
+                                    new Pose(10.5, 37.5).mirror(mirror_length),
 
                                     new Pose(58.565, 77.292).mirror(mirror_length)
                             )
@@ -168,7 +167,7 @@ public class CurrentNearRed15 extends OpMode {
     private Spindexer spindexer;
 
     private double angle       = 130;
-    private double odoDist     = 69;
+    private double odoDist     = 70;
     private String targetMotif = "Null";
 
     public final Pose START_POS = new Pose(31, 135, Math.toRadians(-90)).mirror(mirror_length);
@@ -243,7 +242,7 @@ public class CurrentNearRed15 extends OpMode {
             case 20:
                 follower.followPath(paths.GateIntake, true);
                 spindexer.startIntake();
-                angle = 220;
+                angle = 205;
                 setPathState(21);
                 break;
 
@@ -276,7 +275,7 @@ public class CurrentNearRed15 extends OpMode {
 
             case 30:
                 angle = 180;
-                odoDist = 72;
+                odoDist = 74;
                 if (!follower.isBusy()) {
                     follower.followPath(paths.ShootThirdRow, true);
                     setPathState(31);
@@ -302,7 +301,7 @@ public class CurrentNearRed15 extends OpMode {
             // ── FIRST ROW ─────────────────────────────────────────────────────
 
             case 40:
-                angle = 193;
+                angle = 190;
                 odoDist = 15;
                 setPathState(41);
                 break;

@@ -15,7 +15,7 @@ import org.firstinspires.ftc.teamcode.OpMode.TeleOp.SubSystem.Spindexer;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 @Autonomous(name = "BLUE Far (cycle)", group = "01")
-public class CurrentFarBlue extends OpMode {
+public class BlueFar extends OpMode {
 
     // =========================================================================
     //  PATHS
@@ -111,7 +111,7 @@ public class CurrentFarBlue extends OpMode {
     private Spindexer spindexer;
 
     private double angle       = 247;
-    private double odoDist     = 150;
+    private double odoDist     = 148;
     private String targetMotif = "PPP";
 
     public static final Pose START_POS = new Pose(55, 8, Math.toRadians(90));
