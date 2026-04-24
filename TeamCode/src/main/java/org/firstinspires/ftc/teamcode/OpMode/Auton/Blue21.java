@@ -80,7 +80,7 @@ public class Blue21 extends OpMode {
 
                                     new Pose(10, 62.25)
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(135))
+                    ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(130))
                     .build();
 
             ShootGate = follower.pathBuilder().addPath(

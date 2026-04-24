@@ -188,7 +188,7 @@ public class BlueFar extends OpMode {
 
             // Bezier sweep arc
             case 5:
-                if (!follower.isBusy()) {
+                if (!follower.isBusy() || spindexer.artifactCount == 3) {
                     angle = 310;
                     odoDist = 135;
                     follower.followPath(paths.ShootCycle, true);

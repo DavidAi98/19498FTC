@@ -72,12 +72,12 @@ public class RedFar extends OpMode {
                             new BezierCurve(
                                     new Pose(57, 15).mirror(mirror_length),
                                     new Pose(20,5).mirror(mirror_length),
-                                    new Pose(20, 20).mirror(mirror_length)
+                                    new Pose(14, 10).mirror(mirror_length)
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(40))
                     .addPath(
                             new BezierLine(
-                                    new Pose(20, 20).mirror(mirror_length),
+                                    new Pose(14, 10).mirror(mirror_length),
 
                                     new Pose(14, 40).mirror(mirror_length)
                             )
@@ -189,7 +189,7 @@ public class RedFar extends OpMode {
 
             // Bezier sweep arc
             case 5:
-                if (!follower.isBusy()) {
+                if (!follower.isBusy() || spindexer.artifactCount == 3) {
                     angle = 223;
                     odoDist = 140;
                     follower.followPath(paths.ShootCycle1, true);
