@@ -16,6 +16,7 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 @Autonomous(name = "\uD83D\uDD34 18 SORTED")
 public class Red18 extends OpMode {
+    private double mirror_length = 139.5;
 
     private int cycles_needed = 3;
     private int cycles;
@@ -31,63 +32,71 @@ public class Red18 extends OpMode {
         public Paths(Follower follower) {
             MoveToShootPreload = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(31.000, 135.000).mirror(),
+                                    new Pose(31.000, 135.000).mirror(mirror_length),
 
-                                    new Pose(58.5, 77).mirror()
+                                    new Pose(58.5, 77).mirror(mirror_length)
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(270), Math.toRadians(270))
-                    .addParametricCallback(0.8, () -> spindexer.stopIntake())
-                    .addParametricCallback(0.85, () -> spindexer.startOuttake())
+                    ).setLinearHeadingInterpolation(Math.toRadians(-90), Math.toRadians(-90))
+                    .addParametricCallback(0.95, () -> spindexer.startOuttake())
                     .build();
 
             IntakeSecondRow = follower.pathBuilder().addPath(
                             new BezierCurve(
-                                    new Pose(58.5, 77).mirror(),
-                                    new Pose(56.658, 59.540).mirror(),
-                                    new Pose(41, 59.5).mirror()
+                                    new Pose(58.5, 77).mirror(mirror_length),
+                                    new Pose(56.658, 59.540).mirror(mirror_length),
+                                    new Pose(41, 59.5).mirror(mirror_length)
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(270), Math.toRadians(0))
+                    ).setLinearHeadingInterpolation(Math.toRadians(-90), Math.toRadians(0))
                     .addPath(
                             new BezierLine(
-                                    new Pose(41, 59.5).mirror(),
+                                    new Pose(41, 59.5).mirror(mirror_length),
 
-                                    new Pose(10, 59.5).mirror()
+                                    new Pose(10, 59.5).mirror(mirror_length)
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
                     .build();
 
             ShootSecondRow = follower.pathBuilder().addPath(
+
                             new BezierLine(
+
                                     new Pose(10, 59.5).mirror(),
-                                    new Pose(58.5, 77).mirror()
+
+                                    new Pose(58, 77).mirror()
+
                             )
+
                     ).setTangentHeadingInterpolation()
+
                     .setReversed()
+
                     .addParametricCallback(0.8, () -> spindexer.stopIntake())
+
                     .addParametricCallback(0.9, () -> spindexer.startOuttake())
+
                     .build();
 
             GateIntake = follower.pathBuilder().addPath(
                             new BezierCurve(
-                                    new Pose(58.5, 77).mirror(),
-                                    new Pose(42.000, 64.000).mirror(),
-                                    new Pose(16, 65).mirror()
+                                    new Pose(58, 77).mirror(mirror_length),
+                                    new Pose(42.000, 64.000).mirror(mirror_length),
+                                    new Pose(16, 65).mirror(mirror_length)
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
                     .addPath(
                             new BezierLine(
-                                    new Pose(16, 65).mirror(),
+                                    new Pose(16, 65).mirror(mirror_length),
 
-                                    new Pose(11.5, 62).mirror()
+                                    new Pose(11.8, 62).mirror(mirror_length)
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(40))
+                    ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(35))
                     .build();
 
             ShootGate = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(11.5, 62).mirror(),
+                                    new Pose(11.8, 62).mirror(mirror_length),
 
-                                    new Pose(58.5, 77).mirror()
+                                    new Pose(58.565, 76.845).mirror(mirror_length)
                             )
                     ).setTangentHeadingInterpolation()
                     .setReversed()
@@ -97,9 +106,9 @@ public class Red18 extends OpMode {
 
             IntakeFirstRow = follower.pathBuilder().addPath(
                             new BezierCurve(
-                                    new Pose(58.5, 77).mirror(),
-                                    new Pose(48.911, 85.447).mirror(),
-                                    new Pose(16, 83.553).mirror()
+                                    new Pose(58.565, 76.845).mirror(mirror_length),
+                                    new Pose(48.911, 85.447).mirror(mirror_length),
+                                    new Pose(16, 83.553).mirror(mirror_length)
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
 
@@ -107,9 +116,9 @@ public class Red18 extends OpMode {
 
             ShootFirstRow = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(16, 83.553).mirror(),
+                                    new Pose(16, 83.553).mirror(mirror_length),
 
-                                    new Pose(48.764, 113.435).mirror()
+                                    new Pose(48.764, 113.435).mirror(mirror_length)
                             )
                     ).setTangentHeadingInterpolation()
                     .setReversed()

@@ -46,7 +46,7 @@ public class Spindexer {
     public int autonColor = 1;
     private boolean colorDetected;
 
-    public int sensorInUse = 2;
+    public int sensorInUse = 1;
     public boolean onStart = true;
 
     public Spindexer(@NonNull HardwareMap hwMap) {
@@ -80,7 +80,7 @@ public class Spindexer {
                 spindexerEncoder.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
                 intake.setPower(0);
                 encoderResetDone = true;
-            } else if (resetTimer.milliseconds() >= 2 * Constant.ANTI_STUCK_TIMER){
+            } else if (resetTimer.milliseconds() >= Constant.ANTI_STUCK_TIMER){
                 intake.setPower(-1);
             } else {
                 intake.setPower(0);
@@ -153,9 +153,9 @@ public class Spindexer {
                 }
 
                 if (sensorInUse == 2) {
-                    colorDetected = colorSensor2.getDistance(DistanceUnit.MM) < 20;
+                    colorDetected = colorSensor2.getDistance(DistanceUnit.MM) < 45;
                 } else if (sensorInUse == 1) {
-                    colorDetected = colorSensor1.getDistance(DistanceUnit.MM) < 30;
+                    colorDetected = colorSensor1.getDistance(DistanceUnit.MM) < 45;
                 }
 
                 if (colorDetected || sensorInUse == -1 || skipSlot) {
@@ -331,9 +331,9 @@ public class Spindexer {
                 }
 
                 if (sensorInUse == 2) {
-                    colorDetected = colorSensor2.getDistance(DistanceUnit.MM) < 20;
+                    colorDetected = colorSensor2.getDistance(DistanceUnit.MM) < 45;
                 } else if (sensorInUse == 1) {
-                    colorDetected = colorSensor1.getDistance(DistanceUnit.MM) < 30;
+                    colorDetected = colorSensor1.getDistance(DistanceUnit.MM) < 45;
                 }
 
                 if (colorDetected || sensorInUse == -1) {

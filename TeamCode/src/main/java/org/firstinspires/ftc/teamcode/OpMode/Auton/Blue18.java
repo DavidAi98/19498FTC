@@ -62,14 +62,14 @@ public class Blue18 extends OpMode {
                             new BezierCurve(
                                     new Pose(10, 59.5),
                                     new Pose(26.870, 63.746),
-                                    new Pose(15, 69.199)
+                                    new Pose(14, 65)
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(175))
                     .build();
 
             GateToShoot = follower.pathBuilder().addPath(
                             new BezierCurve(
-                                    new Pose(15, 69.199),
+                                    new Pose(14, 65),
                                     new Pose(37.379, 69.553),
                                     new Pose(58.789, 77.068)
                             )
@@ -88,14 +88,14 @@ public class Blue18 extends OpMode {
                             new BezierLine(
                                     new Pose(15, 65.5),
 
-                                    new Pose(10.2, 62.7)
+                                    new Pose(10.3, 62.5)
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(142))
                     .build();
 
             ShootGate = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(10.2, 62.7),
+                                    new Pose(10.3, 62.5),
 
                                     new Pose(58.565, 76.845)
                             )
@@ -168,7 +168,7 @@ public class Blue18 extends OpMode {
     private Spindexer spindexer;
 
     private double angle       = 44;
-    private double odoDist     = 67;
+    private double odoDist     = 69;
     private String targetMotif = "Null";
 
     public final Pose START_POS = new Pose(31, 135, Math.toRadians(270));

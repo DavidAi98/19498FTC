@@ -61,14 +61,14 @@
                                 new BezierCurve(
                                         new Pose(10, 59.5),
                                         new Pose(26.870, 63.746),
-                                        new Pose(14.5, 69.199)
+                                        new Pose(14, 65)
                                 )
                         ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(175))
                         .build();
 
                 GateToShoot = follower.pathBuilder().addPath(
                                 new BezierCurve(
-                                        new Pose(14.5, 69.199),
+                                        new Pose(14, 65),
                                         new Pose(37.379, 69.553),
                                         new Pose(58.789, 77.068)
                                 )
@@ -80,21 +80,21 @@
                                 new BezierCurve(
                                         new Pose(58.789, 77.068),
                                         new Pose(42.000, 64.000),
-                                        new Pose(14.5, 65.5)
+                                        new Pose(15, 65.5)
                                 )
                         ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
                         .addPath(
                                 new BezierLine(
-                                        new Pose(14.5, 65.5),
+                                        new Pose(15, 65.5),
 
-                                        new Pose(10, 62.25)
+                                        new Pose(10.3, 62.5)
                                 )
-                        ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(130))
+                        ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(140))
                         .build();
 
                 ShootGate = follower.pathBuilder().addPath(
                                 new BezierLine(
-                                        new Pose(10.2, 62.7),
+                                        new Pose(10.3, 62.5),
 
                                         new Pose(58.565, 76.845)
                                 )
@@ -116,14 +116,14 @@
                                 new BezierLine(
                                         new Pose(48, 38),
 
-                                        new Pose(10, 38)
+                                        new Pose(9, 38)
                                 )
                         ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
                         .build();
 
                 ShootThirdRow = follower.pathBuilder().addPath(
                                 new BezierLine(
-                                        new Pose(10, 38),
+                                        new Pose(9, 38),
 
                                         new Pose(58.565, 77.292)
                                 )
@@ -137,7 +137,7 @@
                                 new BezierCurve(
                                         new Pose(58.565, 77.292),
                                         new Pose(48.911, 85.447),
-                                        new Pose(16, 83.553)
+                                        new Pose(15, 83.553)
                                 )
                         ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
 
@@ -145,7 +145,7 @@
 
                 ShootFirstRow = follower.pathBuilder().addPath(
                                 new BezierLine(
-                                        new Pose(16, 83.553),
+                                        new Pose(15, 83.553),
 
                                         new Pose(48.764, 113.435)
                                 )
@@ -167,7 +167,7 @@
         private Spindexer spindexer;
 
         private double angle       = 44;
-        private double odoDist     = 67;
+        private double odoDist     = 69;
         private String targetMotif = "Null";
 
         public final Pose START_POS = new Pose(31, 135, Math.toRadians(270));

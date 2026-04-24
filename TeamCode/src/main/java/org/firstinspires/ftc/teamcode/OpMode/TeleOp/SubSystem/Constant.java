@@ -114,7 +114,7 @@ public class Constant {
     // TIMERS & TOLERANCES
     // -----------------------------------------------------------------------
     public static int INVERSE_TIMER         = 900;
-    public static int INTAKE_TICK_TOLERANCE = 600;
+    public static int INTAKE_TICK_TOLERANCE = 750;
 
     // How many encoder ticks away from target still counts as "in slot".
     //   Artifacts not firing → INCREASE (spindexer settling slowly)
@@ -124,7 +124,7 @@ public class Constant {
     // RPM error allowed before isReady() returns true and fires the ball.
     // Note: isReady() has a (2200/currentVelo)^2 term making this looser than it looks.
     //   Balls firing before shooter is up to speed → DECREASE (try 60–80)
-    public static int VELOCITY_TOLERANCE = 1000; //120
+    public static int VELOCITY_TOLERANCE = 120; //120
 
     // How long pivot travels up before coming back down (ms).
     public static int PIVOT_UP_TIMER   = 90;

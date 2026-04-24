@@ -87,14 +87,14 @@ public class Red15 extends OpMode {
                             new BezierLine(
                                     new Pose(16, 65).mirror(mirror_length),
 
-                                    new Pose(11.5, 62).mirror(mirror_length)
+                                    new Pose(11.8, 62).mirror(mirror_length)
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(35))
                     .build();
 
             ShootGate = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(12, 62).mirror(mirror_length),
+                                    new Pose(11.8, 62).mirror(mirror_length),
 
                                     new Pose(58.565, 76.845).mirror(mirror_length)
                             )
@@ -116,14 +116,14 @@ public class Red15 extends OpMode {
                             new BezierLine(
                                     new Pose(48, 37.5).mirror(mirror_length),
 
-                                    new Pose(10.5, 37.5).mirror(mirror_length)
+                                    new Pose(10, 37.5).mirror(mirror_length)
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
                     .build();
 
             ShootThirdRow = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(10.5, 37.5).mirror(mirror_length),
+                                    new Pose(10, 37.5).mirror(mirror_length),
 
                                     new Pose(58.565, 77.292).mirror(mirror_length)
                             )
@@ -242,7 +242,7 @@ public class Red15 extends OpMode {
             case 20:
                 follower.followPath(paths.GateIntake, true);
                 spindexer.startIntake();
-                angle = 205;
+                angle = 202;
                 setPathState(21);
                 break;
 
@@ -301,7 +301,7 @@ public class Red15 extends OpMode {
             // ── FIRST ROW ─────────────────────────────────────────────────────
 
             case 40:
-                angle = 190;
+                angle = 195;
                 odoDist = 15;
                 setPathState(41);
                 break;
