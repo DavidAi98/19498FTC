@@ -16,7 +16,6 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 @Autonomous(name = "RED Far (cycle)", group = "01")
 public class RedFar extends OpMode {
-    private double mirror_length = 141.5;
 
     // =========================================================================
     //  PATHS
@@ -33,32 +32,32 @@ public class RedFar extends OpMode {
             IntakeThirdRow = follower.pathBuilder()
                     .addPath(
                             new BezierLine(
-                                    new Pose(55.000, 8.000).mirror(mirror_length),
+                                    new Pose(55.000, 8.000).mirror(),
 
-                                    new Pose(55.000, 20).mirror(mirror_length)
+                                    new Pose(55.000, 20).mirror()
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(90))
                     .addPath(
                             new BezierCurve(
-                                    new Pose(55.000, 20).mirror(mirror_length),
-                                    new Pose(55.000, 35.500).mirror(mirror_length),
-                                    new Pose(44.000, 35.500).mirror(mirror_length)
+                                    new Pose(55.000, 20).mirror(),
+                                    new Pose(55.000, 35.500).mirror(),
+                                    new Pose(44.000, 35.500).mirror()
                             )
                     ).setTangentHeadingInterpolation()
                     .addPath(
                             new BezierLine(
-                                    new Pose(44.000, 35.500).mirror(mirror_length),
+                                    new Pose(44.000, 35.500).mirror(),
 
-                                    new Pose(11.000, 35.500).mirror(mirror_length)
+                                    new Pose(11.000, 35.500).mirror()
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
                     .build();
 
             ShootThirdRow = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(11.000, 35.500).mirror(mirror_length),
+                                    new Pose(11.000, 35.500).mirror(),
 
-                                    new Pose(57, 15).mirror(mirror_length)
+                                    new Pose(57, 15).mirror()
                             )
                     ).setTangentHeadingInterpolation()
                     .setReversed()
@@ -70,25 +69,25 @@ public class RedFar extends OpMode {
             CycleFarIntake1 = follower.pathBuilder()
                     .addPath(
                             new BezierCurve(
-                                    new Pose(57, 15).mirror(mirror_length),
-                                    new Pose(20,5).mirror(mirror_length),
-                                    new Pose(14, 10).mirror(mirror_length)
+                                    new Pose(57, 15).mirror(),
+                                    new Pose(20,5).mirror(),
+                                    new Pose(14, 10).mirror()
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(40))
                     .addPath(
                             new BezierLine(
-                                    new Pose(14, 10).mirror(mirror_length),
+                                    new Pose(14, 10).mirror(),
 
-                                    new Pose(14, 40).mirror(mirror_length)
+                                    new Pose(14, 40).mirror()
                             )
                     ).setConstantHeadingInterpolation(Math.toRadians(40))
                     .build();
 
             ShootCycle1 = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(14, 40).mirror(mirror_length),
+                                    new Pose(14, 40).mirror(),
 
-                                    new Pose(57, 15).mirror(mirror_length)
+                                    new Pose(57, 15).mirror()
                             )
                     ).setTangentHeadingInterpolation()
                     .setReversed()
@@ -115,7 +114,7 @@ public class RedFar extends OpMode {
     private double odoDist     = 148;
     private String targetMotif = "PPP";
 
-    public final Pose START_POS = new Pose(55, 8, Math.toRadians(90)).mirror(mirror_length);
+    public final Pose START_POS = new Pose(55, 8, Math.toRadians(90)).mirror();
 
     // =========================================================================
     //  STATE MACHINE

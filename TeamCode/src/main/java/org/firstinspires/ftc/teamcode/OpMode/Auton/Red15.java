@@ -35,7 +35,7 @@ public class Red15 extends OpMode {
                             new BezierLine(
                                     new Pose(31.000, 135.000).mirror(mirror_length),
 
-                                    new Pose(58.789, 77.292).mirror(mirror_length)
+                                    new Pose(58.5, 77).mirror(mirror_length)
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(-90), Math.toRadians(-90))
 
@@ -43,7 +43,7 @@ public class Red15 extends OpMode {
 
             IntakeSecondRow = follower.pathBuilder().addPath(
                             new BezierCurve(
-                                    new Pose(58.789, 77.292).mirror(mirror_length),
+                                    new Pose(58.5, 77).mirror(mirror_length),
                                     new Pose(56.658, 59.540).mirror(mirror_length),
                                     new Pose(41, 59.5).mirror(mirror_length)
                             )
@@ -70,7 +70,7 @@ public class Red15 extends OpMode {
                             new BezierCurve(
                                     new Pose(15.8, 69.199).mirror(mirror_length),
                                     new Pose(37.379, 69.553).mirror(mirror_length),
-                                    new Pose(58.789, 77.068).mirror(mirror_length)
+                                    new Pose(58, 77).mirror(mirror_length)
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(5), Math.toRadians(0))
                     .addParametricCallback(0.9, () -> { spindexer.stopIntake(); spindexer.startOuttake(); })
@@ -78,23 +78,23 @@ public class Red15 extends OpMode {
 
             GateIntake = follower.pathBuilder().addPath(
                             new BezierCurve(
-                                    new Pose(58.789, 77.068).mirror(mirror_length),
+                                    new Pose(58, 77).mirror(mirror_length),
                                     new Pose(42.000, 64.000).mirror(mirror_length),
-                                    new Pose(15, 66).mirror(mirror_length)
+                                    new Pose(16, 65).mirror(mirror_length)
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
                     .addPath(
                             new BezierLine(
-                                    new Pose(15, 66).mirror(mirror_length),
+                                    new Pose(16, 65).mirror(mirror_length),
 
-                                    new Pose(12, 61.5).mirror(mirror_length)
+                                    new Pose(11.5, 62).mirror(mirror_length)
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(35))
                     .build();
 
             ShootGate = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(12, 61.5).mirror(mirror_length),
+                                    new Pose(12, 62).mirror(mirror_length),
 
                                     new Pose(58.565, 76.845).mirror(mirror_length)
                             )

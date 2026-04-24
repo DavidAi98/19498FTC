@@ -61,14 +61,14 @@
                                 new BezierCurve(
                                         new Pose(10, 59.5),
                                         new Pose(26.870, 63.746),
-                                        new Pose(15, 69.199)
+                                        new Pose(14.5, 69.199)
                                 )
                         ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(175))
                         .build();
 
                 GateToShoot = follower.pathBuilder().addPath(
                                 new BezierCurve(
-                                        new Pose(15, 69.199),
+                                        new Pose(14.5, 69.199),
                                         new Pose(37.379, 69.553),
                                         new Pose(58.789, 77.068)
                                 )
@@ -80,16 +80,16 @@
                                 new BezierCurve(
                                         new Pose(58.789, 77.068),
                                         new Pose(42.000, 64.000),
-                                        new Pose(15, 65.5)
+                                        new Pose(14.5, 65.5)
                                 )
                         ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
                         .addPath(
                                 new BezierLine(
-                                        new Pose(15, 65.5),
+                                        new Pose(14.5, 65.5),
 
-                                        new Pose(10.2, 62.7)
+                                        new Pose(10, 62.25)
                                 )
-                        ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(142))
+                        ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(130))
                         .build();
 
                 ShootGate = follower.pathBuilder().addPath(

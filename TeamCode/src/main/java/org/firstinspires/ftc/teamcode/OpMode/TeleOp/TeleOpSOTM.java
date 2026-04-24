@@ -4,6 +4,7 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.OpMode.TeleOp.SubSystem.Constant;
 import org.firstinspires.ftc.teamcode.OpMode.TeleOp.SubSystem.MecanumDrive;
 import org.firstinspires.ftc.teamcode.OpMode.TeleOp.SubSystem.Shooter;
@@ -163,15 +164,10 @@ public class TeleOpSOTM extends OpMode {
         dashboard.sendTelemetryPacket(packet);
         telemetry.addData("Spindexer Slots", slotVisual.toString());
         telemetry.addData("Field Centric",   FieldCentric);
-        telemetry.addData("Distance",  "%.2f", drive.distanceToGoal());
-//        telemetry.addData("rgb2: ", colorSensor4.red()+ " " + colorSensor4.blue() + " " + colorSensor4.green());
-//        telemetry.addData("rgb1: ", colorSensor3.red()+ " " + colorSensor3.blue() + " " + colorSensor3.green());
-        telemetry.addData("Hue", spindexer.HSV[0]);
-//        telemetry.addData("Sat", spindexer.HSV[1]);
-        telemetry.addData("Value", spindexer.HSV[2]);
-        telemetry.addData("brightness",spindexer.brightness);
+        telemetry.addData("Distance1",  "%.2f", spindexer.colorSensor1.getDistance(DistanceUnit.MM));
+        telemetry.addData("Distance2",  "%.2f", spindexer.colorSensor2.getDistance(DistanceUnit.MM));
         telemetry.addData("Alliance",        Constant.ALLIANCE);
-        telemetry.addData("Motif",           motif);
+//        telemetry.addData("Motif",           motif);
         telemetry.addData("Sensor in use",   spindexer.sensorInUse);
         telemetry.addData("Intake Stage",    spindexer.intakeStage);
         telemetry.addData("Outtake Stage",   spindexer.outtakeStage);

@@ -227,6 +227,6 @@ public class Shooter {
         double currentVelo = rightShooter.getVelocity();
         double voltageComp = Constant.NOMINAL_VOLTAGE / battery.getVoltage();
         double error = Math.abs(currentVelo - calculatedTargetVelocity);
-        return calculatedTargetVelocity > 0 && (error < Constant.VELOCITY_TOLERANCE * (1/voltageComp) * Math.pow((2200/currentVelo),2));
+        return calculatedTargetVelocity > 0 && (error < Constant.VELOCITY_TOLERANCE * (voltageComp) * Math.pow((2200/currentVelo),2));
     }
 }

@@ -88,6 +88,10 @@ public class Constant {
     // SPINDEXER SERVO POSITIONS
     // Hardware-specific — don't change without re-measuring.
     // -----------------------------------------------------------------------
+
+    public static double BRIGHTNESS_GATE = 2250;
+
+
     public static double INTAKE_POS1  = 0.014; // a
     public static double INTAKE_POS2  = 0.1528;//(b-a)(2/5)+a
     public static double INTAKE_POS3  = 0.2916;//(b-a)(4/5)+a
@@ -120,7 +124,7 @@ public class Constant {
     // RPM error allowed before isReady() returns true and fires the ball.
     // Note: isReady() has a (2200/currentVelo)^2 term making this looser than it looks.
     //   Balls firing before shooter is up to speed → DECREASE (try 60–80)
-    public static int VELOCITY_TOLERANCE = 120;
+    public static int VELOCITY_TOLERANCE = 1000; //120
 
     // How long pivot travels up before coming back down (ms).
     public static int PIVOT_UP_TIMER   = 90;

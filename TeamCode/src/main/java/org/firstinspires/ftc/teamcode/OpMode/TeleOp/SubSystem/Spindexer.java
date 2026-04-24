@@ -9,9 +9,10 @@ import com.qualcomm.hardware.rev.RevColorSensorV3;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
+
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 public class Spindexer {
     public int brightness;
@@ -20,10 +21,10 @@ public class Spindexer {
     public DcMotor spindexerEncoder, intake;
     public Servo spindexer1, spindexer2, leftPivot, rightPivot;
 
-    // brushlandColorSensor = main sensor (CS2, new blue-threshold + gap detection)
-    // revColorSensor = backup sensor (CS1, old simple threshold)
-    public RevColorSensorV3 revColorSensor;
-    public RevColorSensorV3 brushlandColorSensor;
+    // colorSensor2 = main sensor (CS2, new blue-threshold + gap detection)
+    // colorSensor1 = backup sensor (CS1, old simple threshold)
+    public RevColorSensorV3 colorSensor1;
+    public RevColorSensorV3 colorSensor2;
     private boolean inSlot;
 
     public Artifact[] slots = new Artifact[3];
@@ -59,9 +60,9 @@ public class Spindexer {
         spindexer2 = hwMap.get(Servo.class, "spindexer2");
         leftPivot = hwMap.get(Servo.class, "LeftPivot");
         rightPivot = hwMap.get(Servo.class, "RightPivot");
-        revColorSensor = hwMap.get(RevColorSensorV3.class, "colorSensor1");
-        brushlandColorSensor = hwMap.get(RevColorSensorV3.class, "colorSensor2");
-        ((LynxI2cDeviceSynch) brushlandColorSensor.getDeviceClient()).setBusSpeed(LynxI2cDeviceSynch.BusSpeed.FAST_400K);
+        colorSensor1 = hwMap.get(RevColorSensorV3.class, "colorSensor1");
+        colorSensor2 = hwMap.get(RevColorSensorV3.class, "colorSensor2");
+        ((LynxI2cDeviceSynch) colorSensor2.getDeviceClient()).setBusSpeed(LynxI2cDeviceSynch.BusSpeed.FAST_400K);
         spindexerEncoder = hwMap.get(DcMotor.class, "SpindexerEncoder");
         spindexerEncoder.setDirection(DcMotorSimple.Direction.REVERSE);
         leftPivot.setDirection(Servo.Direction.REVERSE);
@@ -143,51 +144,34 @@ public class Spindexer {
                 if (!inSlot) {
                     return;
                 }
+
+                if ((colorSensor2.getDistance(DistanceUnit.MM) == 152.4) && (colorSensor1.getDistance(DistanceUnit.MM) == 152.4)) {
+                    sensorInUse = -1;
+                } else if (colorSensor1.getDistance(DistanceUnit.MM) == 152.4) {
+                    sensorInUse = 2;
+                } else if (colorSensor2.getDistance(DistanceUnit.MM) == 152.4) {
+                    sensorInUse = 1;
+                }
+
                 if (sensorInUse == 2) {
-                    brightness = brushlandColorSensor.alpha();
-                    NormalizedRGBA colors = brushlandColorSensor.getNormalizedColors();
-                    Color.colorToHSV(colors.toColor(), HSV);
-
-                    float hue = HSV[0];
-
-                    // 1. GATEKEEPER: Is something physically there and is it vivid?
-                    boolean currentlySeeingBall = (brightness > 2000);
-
-                    if (currentlySeeingBall || skipSlot) {
-                        if (!potentialBallDetected) {
-                            colorTimer.reset(); // Start timing the "stable" detection
-                            potentialBallDetected = true;
-                        }
-
-                        // 2. STABILITY CHECK
-                        if (colorTimer.milliseconds() > 25 || skipSlot) {
-                            if (skipSlot) {
-                                color = "P";
-                            } else if (hue > 165 && hue < 210) {
-                                color = "P";
-                            } else if (hue > 100 && hue < 165) {
-                                color = "G";
-                            } else {
-                                return; // Bright/Vivid but wrong color
-                            }
-
-                            slots[Index - 1] = new Artifact(color, getOuttakePos(Index));
-                            artifactCount++;
-                            potentialBallDetected = false; // Reset for next slot
-                            intakeStage = (artifactCount < 3) ? 2 : -1;
-                        }
-                    }
+                    colorDetected = artifactCount < 3 && colorSensor2.getDistance(DistanceUnit.MM) < 8;
                 } else if (sensorInUse == 1) {
-                    // CS1 — backup sensor, old logic
-                    colorDetected = artifactCount < 3 && revColorSensor.blue() >= 150;
-                    if (colorDetected || skipSlot) {
-                        color = (revColorSensor.blue() >= revColorSensor.green()) ? "P" : "G";
-                        slots[Index - 1] = new Artifact(color, getOuttakePos(Index));
-                        artifactCount++;
-                        intakeStage = (artifactCount < 3) ? 2 : -1;
+                    colorDetected = artifactCount < 3 && colorSensor1.getDistance(DistanceUnit.MM) < 8;
+                } else {
+                    colorDetected = artifactCount < 3;
+                }
+
+                if (colorDetected || skipSlot) {
+                    if (sensorInUse == 2) {
+                        color = (colorSensor2.blue() >= colorSensor2.green()) ? "P" : "G";
+                    } else if (sensorInUse == 1) {
+                        color = (colorSensor1.blue() >= colorSensor1.green()) ? "P" : "G";
                     } else {
-                        potentialBallDetected = false; // Lost contact, reset timer
+                        color = "P";
                     }
+                    slots[Index - 1] = new Artifact(color, getOuttakePos(Index));
+                    artifactCount++;
+                    intakeStage = (artifactCount < 3) ? 2 : -1;
                 }
                 break;
 
@@ -333,37 +317,25 @@ public class Spindexer {
                 if (!inSlot) {
                     return;
                 }
+                if (sensorInUse == 2) {
+                    colorDetected = artifactCount < 3 && colorSensor2.getDistance(DistanceUnit.MM) < 8;
+                } else if (sensorInUse == 1) {
+                    colorDetected = artifactCount < 3 && colorSensor1.getDistance(DistanceUnit.MM) < 8;
+                } else {
+                    colorDetected = artifactCount < 3;
+                }
 
-                brightness = brushlandColorSensor.alpha();
-                NormalizedRGBA colors = brushlandColorSensor.getNormalizedColors();
-                Color.colorToHSV(colors.toColor(), HSV);
-
-                float hue = HSV[0];
-
-                // 1. GATEKEEPER: Is something physically there and is it vivid?
-                boolean currentlySeeingBall = (brightness > 2000);
-
-                if (currentlySeeingBall) {
-                    if (!potentialBallDetected) {
-                        colorTimer.reset(); // Start timing the "stable" detection
-                        potentialBallDetected = true;
+                if (colorDetected) {
+                    if (sensorInUse == 2) {
+                        color = (colorSensor2.blue() >= colorSensor2.green()) ? "P" : "G";
+                    } else if (sensorInUse == 1) {
+                        color = (colorSensor1.blue() >= colorSensor1.green()) ? "P" : "G";
+                    } else {
+                        color = "P";
                     }
-
-                    // 2. STABILITY CHECK
-                    if (colorTimer.milliseconds() > 25) {
-                        if (hue > 165 && hue < 210) {
-                            color = "P";
-                        } else if (hue > 100 && hue < 165) {
-                            color = "G";
-                        } else {
-                            return; // Bright/Vivid but wrong color
-                        }
-
-                        slots[Index - 1] = new Artifact(color, getOuttakePos(Index));
-                        artifactCount++;
-                        potentialBallDetected = false; // Reset for next slot
-                        intakeStage = (artifactCount < 3) ? 2 : -1;
-                    }
+                    slots[Index - 1] = new Artifact(color, getOuttakePos(Index));
+                    artifactCount++;
+                    intakeStage = (artifactCount < 3) ? 2 : -1;
                 }
                 break;
 
