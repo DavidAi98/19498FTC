@@ -33,6 +33,8 @@ public class TeleOpSOTM extends OpMode {
     @Override
     public void start() {
         spindexer.encoderResetDone = false;
+        spindexer.sensorInUse = 1;
+        FieldCentric = true;
     }
 
     @Override

@@ -21,8 +21,6 @@ public class Spindexer {
     public DcMotor spindexerEncoder, intake;
     public Servo spindexer1, spindexer2, leftPivot, rightPivot;
 
-    // colorSensor2 = main sensor (CS2, new blue-threshold + gap detection)
-    // colorSensor1 = backup sensor (CS1, old simple threshold)
     public RevColorSensorV3 colorSensor1;
     public RevColorSensorV3 colorSensor2;
     private boolean inSlot;
@@ -35,8 +33,6 @@ public class Spindexer {
     private ElapsedTime pivotTimer = new ElapsedTime();
     private ElapsedTime inverseTimer = new ElapsedTime();
     public ElapsedTime resetTimer = new ElapsedTime();
-    private  ElapsedTime colorTimer = new ElapsedTime();
-    private boolean potentialBallDetected = false;
     private boolean intakeDone = false;
     public boolean encoderResetDone = false;
 
@@ -47,7 +43,6 @@ public class Spindexer {
     public String targetColor = "NaN";
 
     private static final int[] priorityOrder = {2, 1, 3};
-    private String motifLine = "";
     public int autonColor = 1;
     private boolean colorDetected;
 
@@ -62,7 +57,6 @@ public class Spindexer {
         rightPivot = hwMap.get(Servo.class, "RightPivot");
         colorSensor1 = hwMap.get(RevColorSensorV3.class, "colorSensor1");
         colorSensor2 = hwMap.get(RevColorSensorV3.class, "colorSensor2");
-        ((LynxI2cDeviceSynch) colorSensor2.getDeviceClient()).setBusSpeed(LynxI2cDeviceSynch.BusSpeed.FAST_400K);
         spindexerEncoder = hwMap.get(DcMotor.class, "SpindexerEncoder");
         spindexerEncoder.setDirection(DcMotorSimple.Direction.REVERSE);
         leftPivot.setDirection(Servo.Direction.REVERSE);
@@ -81,13 +75,15 @@ public class Spindexer {
             artifactCount = 0;
             Index = 1;
             setSpindexer(Constant.INTAKE_POS1);
-            if (resetTimer.milliseconds() >= 3 * Constant.ANTI_STUCK_TIMER) {
+            if (resetTimer.milliseconds() >= 2 * Constant.ANTI_STUCK_TIMER) {
                 spindexerEncoder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                 spindexerEncoder.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
                 intake.setPower(0);
                 encoderResetDone = true;
-            } else if (resetTimer.milliseconds() >= 2* Constant.ANTI_STUCK_TIMER){
+            } else if (resetTimer.milliseconds() >= 2 * Constant.ANTI_STUCK_TIMER){
                 intake.setPower(-1);
+            } else {
+                intake.setPower(0);
             }
         }
     }
@@ -136,42 +132,48 @@ public class Spindexer {
         } else {
             intake.setPower(1);
         }
+        boolean sensor1dc = Math.abs(colorSensor1.getDistance(DistanceUnit.MM)-152.4) < 1;
+        boolean sensor2dc = Math.abs(colorSensor2.getDistance(DistanceUnit.MM)-152.4) < 1;
+
+
+        if (sensor1dc && sensor2dc) {
+            sensorInUse = -1;
+        } else if (sensor1dc) {
+            sensorInUse = 2;
+        } else if (sensor2dc) {
+            sensorInUse = 1;
+        }
 
         switch (intakeStage) {
             case 1:
                 targetTicks = getIntakeTick(Index);
                 inSlot = withinTarget(targetTicks, Constant.INTAKE_TICK_TOLERANCE);
-                if (!inSlot) {
+                if (!inSlot || artifactCount == 3) {
                     return;
                 }
 
-                if ((colorSensor2.getDistance(DistanceUnit.MM) == 152.4) && (colorSensor1.getDistance(DistanceUnit.MM) == 152.4)) {
-                    sensorInUse = -1;
-                } else if (colorSensor1.getDistance(DistanceUnit.MM) == 152.4) {
-                    sensorInUse = 2;
-                } else if (colorSensor2.getDistance(DistanceUnit.MM) == 152.4) {
-                    sensorInUse = 1;
-                }
-
                 if (sensorInUse == 2) {
-                    colorDetected = artifactCount < 3 && colorSensor2.getDistance(DistanceUnit.MM) < 8;
+                    colorDetected = colorSensor2.getDistance(DistanceUnit.MM) < 20;
                 } else if (sensorInUse == 1) {
-                    colorDetected = artifactCount < 3 && colorSensor1.getDistance(DistanceUnit.MM) < 8;
-                } else {
-                    colorDetected = artifactCount < 3;
+                    colorDetected = colorSensor1.getDistance(DistanceUnit.MM) < 30;
                 }
 
-                if (colorDetected || skipSlot) {
+                if (colorDetected || sensorInUse == -1 || skipSlot) {
                     if (sensorInUse == 2) {
-                        color = (colorSensor2.blue() >= colorSensor2.green()) ? "P" : "G";
+                        color = returnColor(colorSensor2.red(),colorSensor2.green(),colorSensor2.blue());
                     } else if (sensorInUse == 1) {
-                        color = (colorSensor1.blue() >= colorSensor1.green()) ? "P" : "G";
+                        color = returnColor(colorSensor1.red(),colorSensor1.green(),colorSensor1.blue());
+                    } else if (sensorInUse == -1){
+                        color =  "P";
                     } else {
-                        color = "P";
+                        return;
                     }
-                    slots[Index - 1] = new Artifact(color, getOuttakePos(Index));
-                    artifactCount++;
-                    intakeStage = (artifactCount < 3) ? 2 : -1;
+
+                    if (!color.equals("NaN")) {
+                        slots[Index - 1] = new Artifact(color, getOuttakePos(Index));
+                        artifactCount++;
+                        intakeStage = (artifactCount < 3) ? 2 : -1;
+                    }
                 }
                 break;
 
@@ -310,32 +312,46 @@ public class Spindexer {
             intake.setPower(1);
         }
 
+        double sensor1dist = colorSensor1.getDistance(DistanceUnit.MM);
+        double sensor2dist = colorSensor2.getDistance(DistanceUnit.MM);
+        if ((sensor2dist == 152.4) && (sensor1dist == 152.4)) {
+            sensorInUse = -1;
+        } else if (sensor1dist == 152.4) {
+            sensorInUse = 2;
+        } else if (sensor2dist == 152.4) {
+            sensorInUse = 1;
+        }
+
         switch (intakeStage) {
             case 1:
                 targetTicks = getIntakeTick(Index);
                 inSlot = withinTarget(targetTicks, Constant.INTAKE_TICK_TOLERANCE);
-                if (!inSlot) {
+                if (!inSlot || artifactCount == 3) {
                     return;
                 }
+
                 if (sensorInUse == 2) {
-                    colorDetected = artifactCount < 3 && colorSensor2.getDistance(DistanceUnit.MM) < 8;
+                    colorDetected = colorSensor2.getDistance(DistanceUnit.MM) < 20;
                 } else if (sensorInUse == 1) {
-                    colorDetected = artifactCount < 3 && colorSensor1.getDistance(DistanceUnit.MM) < 8;
-                } else {
-                    colorDetected = artifactCount < 3;
+                    colorDetected = colorSensor1.getDistance(DistanceUnit.MM) < 30;
                 }
 
-                if (colorDetected) {
+                if (colorDetected || sensorInUse == -1) {
                     if (sensorInUse == 2) {
-                        color = (colorSensor2.blue() >= colorSensor2.green()) ? "P" : "G";
+                        color = returnColor(colorSensor2.red(),colorSensor2.green(),colorSensor2.blue());
                     } else if (sensorInUse == 1) {
-                        color = (colorSensor1.blue() >= colorSensor1.green()) ? "P" : "G";
+                        color = returnColor(colorSensor1.red(),colorSensor1.green(),colorSensor1.blue());
+                    } else if (sensorInUse == -1){
+                        color =  "P";
                     } else {
-                        color = "P";
+                        return;
                     }
-                    slots[Index - 1] = new Artifact(color, getOuttakePos(Index));
-                    artifactCount++;
-                    intakeStage = (artifactCount < 3) ? 2 : -1;
+
+                    if (!color.equals("NaN")) {
+                        slots[Index - 1] = new Artifact(color, getOuttakePos(Index));
+                        artifactCount++;
+                        intakeStage = (artifactCount < 3) ? 2 : -1;
+                    }
                 }
                 break;
 
@@ -479,4 +495,13 @@ public class Spindexer {
     public double getOuttakePos(int i) { return (i==1) ? Constant.OUTTAKE_POS1 : (i==2) ? Constant.OUTTAKE_POS2 : Constant.OUTTAKE_POS3; }
     public int getOuttakeTick(int i) { return (i==1) ? Constant.OUTTAKE_POS1_TICK : (i==2) ? Constant.OUTTAKE_POS2_TICK : Constant.OUTTAKE_POS3_TICK; }
     public int getIntakeTick(int i) { return (i==1) ? Constant.INTAKE_POS1_TICK : (i==2) ? Constant.INTAKE_POS2_TICK : Constant.INTAKE_POS3_TICK; }
+
+    public String returnColor(float r,float g,float b) {
+        if (g > b) {
+            return "G";
+        } else if (b > g) {
+            return "P";
+        }
+        return "NaN";
+    }
 }
