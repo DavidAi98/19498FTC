@@ -24,8 +24,8 @@ public class BlueFar extends OpMode {
     public class Paths {
         public PathChain IntakeThirdRow;
         public PathChain ShootThirdRow;
-        public PathChain CycleFarIntake1;
-        public PathChain ShootCycle1;
+        public PathChain CycleFarIntake;
+        public PathChain ShootCycle;
 
         public Paths(Follower follower) {
 
@@ -48,14 +48,14 @@ public class BlueFar extends OpMode {
                             new BezierLine(
                                     new Pose(44.000, 35.500),
 
-                                    new Pose(11.000, 35.500)
+                                    new Pose(11.000, 30)
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
                     .build();
 
             ShootThirdRow = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(11.000, 35.500),
+                                    new Pose(11.000, 30),
 
                                     new Pose(57, 15)
                             )
@@ -66,26 +66,26 @@ public class BlueFar extends OpMode {
                     .build();
 
             // Drive from shooting spot to far intake zone
-            CycleFarIntake1 = follower.pathBuilder()
+            CycleFarIntake = follower.pathBuilder()
                     .addPath(
                             new BezierCurve(
                                     new Pose(57, 15),
                                     new Pose(20,5),
-                                    new Pose(20, 20)
+                                    new Pose(14, 10)
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(140))
                     .addPath(
                             new BezierLine(
-                                    new Pose(20, 20),
+                                    new Pose(14, 10),
 
-                                    new Pose(14, 40)
+                                    new Pose(14, 35)
                             )
                     ).setConstantHeadingInterpolation(Math.toRadians(140))
                     .build();
 
-            ShootCycle1 = follower.pathBuilder().addPath(
+            ShootCycle = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(14, 40),
+                                    new Pose(14, 35),
 
                                     new Pose(57, 15)
                             )
@@ -181,17 +181,17 @@ public class BlueFar extends OpMode {
             case 4:
                 if (!follower.isBusy() && spindexer.outtakeStage == -1) {
                     spindexer.startIntake();
-                    follower.followPath(paths.CycleFarIntake1, true);
+                    follower.followPath(paths.CycleFarIntake, true);
                     setPathState(5);
                 }
                 break;
 
             // Bezier sweep arc
             case 5:
-                if (!follower.isBusy()) {
-                    angle = 300;
-                    odoDist = 140;
-                    follower.followPath(paths.ShootCycle1, true);
+                if (!follower.isBusy() || spindexer.artifactCount == 3) {
+                    angle = 310;
+                    odoDist = 135;
+                    follower.followPath(paths.ShootCycle, true);
                     setPathState(4);
                 }
                 break;
