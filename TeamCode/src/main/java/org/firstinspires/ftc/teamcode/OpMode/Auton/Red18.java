@@ -172,7 +172,7 @@ public class Red18 extends OpMode {
             case 10:
                 if (!follower.isBusy() && spindexer.outtakeStage == -1) {
                     angle = 200;
-                    odoDist     = 72;
+                    odoDist     = 76;
                     follower.followPath(paths.IntakeSecondRow, true);
                     spindexer.startIntake();
                     setPathState(11);

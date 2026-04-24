@@ -167,7 +167,7 @@ public class Red15 extends OpMode {
     private Spindexer spindexer;
 
     private double angle       = 130;
-    private double odoDist     = 70;
+    private double odoDist     = 71;
     private String targetMotif = "Null";
 
     public final Pose START_POS = new Pose(31, 135, Math.toRadians(-90)).mirror(mirror_length);

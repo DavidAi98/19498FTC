@@ -105,34 +105,6 @@ public class Blue18 extends OpMode {
                     .addParametricCallback(0.8, () -> spindexer.startOuttake())
                     .build();
 
-//            MoveToThirdRow = follower.pathBuilder().addPath(
-//                            new BezierCurve(
-//                                    new Pose(58.565, 76.845),
-//                                    new Pose(58.000, 46.000),
-//                                    new Pose(52.000, 38.000),
-//                                    new Pose(48, 38)
-//                            )
-//                    ).setLinearHeadingInterpolation(Math.toRadians(-90), Math.toRadians(180))
-//                    .addPath(
-//                            new BezierLine(
-//                                    new Pose(48, 38),
-//
-//                                    new Pose(10, 38)
-//                            )
-//                    ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
-//                    .build();
-//
-//            ShootThirdRow = follower.pathBuilder().addPath(
-//                            new BezierLine(
-//                                    new Pose(10, 38),
-//
-//                                    new Pose(58.565, 77.292)
-//                            )
-//                    ).setTangentHeadingInterpolation()
-//                    .setReversed()
-//                    .addParametricCallback(0.7, () -> spindexer.stopIntake())
-//                    .addParametricCallback(0.8, () -> spindexer.startOuttake())
-//                    .build();
 
             IntakeFirstRow = follower.pathBuilder().addPath(
                             new BezierCurve(
