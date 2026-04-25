@@ -14,7 +14,7 @@ import org.firstinspires.ftc.teamcode.OpMode.TeleOp.SubSystem.Shooter;
 import org.firstinspires.ftc.teamcode.OpMode.TeleOp.SubSystem.Spindexer;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
-@Autonomous(name = "BLUE Far (cycle)", group = "01")
+@Autonomous(name = "\uD83D\uDD35 Far (cycle)", group = "02")
 public class BlueFar extends OpMode {
 
     // =========================================================================
@@ -48,14 +48,14 @@ public class BlueFar extends OpMode {
                             new BezierLine(
                                     new Pose(44.000, 35.500),
 
-                                    new Pose(11.000, 30)
+                                    new Pose(11.000, 35.5)
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
                     .build();
 
             ShootThirdRow = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(11.000, 30),
+                                    new Pose(11.000, 35.5),
 
                                     new Pose(57, 15)
                             )
@@ -207,6 +207,8 @@ public class BlueFar extends OpMode {
 
     @Override
     public void init() {
+        Constant.ALLIANCE = "BLUE";
+
         pathTimer = new Timer();
         opmodeTimer = new Timer();
 
@@ -237,7 +239,7 @@ public class BlueFar extends OpMode {
         autonomousPathUpdate();
 
         shooter.updateShootingParams(odoDist, 20, spindexer.outtakeStage != -1);
-        shooter.updateTurret(angle, 0);
+        shooter.updateTurret(angle);
         shooter.runShooter(spindexer.outtakeStage != -1);
         spindexer.update(targetMotif, shooter.isReady());
 

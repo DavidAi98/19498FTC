@@ -14,7 +14,7 @@
     import org.firstinspires.ftc.teamcode.OpMode.TeleOp.SubSystem.Spindexer;
     import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
-    @Autonomous(name = "\uD83D\uDD35 15 SORTED")
+    @Autonomous(name = "\uD83D\uDD35 15 SORTED", group = "00")
     public class Blue15 extends OpMode {
 
 

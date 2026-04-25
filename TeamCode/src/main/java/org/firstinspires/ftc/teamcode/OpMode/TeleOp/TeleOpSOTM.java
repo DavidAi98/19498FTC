@@ -54,7 +54,7 @@ public class TeleOpSOTM extends OpMode {
         // Dpad Left:   Disable color sensor (if both dead)
         // Dpad Right:  Swap color sensor
 
-        if (gamepad1.left_bumper && gamepad1.right_bumper && gamepad1.left_stick_button && gamepad1.right_stick_button) {
+        if (gamepad1.left_stick_button && gamepad1.right_stick_button) {
             Constant.ALLIANCE = Constant.ALLIANCE.equalsIgnoreCase("RED") ? "BLUE" : "RED";
         }
         if (gamepad1.aWasPressed()) {
@@ -166,26 +166,27 @@ public class TeleOpSOTM extends OpMode {
         dashboard.sendTelemetryPacket(packet);
         telemetry.addData("Spindexer Slots", slotVisual.toString());
         telemetry.addData("Field Centric",   FieldCentric);
-        telemetry.addData("Distance1",  "%.2f", spindexer.colorSensor1.getDistance(DistanceUnit.MM));
-        telemetry.addData("Distance2",  "%.2f", spindexer.colorSensor2.getDistance(DistanceUnit.MM));
+//        telemetry.addData("Distance1",  "%.2f", spindexer.colorSensor1.getDistance(DistanceUnit.MM));
+//        telemetry.addData("Distance2",  "%.2f", spindexer.colorSensor2.getDistance(DistanceUnit.MM));
         telemetry.addData("Alliance",        Constant.ALLIANCE);
 //        telemetry.addData("Motif",           motif);
         telemetry.addData("Sensor in use",   spindexer.sensorInUse);
         telemetry.addData("Intake Stage",    spindexer.intakeStage);
         telemetry.addData("Outtake Stage",   spindexer.outtakeStage);
 //        telemetry.addData("Shooter Ready",   shooter.isReady());
-        telemetry.addData("Robot Heading",   "%.2f", drive.headingDeg);
-        telemetry.addData("Veloity ", shooter.rightShooter.getVelocity());
+        telemetry.addData("Current Veloity", shooter.rightShooter.getVelocity());
         telemetry.addData("Velo Error",      "%.1f", shooter.calculatedTargetVelocity - shooter.rightShooter.getVelocity());
 //        telemetry.addData("Real Dist (in)",  "%.2f", drive.distanceToGoal());
 //        telemetry.addData("Eff Dist (in)",   "%.2f", lastSolution.effectiveDistInch);
 //        telemetry.addData("Moving Scale",    "%.2f", shooter.movingScale);
 //        telemetry.addData("target ticks",    spindexer.targetTicks);
-        telemetry.addData("current ticks",   spindexer.spindexerEncoder.getCurrentPosition());
-        telemetry.addData("x Vel", MecanumDrive.getRawVelX());
-        telemetry.addData("y Vel", MecanumDrive.getRawVelY());
+//        telemetry.addData("current ticks",   spindexer.spindexerEncoder.getCurrentPosition());
+//        telemetry.addData("x Vel", MecanumDrive.getRawVelX());
+//        telemetry.addData("y Vel", MecanumDrive.getRawVelY());
         telemetry.addData("filteredAprilX",  shooter.filteredAprilX);
         telemetry.addData("Drive Pos",       "X=%.1f  Y=%.1f", drive.botX, drive.botY);
+        telemetry.addData("Robot Heading",   "%.2f", drive.headingDeg);
+
 //        telemetry.addData("Turret Pos",      "X=%.1f  Y=%.1f", drive.turretX, drive.turretY);
 //
 //        telemetry.addData("CS2 Blue",        spindexer.colorSensor2.blue());

@@ -14,7 +14,7 @@ import org.firstinspires.ftc.teamcode.OpMode.TeleOp.SubSystem.Shooter;
 import org.firstinspires.ftc.teamcode.OpMode.TeleOp.SubSystem.Spindexer;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
-@Autonomous(name = "RED Far (cycle)", group = "01")
+@Autonomous(name = "\uD83D\uDD34 Far (cycle)", group = "02")
 public class RedFar extends OpMode {
 
     // =========================================================================
@@ -78,14 +78,14 @@ public class RedFar extends OpMode {
                             new BezierLine(
                                     new Pose(14, 10).mirror(),
 
-                                    new Pose(14, 40).mirror()
+                                    new Pose(14, 35).mirror()
                             )
                     ).setConstantHeadingInterpolation(Math.toRadians(40))
                     .build();
 
             ShootCycle1 = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(14, 40).mirror(),
+                                    new Pose(14, 35).mirror(),
 
                                     new Pose(57, 15).mirror()
                             )
@@ -207,6 +207,8 @@ public class RedFar extends OpMode {
 
     @Override
     public void init() {
+        Constant.ALLIANCE = "RED";
+
         pathTimer = new Timer();
         opmodeTimer = new Timer();
 
@@ -237,13 +239,13 @@ public class RedFar extends OpMode {
         autonomousPathUpdate();
 
         shooter.updateShootingParams(odoDist, 20, spindexer.outtakeStage != -1);
-        shooter.updateTurret(angle, 0);
+        shooter.updateTurret(angle);
         shooter.runShooter(spindexer.outtakeStage != -1);
         spindexer.update(targetMotif, shooter.isReady());
 
         Pose p = follower.getPose();
-        Constant.AUTON_LAST_X           = 113.5 - p.getX();
-        Constant.AUTON_LAST_Y           =   8 - p.getY();
+        Constant.AUTON_LAST_X = p.getX() - 33.5;
+        Constant.AUTON_LAST_Y = p.getY() - 11.5;
         Constant.AUTON_LAST_HEADING_RAD = p.getHeading();
         Constant.AUTON_LAST_HEADING_DEG = Math.toDegrees(Constant.AUTON_LAST_HEADING_RAD);
 

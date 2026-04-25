@@ -15,7 +15,7 @@ import org.firstinspires.ftc.teamcode.OpMode.TeleOp.SubSystem.Shooter;
 import org.firstinspires.ftc.teamcode.OpMode.TeleOp.SubSystem.Spindexer;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
-@Autonomous(name = "\uD83D\uDD35 18")
+@Autonomous(name = "\uD83D\uDD35 18", group = "01")
 public class Blue18 extends OpMode {
 
 

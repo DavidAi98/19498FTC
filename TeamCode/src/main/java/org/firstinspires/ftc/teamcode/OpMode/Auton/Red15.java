@@ -14,7 +14,7 @@ import org.firstinspires.ftc.teamcode.OpMode.TeleOp.SubSystem.Shooter;
 import org.firstinspires.ftc.teamcode.OpMode.TeleOp.SubSystem.Spindexer;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
-@Autonomous(name = "\uD83D\uDD34 15 SORTED")
+@Autonomous(name = "\uD83D\uDD34 15 SORTED", group = "00")
 public class Red15 extends OpMode {
 
     private double mirror_length = 139.5;
@@ -386,9 +386,9 @@ public class Red15 extends OpMode {
         }
 
         Pose p = follower.getPose();
-        Constant.AUTON_LAST_X           = 113.5 - p.getX();
-        Constant.AUTON_LAST_Y           =   8 - p.getY();
-        Constant.AUTON_LAST_HEADING_RAD = p.getHeading() - Math.PI;
+        Constant.AUTON_LAST_X = p.getX() - 33.5;
+        Constant.AUTON_LAST_Y = p.getY() - 11.5;
+        Constant.AUTON_LAST_HEADING_RAD = p.getHeading();
         Constant.AUTON_LAST_HEADING_DEG = Math.toDegrees(Constant.AUTON_LAST_HEADING_RAD);
 
         telemetry.addData("Slots",         slotVisual.toString());

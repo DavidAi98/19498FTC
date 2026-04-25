@@ -119,7 +119,7 @@ public class Constant {
     // How many encoder ticks away from target still counts as "in slot".
     //   Artifacts not firing → INCREASE (spindexer settling slowly)
     //   Artifacts fire at wrong slot → DECREASE (too loose)
-    public static int OUTTAKE_TICK_TOLERANCE = 600;
+    public static int OUTTAKE_TICK_TOLERANCE = 600; //maybe 750 if module
 
     // RPM error allowed before isReady() returns true and fires the ball.
     // Note: isReady() has a (2200/currentVelo)^2 term making this looser than it looks.
@@ -127,8 +127,8 @@ public class Constant {
     public static int VELOCITY_TOLERANCE = 120; //120
 
     // How long pivot travels up before coming back down (ms).
-    public static int PIVOT_UP_TIMER   = 90;
-    public static int PIVOT_DOWN_TIMER = 160;
+    public static int PIVOT_UP_TIMER   = 90; //70 if module
+    public static int PIVOT_DOWN_TIMER = 160; //125 if module
 
     // Milliseconds before spindexer gives up and retries if it can't reach position.
     //   Getting stuck often → INCREASE
