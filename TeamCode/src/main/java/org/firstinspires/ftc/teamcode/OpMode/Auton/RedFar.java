@@ -24,8 +24,9 @@ public class RedFar extends OpMode {
     public class Paths {
         public PathChain IntakeThirdRow;
         public PathChain ShootThirdRow;
-        public PathChain CycleFarIntake1;
-        public PathChain ShootCycle1;
+        public PathChain CycleFarIntake;
+        public PathChain ShootCycle;
+        public PathChain Leave;
 
         public Paths(Follower follower) {
 
@@ -66,24 +67,24 @@ public class RedFar extends OpMode {
                     .build();
 
             // Drive from shooting spot to far intake zone
-            CycleFarIntake1 = follower.pathBuilder()
+            CycleFarIntake = follower.pathBuilder()
                     .addPath(
                             new BezierCurve(
                                     new Pose(57, 15).mirror(),
                                     new Pose(20,5).mirror(),
-                                    new Pose(14, 10).mirror()
+                                    new Pose(14, 13).mirror()
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(40))
+                    ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(35))
                     .addPath(
                             new BezierLine(
-                                    new Pose(14, 10).mirror(),
+                                    new Pose(14, 13).mirror(),
 
-                                    new Pose(14, 35).mirror()
+                                    new Pose(14, 30).mirror()
                             )
-                    ).setConstantHeadingInterpolation(Math.toRadians(40))
+                    ).setConstantHeadingInterpolation(Math.toRadians(35))
                     .build();
 
-            ShootCycle1 = follower.pathBuilder().addPath(
+            ShootCycle = follower.pathBuilder().addPath(
                             new BezierLine(
                                     new Pose(14, 35).mirror(),
 
@@ -93,6 +94,15 @@ public class RedFar extends OpMode {
                     .setReversed()
                     .addParametricCallback(0.8, () -> spindexer.stopIntake())
                     .addParametricCallback(0.9, () -> spindexer.startOuttake())
+                    .build();
+
+            Leave = follower.pathBuilder().addPath(
+                            new BezierLine(
+                                    new Pose(57, 15).mirror(),
+
+                                    new Pose(30, 15).mirror()
+                            )
+                    ).setTangentHeadingInterpolation()
                     .build();
 
         }
@@ -180,20 +190,38 @@ public class RedFar extends OpMode {
             // Short reposition
             case 4:
                 if (!follower.isBusy() && spindexer.outtakeStage == -1) {
-                    spindexer.startIntake();
-                    follower.followPath(paths.CycleFarIntake1, true);
-                    setPathState(5);
+                    if (opmodeTimer.getElapsedTimeSeconds() < 27) {
+                        spindexer.startIntake();
+                        follower.followPath(paths.CycleFarIntake, false);
+                        setPathState(5);
+                    } else {
+                        setPathState(100);
+                    }
+
                 }
                 break;
 
             // Bezier sweep arc
             case 5:
                 if (!follower.isBusy() || spindexer.artifactCount == 3) {
-                    angle = 223;
-                    odoDist = 140;
-                    follower.followPath(paths.ShootCycle1, true);
-                    setPathState(4);
+                    if (opmodeTimer.getElapsedTimeSeconds() < 27) {
+                        angle = 223;
+                        odoDist = 140;
+                        follower.followPath(paths.ShootCycle, true);
+                        setPathState(4);
+                    } else {
+                        setPathState(99);
+                    }
                 }
+                break;
+
+            case 99:
+                follower.followPath(paths.Leave,true);
+                setPathState(100);
+                break;
+
+            case 100:
+                requestOpModeStop();
                 break;
 
 
@@ -244,8 +272,8 @@ public class RedFar extends OpMode {
         spindexer.update(targetMotif, shooter.isReady());
 
         Pose p = follower.getPose();
-        Constant.AUTON_LAST_X = p.getX() - 33.5;
-        Constant.AUTON_LAST_Y = p.getY() - 11.5;
+        Constant.AUTON_LAST_X = p.getX();
+        Constant.AUTON_LAST_Y = p.getY() - 18;
         Constant.AUTON_LAST_HEADING_RAD = p.getHeading();
         Constant.AUTON_LAST_HEADING_DEG = Math.toDegrees(Constant.AUTON_LAST_HEADING_RAD);
 

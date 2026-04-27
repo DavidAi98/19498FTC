@@ -114,7 +114,7 @@ public class Constant {
     // TIMERS & TOLERANCES
     // -----------------------------------------------------------------------
     public static int INVERSE_TIMER         = 900;
-    public static int INTAKE_TICK_TOLERANCE = 750;
+    public static int INTAKE_TICK_TOLERANCE = 700;
 
     // How many encoder ticks away from target still counts as "in slot".
     //   Artifacts not firing → INCREASE (spindexer settling slowly)
@@ -143,19 +143,35 @@ public class Constant {
     // -----------------------------------------------------------------------
     public static final TreeMap<Double, double[]> SHOOTING_TABLE = new TreeMap<>();
     static {
+        SHOOTING_TABLE.put(20.0, new double[]{0,0});
         SHOOTING_TABLE.put(30.0,  new double[]{1380, 30});
         SHOOTING_TABLE.put(40.0,  new double[]{1440, 35});
-        SHOOTING_TABLE.put(50.0,  new double[]{1500, 40});
-        SHOOTING_TABLE.put(60.0,  new double[]{1500, 45});
-        SHOOTING_TABLE.put(70.0,  new double[]{1540, 45});
-        SHOOTING_TABLE.put(80.0,  new double[]{1595, 45});
-        SHOOTING_TABLE.put(90.0,  new double[]{1680, 45});
-        SHOOTING_TABLE.put(100.0, new double[]{1740, 45});
-        SHOOTING_TABLE.put(110.0, new double[]{1840, 45});
-        SHOOTING_TABLE.put(120.0, new double[]{1940, 45});
-        SHOOTING_TABLE.put(130.0, new double[]{2020, 45});
-        SHOOTING_TABLE.put(140.0, new double[]{2100, 45});
-        SHOOTING_TABLE.put(150.0, new double[]{2180, 45});
+        SHOOTING_TABLE.put(50.0,  new double[]{1220, 32});
+        SHOOTING_TABLE.put(60.0,  new double[]{1300, 35});
+        SHOOTING_TABLE.put(70.0,  new double[]{1400, 40});
+        SHOOTING_TABLE.put(80.0,  new double[]{1500, 45});
+        SHOOTING_TABLE.put(90.0,  new double[]{1550, 45});
+        SHOOTING_TABLE.put(100.0, new double[]{1620, 45});
+        SHOOTING_TABLE.put(110.0, new double[]{1700, 45});
+        SHOOTING_TABLE.put(120.0, new double[]{1780, 45});
+        SHOOTING_TABLE.put(130.0, new double[]{1860, 45});
+        SHOOTING_TABLE.put(140.0, new double[]{1900, 45});
+        SHOOTING_TABLE.put(150.0, new double[]{2140, 45});
+        SHOOTING_TABLE.put(160.0, new double[]{2140, 45});
+//        SHOOTING_TABLE.put(20.0, new double[]{0,0});
+//        SHOOTING_TABLE.put(30.0,  new double[]{1380, 30});
+//        SHOOTING_TABLE.put(40.0,  new double[]{1440, 35});
+//        SHOOTING_TABLE.put(50.0,  new double[]{1500, 40});
+//        SHOOTING_TABLE.put(60.0,  new double[]{1500, 45});
+//        SHOOTING_TABLE.put(70.0,  new double[]{1540, 45});
+//        SHOOTING_TABLE.put(80.0,  new double[]{1595, 45});
+//        SHOOTING_TABLE.put(90.0,  new double[]{1680, 45});
+//        SHOOTING_TABLE.put(100.0, new double[]{1740, 45});
+//        SHOOTING_TABLE.put(110.0, new double[]{1840, 45});
+//        SHOOTING_TABLE.put(120.0, new double[]{1940, 45});
+//        SHOOTING_TABLE.put(130.0, new double[]{2020, 45});
+//        SHOOTING_TABLE.put(140.0, new double[]{2100, 45});
+//        SHOOTING_TABLE.put(150.0, new double[]{2180, 45});
     }
 
     // -----------------------------------------------------------------------

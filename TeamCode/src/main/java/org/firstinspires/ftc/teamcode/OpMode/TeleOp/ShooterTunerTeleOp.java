@@ -43,7 +43,7 @@ public class ShooterTunerTeleOp extends OpMode {
 
     // ================= HARDWARE =================
     private DcMotor leftFront, rightFront, leftBack, rightBack;
-    private DcMotorEx leftShooter, rightShooter;
+    private DcMotorEx rightShooter, leftShooter;
     private Servo leftPivot, rightPivot, hood;
     private Servo turret1, turret2;
 
@@ -73,12 +73,12 @@ public class ShooterTunerTeleOp extends OpMode {
         leftBack.setDirection(DcMotorSimple.Direction.REVERSE);
 
         // ---- Shooter ----
-        leftShooter  = hardwareMap.get(DcMotorEx.class, "LeftShooterMotor");
-        rightShooter = hardwareMap.get(DcMotorEx.class, "RightShooterMotor");
+        rightShooter  = hardwareMap.get(DcMotorEx.class, "RightShooterMotor");
+        leftShooter = hardwareMap.get(DcMotorEx.class, "LeftShooterMotor");
 
-        leftShooter.setDirection(DcMotorSimple.Direction.REVERSE);
-        leftShooter.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightShooter.setDirection(DcMotorSimple.Direction.REVERSE);
         rightShooter.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        leftShooter.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         // ---- Pivot & Hood ----
         leftPivot  = hardwareMap.get(Servo.class, "LeftPivot");
@@ -229,7 +229,7 @@ public class ShooterTunerTeleOp extends OpMode {
         TelemetryPacket packet = new TelemetryPacket();
         packet.put("Distance (in)", distance);
         packet.put("Target RPM", TARGET_RPM);
-        packet.put("Actual RPM", leftShooter.getVelocity());
+        packet.put("Actual RPM", rightShooter.getVelocity());
         packet.put("Hood Angle", hoodAngle);
         packet.put("Turret Pos", turretPos);
         packet.put("Turret Heading", turretHeading);
@@ -242,7 +242,7 @@ public class ShooterTunerTeleOp extends OpMode {
 
         telemetry.addData("Distance", "%.2f", distance);
         telemetry.addData("Target RPM", TARGET_RPM);
-        telemetry.addData("Actual RPM", "%.1f", leftShooter.getVelocity());
+        telemetry.addData("Actual RPM", "%.1f", rightShooter.getVelocity());
         telemetry.addData("Hood Angle", hoodAngle);
         telemetry.addData("kP", kP);
         telemetry.addData("kI", kI);
@@ -255,7 +255,7 @@ public class ShooterTunerTeleOp extends OpMode {
     // ================= PID + FF =================
     private void applyShooterPower(double targetVelo) {
 
-        double currentVelo = leftShooter.getVelocity();
+        double currentVelo = rightShooter.getVelocity();
         double voltage = batteryVoltageSensor.getVoltage();
 
         double ff = (kV * targetVelo) + (targetVelo > 0 ? kS : 0);
@@ -266,7 +266,7 @@ public class ShooterTunerTeleOp extends OpMode {
         double power = (pid + ff)* (Constant.NOMINAL_VOLTAGE / voltage);
         double safe = Math.max(0, Math.min(1.0, power));
 
-        leftShooter.setPower(safe);
         rightShooter.setPower(safe);
+        leftShooter.setPower(safe);
     }
 }

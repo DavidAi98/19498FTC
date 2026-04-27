@@ -17,7 +17,6 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 @Autonomous(name = "\uD83D\uDD34 15 SORTED", group = "00")
 public class Red15 extends OpMode {
 
-    private double mirror_length = 139.5;
     public class Paths {
         public PathChain MoveToShootPreload;
         public PathChain IntakeSecondRow;
@@ -33,9 +32,9 @@ public class Red15 extends OpMode {
         public Paths(Follower follower) {
             MoveToShootPreload = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(31.000, 135.000).mirror(mirror_length),
+                                    new Pose(31.000, 135.000).mirror(),
 
-                                    new Pose(58.5, 77).mirror(mirror_length)
+                                    new Pose(58.5, 77).mirror()
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(-90), Math.toRadians(-90))
 
@@ -43,34 +42,34 @@ public class Red15 extends OpMode {
 
             IntakeSecondRow = follower.pathBuilder().addPath(
                             new BezierCurve(
-                                    new Pose(58.5, 77).mirror(mirror_length),
-                                    new Pose(56.658, 59.540).mirror(mirror_length),
-                                    new Pose(41, 59.5).mirror(mirror_length)
+                                    new Pose(58.5, 77).mirror(),
+                                    new Pose(56.658, 59.540).mirror(),
+                                    new Pose(41, 59.5).mirror()
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(-90), Math.toRadians(0))
                     .addPath(
                             new BezierLine(
-                                    new Pose(41, 59.5).mirror(mirror_length),
+                                    new Pose(41, 59.5).mirror(),
 
-                                    new Pose(10, 59.5).mirror(mirror_length)
+                                    new Pose(10, 59.5).mirror()
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
                     .build();
 
             SecondRowToGate = follower.pathBuilder().addPath(
                             new BezierCurve(
-                                    new Pose(10, 59.5).mirror(mirror_length),
-                                    new Pose(26.870, 63.746).mirror(mirror_length),
-                                    new Pose(15.8, 69.199).mirror(mirror_length)
+                                    new Pose(10, 59.5).mirror(),
+                                    new Pose(26.870, 63.746).mirror(),
+                                    new Pose(15.8, 69.199).mirror()
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(5))
                     .build();
 
             GateToShoot = follower.pathBuilder().addPath(
                             new BezierCurve(
-                                    new Pose(15.8, 69.199).mirror(mirror_length),
-                                    new Pose(37.379, 69.553).mirror(mirror_length),
-                                    new Pose(58, 77).mirror(mirror_length)
+                                    new Pose(15.8, 69.199).mirror(),
+                                    new Pose(37.379, 69.553).mirror(),
+                                    new Pose(58, 77).mirror()
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(5), Math.toRadians(0))
                     .addParametricCallback(0.9, () -> { spindexer.stopIntake(); spindexer.startOuttake(); })
@@ -78,25 +77,25 @@ public class Red15 extends OpMode {
 
             GateIntake = follower.pathBuilder().addPath(
                             new BezierCurve(
-                                    new Pose(58, 77).mirror(mirror_length),
-                                    new Pose(42.000, 64.000).mirror(mirror_length),
-                                    new Pose(16, 65).mirror(mirror_length)
+                                    new Pose(58, 77).mirror(),
+                                    new Pose(42.000, 64.000).mirror(),
+                                    new Pose(16, 65).mirror()
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
                     .addPath(
                             new BezierLine(
-                                    new Pose(16, 65).mirror(mirror_length),
+                                    new Pose(16, 65).mirror(),
 
-                                    new Pose(11.8, 62).mirror(mirror_length)
+                                    new Pose(12.3, 61.5).mirror()
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(35))
+                    ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(32.5))
                     .build();
 
             ShootGate = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(11.8, 62).mirror(mirror_length),
-
-                                    new Pose(58.565, 76.845).mirror(mirror_length)
+                                    new Pose(12.3, 61.5).mirror(),
+                                    // (12.3, 61.2) 32.5deg
+                                    new Pose(58, 77).mirror()
                             )
                     ).setTangentHeadingInterpolation()
                     .setReversed()
@@ -106,26 +105,26 @@ public class Red15 extends OpMode {
 
             MoveToThirdRow = follower.pathBuilder().addPath(
                             new BezierCurve(
-                                    new Pose(58.565, 76.845).mirror(mirror_length),
-                                    new Pose(58.000, 46.000).mirror(mirror_length),
-                                    new Pose(52.000, 37.5).mirror(mirror_length),
-                                    new Pose(48, 37.5).mirror(mirror_length)
+                                    new Pose(58, 77).mirror(),
+                                    new Pose(58.000, 46.000).mirror(),
+                                    new Pose(52.000, 37.5).mirror(),
+                                    new Pose(48, 37.5).mirror()
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(270), Math.toRadians(0))
                     .addPath(
                             new BezierLine(
-                                    new Pose(48, 37.5).mirror(mirror_length),
+                                    new Pose(48, 37.5).mirror(),
 
-                                    new Pose(10, 37.5).mirror(mirror_length)
+                                    new Pose(10, 37.5).mirror()
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
                     .build();
 
             ShootThirdRow = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(10, 37.5).mirror(mirror_length),
+                                    new Pose(10, 37.5).mirror(),
 
-                                    new Pose(58.565, 77.292).mirror(mirror_length)
+                                    new Pose(58.565, 77.292).mirror()
                             )
                     ).setTangentHeadingInterpolation()
                     .setReversed()
@@ -135,9 +134,9 @@ public class Red15 extends OpMode {
 
             IntakeFirstRow = follower.pathBuilder().addPath(
                             new BezierCurve(
-                                    new Pose(58.565, 77.292).mirror(mirror_length),
-                                    new Pose(48.911, 85.447).mirror(mirror_length),
-                                    new Pose(16, 83.553).mirror(mirror_length)
+                                    new Pose(58.565, 77.292).mirror(),
+                                    new Pose(48.911, 85.447).mirror(),
+                                    new Pose(16, 83.553).mirror()
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
 
@@ -145,9 +144,9 @@ public class Red15 extends OpMode {
 
             ShootFirstRow = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(16, 83.553).mirror(mirror_length),
+                                    new Pose(16, 83.553).mirror(),
 
-                                    new Pose(48.764, 113.435).mirror(mirror_length)
+                                    new Pose(48.764, 113.435).mirror()
                             )
                     ).setTangentHeadingInterpolation()
                     .setReversed()
@@ -167,10 +166,10 @@ public class Red15 extends OpMode {
     private Spindexer spindexer;
 
     private double angle       = 130;
-    private double odoDist     = 71;
+    private double odoDist     = 72;
     private String targetMotif = "Null";
 
-    public final Pose START_POS = new Pose(31, 135, Math.toRadians(-90)).mirror(mirror_length);
+    public final Pose START_POS = new Pose(31, 135, Math.toRadians(-90)).mirror();
 
     public void autonomousPathUpdate() {
         switch (pathState) {
@@ -303,6 +302,7 @@ public class Red15 extends OpMode {
             case 40:
                 angle = 195;
                 odoDist = 15;
+                follower.setMaxPower(0.9);
                 setPathState(41);
                 break;
 
@@ -386,7 +386,7 @@ public class Red15 extends OpMode {
         }
 
         Pose p = follower.getPose();
-        Constant.AUTON_LAST_X = p.getX() - 33.5;
+        Constant.AUTON_LAST_X = p.getX() - 31;
         Constant.AUTON_LAST_Y = p.getY() - 11.5;
         Constant.AUTON_LAST_HEADING_RAD = p.getHeading();
         Constant.AUTON_LAST_HEADING_DEG = Math.toDegrees(Constant.AUTON_LAST_HEADING_RAD);

@@ -35,7 +35,7 @@
                                 new BezierLine(
                                         new Pose(31.000, 135.000),
 
-                                        new Pose(58.789, 77.292)
+                                        new Pose(58.5, 77)
                                 )
                         ).setLinearHeadingInterpolation(Math.toRadians(270), Math.toRadians(270))
 
@@ -43,7 +43,7 @@
 
                 IntakeSecondRow = follower.pathBuilder().addPath(
                                 new BezierCurve(
-                                        new Pose(58.789, 77.292),
+                                        new Pose(58.5, 77),
                                         new Pose(56.658, 59.540),
                                         new Pose(41, 59.5)
                                 )
@@ -80,23 +80,23 @@
                                 new BezierCurve(
                                         new Pose(58.789, 77.068),
                                         new Pose(42.000, 64.000),
-                                        new Pose(15, 65.5)
+                                        new Pose(17, 65)
                                 )
                         ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
                         .addPath(
                                 new BezierLine(
-                                        new Pose(15, 65.5),
+                                        new Pose(17, 65),
 
-                                        new Pose(10.3, 62.5)
+                                        new Pose(11.5, 63)
                                 )
-                        ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(140))
+                        ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(147.5))
                         .build();
 
                 ShootGate = follower.pathBuilder().addPath(
                                 new BezierLine(
-                                        new Pose(10.3, 62.5),
+                                        new Pose(11.5, 63),
 
-                                        new Pose(58.565, 76.845)
+                                        new Pose(58, 77)
                                 )
                         ).setTangentHeadingInterpolation()
                         .setReversed()
@@ -106,7 +106,7 @@
 
                 MoveToThirdRow = follower.pathBuilder().addPath(
                                 new BezierCurve(
-                                        new Pose(58.565, 76.845),
+                                        new Pose(58, 77),
                                         new Pose(58.000, 46.000),
                                         new Pose(52.000, 38.000),
                                         new Pose(48, 38)
@@ -137,7 +137,7 @@
                                 new BezierCurve(
                                         new Pose(58.565, 77.292),
                                         new Pose(48.911, 85.447),
-                                        new Pose(15, 83.553)
+                                        new Pose(16, 83.553)
                                 )
                         ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
 
@@ -145,7 +145,7 @@
 
                 ShootFirstRow = follower.pathBuilder().addPath(
                                 new BezierLine(
-                                        new Pose(15, 83.553),
+                                        new Pose(16, 83.553),
 
                                         new Pose(48.764, 113.435)
                                 )
@@ -167,7 +167,7 @@
         private Spindexer spindexer;
 
         private double angle       = 44;
-        private double odoDist     = 69;
+        private double odoDist     = 72;
         private String targetMotif = "Null";
 
         public final Pose START_POS = new Pose(31, 135, Math.toRadians(270));
@@ -214,7 +214,7 @@
                     follower.followPath(paths.IntakeSecondRow, true);
                     spindexer.startIntake();
                     angle = 317;
-                    odoDist = 72;
+                    odoDist = 74;
                     setPathState(11);
                     break;
 
@@ -275,8 +275,7 @@
                 // ── THIRD ROW ─────────────────────────────────────────────────────
 
                 case 30:
-                    angle = 1;
-                    odoDist = 68;
+                    angle = 356;
                     if (!follower.isBusy()) {
                         follower.followPath(paths.ShootThirdRow, true);
                         setPathState(31);
@@ -304,6 +303,7 @@
                 case 40:
                     angle = 336;
                     odoDist = 15;
+                    follower.setMaxPower(0.9);
                     setPathState(41);
                     break;
 

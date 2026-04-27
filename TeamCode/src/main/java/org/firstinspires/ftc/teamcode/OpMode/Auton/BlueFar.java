@@ -26,6 +26,7 @@ public class BlueFar extends OpMode {
         public PathChain ShootThirdRow;
         public PathChain CycleFarIntake;
         public PathChain ShootCycle;
+        public PathChain Leave;
 
         public Paths(Follower follower) {
 
@@ -71,16 +72,16 @@ public class BlueFar extends OpMode {
                             new BezierCurve(
                                     new Pose(57, 15),
                                     new Pose(20,5),
-                                    new Pose(14, 10)
+                                    new Pose(14, 13)
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(140))
+                    ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(145))
                     .addPath(
                             new BezierLine(
-                                    new Pose(14, 10),
+                                    new Pose(14, 13),
 
-                                    new Pose(14, 35)
+                                    new Pose(14, 30)
                             )
-                    ).setConstantHeadingInterpolation(Math.toRadians(140))
+                    ).setConstantHeadingInterpolation(Math.toRadians(145))
                     .build();
 
             ShootCycle = follower.pathBuilder().addPath(
@@ -94,7 +95,14 @@ public class BlueFar extends OpMode {
                     .addParametricCallback(0.8, () -> spindexer.stopIntake())
                     .addParametricCallback(0.9, () -> spindexer.startOuttake())
                     .build();
+            Leave = follower.pathBuilder().addPath(
+                    new BezierLine(
+                            new Pose(57, 15),
 
+                            new Pose(30, 15)
+                    )
+                    ).setTangentHeadingInterpolation()
+                    .build();
         }
     }
 
@@ -171,7 +179,7 @@ public class BlueFar extends OpMode {
             case 3:
                 if (!follower.isBusy()) {
                     angle = 315;
-                    odoDist = 140;
+                    odoDist = 135;
                     follower.followPath(paths.ShootThirdRow, true);
                     setPathState(4);
                 }
@@ -180,22 +188,39 @@ public class BlueFar extends OpMode {
             // Short reposition
             case 4:
                 if (!follower.isBusy() && spindexer.outtakeStage == -1) {
-                    spindexer.startIntake();
-                    follower.followPath(paths.CycleFarIntake, true);
-                    setPathState(5);
+                    if (opmodeTimer.getElapsedTimeSeconds() < 28) {
+                        spindexer.startIntake();
+                        follower.followPath(paths.CycleFarIntake, false);
+                        setPathState(5);
+                    } else {
+                        setPathState(100);
+                    }
+
                 }
                 break;
 
             // Bezier sweep arc
             case 5:
                 if (!follower.isBusy() || spindexer.artifactCount == 3) {
-                    angle = 310;
-                    odoDist = 135;
-                    follower.followPath(paths.ShootCycle, true);
-                    setPathState(4);
+                    if (opmodeTimer.getElapsedTimeSeconds() < 28) {
+                        angle = 313;
+                        odoDist = 135;
+                        follower.followPath(paths.ShootCycle, true);
+                        setPathState(4);
+                    } else {
+                        setPathState(99);
+                    }
                 }
                 break;
 
+            case 99:
+                follower.followPath(paths.Leave,true);
+                setPathState(100);
+                break;
+
+            case 100:
+                requestOpModeStop();
+                break;
 
             // Return to shoot, then loop back to CycleFarIntake1
         }
@@ -239,14 +264,14 @@ public class BlueFar extends OpMode {
         autonomousPathUpdate();
 
         shooter.updateShootingParams(odoDist, 20, spindexer.outtakeStage != -1);
-        shooter.updateTurret(angle);
+        shooter.updateTurret(angle, 0);
         shooter.runShooter(spindexer.outtakeStage != -1);
         spindexer.update(targetMotif, shooter.isReady());
 
         Pose p = follower.getPose();
-        Constant.AUTON_LAST_X           = 113.5 - p.getX();
-        Constant.AUTON_LAST_Y           =   8 - p.getY();
-        Constant.AUTON_LAST_HEADING_RAD = p.getHeading();
+        Constant.AUTON_LAST_X           = 111 - p.getX();
+        Constant.AUTON_LAST_Y           =   5 - p.getY();
+        Constant.AUTON_LAST_HEADING_RAD = p.getHeading() - Math.PI;
         Constant.AUTON_LAST_HEADING_DEG = Math.toDegrees(Constant.AUTON_LAST_HEADING_RAD);
 
         StringBuilder slotVisual = new StringBuilder();

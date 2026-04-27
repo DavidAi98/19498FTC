@@ -166,8 +166,8 @@ public class TeleOpSOTM extends OpMode {
         dashboard.sendTelemetryPacket(packet);
         telemetry.addData("Spindexer Slots", slotVisual.toString());
         telemetry.addData("Field Centric",   FieldCentric);
-//        telemetry.addData("Distance1",  "%.2f", spindexer.colorSensor1.getDistance(DistanceUnit.MM));
-//        telemetry.addData("Distance2",  "%.2f", spindexer.colorSensor2.getDistance(DistanceUnit.MM));
+        telemetry.addData("Distance1",  "%.2f", spindexer.colorSensor1.getDistance(DistanceUnit.MM));
+        telemetry.addData("Distance2",  "%.2f", spindexer.colorSensor2.getDistance(DistanceUnit.MM));
         telemetry.addData("Alliance",        Constant.ALLIANCE);
 //        telemetry.addData("Motif",           motif);
         telemetry.addData("Sensor in use",   spindexer.sensorInUse);
@@ -176,7 +176,7 @@ public class TeleOpSOTM extends OpMode {
 //        telemetry.addData("Shooter Ready",   shooter.isReady());
         telemetry.addData("Current Veloity", shooter.rightShooter.getVelocity());
         telemetry.addData("Velo Error",      "%.1f", shooter.calculatedTargetVelocity - shooter.rightShooter.getVelocity());
-//        telemetry.addData("Real Dist (in)",  "%.2f", drive.distanceToGoal());
+        telemetry.addData("Real Dist (in)",  "%.2f", drive.distanceToGoal());
 //        telemetry.addData("Eff Dist (in)",   "%.2f", lastSolution.effectiveDistInch);
 //        telemetry.addData("Moving Scale",    "%.2f", shooter.movingScale);
 //        telemetry.addData("target ticks",    spindexer.targetTicks);

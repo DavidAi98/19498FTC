@@ -132,8 +132,8 @@ public class Spindexer {
         } else {
             intake.setPower(1);
         }
-        boolean sensor1dc = Math.abs(colorSensor1.getDistance(DistanceUnit.MM)-152.4) < 1;
-        boolean sensor2dc = Math.abs(colorSensor2.getDistance(DistanceUnit.MM)-152.4) < 1;
+        boolean sensor1dc = colorSensor1.getDistance(DistanceUnit.MM) == 152.4;
+        boolean sensor2dc = colorSensor2.getDistance(DistanceUnit.MM) == 152.4;
 
 
         if (sensor1dc && sensor2dc) {
@@ -153,9 +153,9 @@ public class Spindexer {
                 }
 
                 if (sensorInUse == 1) {
-                    colorDetected = artifactCount < 3 && colorSensor1.blue() >= 150 && colorSensor1.green() >= 150;
+                    colorDetected = artifactCount < 3 && colorSensor1.blue() + colorSensor1.green() > 175;
                 } else if (sensorInUse == 2) {
-                    colorDetected = artifactCount < 3 && colorSensor2.blue() >= 150 && colorSensor2.green() >= 150;
+                    colorDetected = artifactCount < 3 && colorSensor2.blue() + colorSensor2.green() > 175;
                 }
 
                 if (colorDetected || sensorInUse == -1 || skipSlot) {
@@ -331,9 +331,9 @@ public class Spindexer {
                 }
 
                 if (sensorInUse == 1) {
-                    colorDetected = artifactCount < 3 && colorSensor1.blue() >= 150 && colorSensor1.green() >= 150;
+                    colorDetected = artifactCount < 3 && colorSensor1.blue() + colorSensor1.green() > 175;
                 } else if (sensorInUse == 2) {
-                    colorDetected = artifactCount < 3 && colorSensor2.blue() >= 150 && colorSensor2.green() >= 150;
+                    colorDetected = artifactCount < 3 && colorSensor2.blue() + colorSensor2.green() > 175;
                 }
 
                 if (colorDetected || sensorInUse == -1) {
