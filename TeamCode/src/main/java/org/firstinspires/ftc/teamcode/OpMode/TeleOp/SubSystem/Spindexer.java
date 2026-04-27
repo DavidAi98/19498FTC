@@ -39,7 +39,8 @@ public class Spindexer {
     public int intakeStage = -1, outtakeStage = -1;
     public int Index = 1, nearestIndex = -1;
     public int targetTicks, currentTicks;
-    public double nearestPos, lastPos;
+    public double nearestPos = Constant.OUTTAKE_POS2;
+    public double lastPos;
     public String targetColor = "NaN";
 
     private static final int[] priorityOrder = {2, 1, 3};
@@ -236,7 +237,6 @@ public class Spindexer {
                 if (foundIndex != -1) {
                     nearestIndex = foundIndex;
                     nearestPos = getOuttakePos(nearestIndex);
-                    lastPos = nearestPos;
                     setSpindexer(nearestPos);
                     stateTimer.reset();
                     outtakeStage = 2;
@@ -271,6 +271,7 @@ public class Spindexer {
                 }
                 nearestIndex = -1;
                 if (artifactCount == 0) {
+                    nearestPos = Constant.OUTTAKE_POS2;
                     outtakeStage = -1;
                     Index = 1;
                     intakeDone = false;

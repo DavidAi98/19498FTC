@@ -76,7 +76,7 @@ public class ShooterTunerTeleOp extends OpMode {
         rightShooter  = hardwareMap.get(DcMotorEx.class, "RightShooterMotor");
         leftShooter = hardwareMap.get(DcMotorEx.class, "LeftShooterMotor");
 
-        rightShooter.setDirection(DcMotorSimple.Direction.REVERSE);
+        leftShooter.setDirection(DcMotorSimple.Direction.REVERSE);
         rightShooter.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         leftShooter.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 

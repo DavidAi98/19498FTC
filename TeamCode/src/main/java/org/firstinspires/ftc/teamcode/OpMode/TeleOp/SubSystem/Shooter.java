@@ -31,6 +31,7 @@ public class Shooter {
     // Original tracking variables
     public double filteredAprilX, aprilx;
     public double lastKP, lastKI, lastKD;
+    private double offset;
     String motif = "Null";
 
     public Shooter(HardwareMap hwMap) {
@@ -59,12 +60,16 @@ public class Shooter {
     public void updateShootingParams(double odoDistance, int aprilTagID, boolean active) {
         LLResult results = limelight.getLatestResult();
         linearInterpolation(odoDistance, active);
-
+        if (Constant.ALLIANCE.equals("RED")) {
+            offset = 1;
+        } else if (Constant.ALLIANCE.equals("BLUE")) {
+            offset = -1;
+        }
         if (results != null && results.isValid()) {
             List<LLResultTypes.FiducialResult> detection = results.getFiducialResults();
             for (LLResultTypes.FiducialResult april : detection) {
                 if (april.getFiducialId() == aprilTagID) {
-                    aprilx = april.getTargetXDegrees();
+                    aprilx = april.getTargetXDegrees() + offset;
                     break;
                 }
             }
