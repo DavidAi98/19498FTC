@@ -190,7 +190,7 @@ public class Blue18 extends OpMode {
 
 
             case 22:
-                if (spindexer.artifactCount == 3 || intakeTimer.getElapsedTimeSeconds() > 1.75) {
+                if (spindexer.artifactCount == 3 || intakeTimer.getElapsedTimeSeconds() > 1.6) {
                     follower.followPath(paths.ShootGate, true);
                     setPathState(67);
                 }
@@ -205,7 +205,7 @@ public class Blue18 extends OpMode {
                     setPathState(21);
                 } else if (!follower.isBusy() && spindexer.outtakeStage == -1 && cycles >= cycles_needed){
                     angle = 336;
-                    odoDist = 15;
+                    odoDist = 35;
                     follower.followPath(paths.IntakeFirstRow, true);
                     spindexer.startIntake();
                     setPathState(30);

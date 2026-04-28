@@ -188,7 +188,7 @@ public class Red18 extends OpMode {
 
             case 20:
                 if (!follower.isBusy() && spindexer.outtakeStage == -1) {
-                    angle = 195;
+                    angle = 198;
                     odoDist     = 77;
                     follower.followPath(paths.GateIntake, true);
                     spindexer.startIntake();
@@ -206,7 +206,7 @@ public class Red18 extends OpMode {
 
 
             case 22:
-                if (spindexer.artifactCount == 3 || intakeTimer.getElapsedTimeSeconds() > 1.75) {
+                if (spindexer.artifactCount == 3 || intakeTimer.getElapsedTimeSeconds() > 1.6) {
                     follower.followPath(paths.ShootGate, true);
                     setPathState(67);
                 }
@@ -221,7 +221,7 @@ public class Red18 extends OpMode {
                     setPathState(21);
                 } else if (!follower.isBusy() && spindexer.outtakeStage == -1 && cycles >= cycles_needed){
 
-                    odoDist = 15;
+                    odoDist = 35;
                     follower.followPath(paths.IntakeFirstRow, true);
                     spindexer.startIntake();
                     setPathState(30);

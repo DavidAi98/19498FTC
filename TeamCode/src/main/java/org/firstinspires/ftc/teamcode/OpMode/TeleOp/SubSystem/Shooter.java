@@ -61,9 +61,9 @@ public class Shooter {
         LLResult results = limelight.getLatestResult();
         linearInterpolation(odoDistance, active);
         if (Constant.ALLIANCE.equals("RED")) {
-            offset = 1;
+            offset = 0.5;
         } else if (Constant.ALLIANCE.equals("BLUE")) {
-            offset = -1;
+            offset = -0.5;
         }
         if (results != null && results.isValid()) {
             List<LLResultTypes.FiducialResult> detection = results.getFiducialResults();

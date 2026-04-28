@@ -302,7 +302,7 @@
 
                 case 40:
                     angle = 336;
-                    odoDist = 15;
+                    odoDist = 35;
                     follower.setMaxPower(0.9);
                     setPathState(41);
                     break;

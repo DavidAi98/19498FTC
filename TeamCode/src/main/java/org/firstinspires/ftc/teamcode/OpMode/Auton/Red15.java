@@ -241,7 +241,7 @@ public class Red15 extends OpMode {
             case 20:
                 follower.followPath(paths.GateIntake, true);
                 spindexer.startIntake();
-                angle = 202;
+                angle = 198;
                 setPathState(21);
                 break;
 
@@ -301,7 +301,7 @@ public class Red15 extends OpMode {
 
             case 40:
                 angle = 195;
-                odoDist = 15;
+                odoDist = 35;
                 follower.setMaxPower(0.9);
                 setPathState(41);
                 break;
