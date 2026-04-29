@@ -188,12 +188,12 @@ public class BlueFar extends OpMode {
             // Short reposition
             case 4:
                 if (!follower.isBusy() && spindexer.outtakeStage == -1) {
-                    if (opmodeTimer.getElapsedTimeSeconds() < 28) {
+                    if (opmodeTimer.getElapsedTimeSeconds() < 25) {
                         spindexer.startIntake();
                         follower.followPath(paths.CycleFarIntake, false);
                         setPathState(5);
                     } else {
-                        setPathState(100);
+                        setPathState(99);
                     }
 
                 }
@@ -201,16 +201,16 @@ public class BlueFar extends OpMode {
 
             // Bezier sweep arc
             case 5:
-                if (!follower.isBusy() || spindexer.artifactCount == 3) {
-                    if (opmodeTimer.getElapsedTimeSeconds() < 28) {
-                        angle = 313;
-                        odoDist = 135;
-                        follower.followPath(paths.ShootCycle, true);
-                        setPathState(4);
-                    } else {
-                        setPathState(99);
-                    }
+                if (opmodeTimer.getElapsedTimeSeconds() > 27) {
+                    setPathState(100);
                 }
+                if (!follower.isBusy() || spindexer.artifactCount == 3) {
+                    angle = 313;
+                    odoDist = 135;
+                    follower.followPath(paths.ShootCycle, true);
+                    setPathState(4);
+                }
+
                 break;
 
             case 99:
@@ -219,10 +219,13 @@ public class BlueFar extends OpMode {
                 break;
 
             case 100:
-                requestOpModeStop();
+                if (!follower.isBusy()) {
+                    setPathState(6767);
+                }
                 break;
 
-            // Return to shoot, then loop back to CycleFarIntake1
+            case 6767:
+                break;
         }
     }
 
@@ -269,8 +272,8 @@ public class BlueFar extends OpMode {
         spindexer.update(targetMotif, shooter.isReady());
 
         Pose p = follower.getPose();
-        Constant.AUTON_LAST_X           = 111 - p.getX();
-        Constant.AUTON_LAST_Y           =   5 - p.getY();
+        Constant.AUTON_LAST_X           = 112 - p.getX();
+        Constant.AUTON_LAST_Y           =   8 - p.getY();
         Constant.AUTON_LAST_HEADING_RAD = p.getHeading() - Math.PI;
         Constant.AUTON_LAST_HEADING_DEG = Math.toDegrees(Constant.AUTON_LAST_HEADING_RAD);
 

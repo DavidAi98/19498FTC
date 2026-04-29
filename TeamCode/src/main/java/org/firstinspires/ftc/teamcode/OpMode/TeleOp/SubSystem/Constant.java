@@ -43,12 +43,16 @@ public class Constant {
     // Force a fixed RPM target regardless of distance. -1 = disabled (use table).
     // Set on Dashboard to test a specific RPM without moving.
     public static double overwritenVelocity = -1;
-
-    public static double kP = 0.0032;       // proportional — increase if slow to reach target
+    public static double kP = 0.0015;       // was 0.0032, proportional — increase if slow to reach target
     public static double kI = 0;            // integral — leave at 0, causes windup
-    public static double kD = 10e-7;        // derivative — leave at 0 effectively
-    public static double kV = 0.000341754;  // feedforward per RPM — primary steady-state tuning knob
-    public static double kS = 0.12;         // static friction offset
+    public static double kD = 0.000025;        //was 10e-7, derivative — leave at 0 effectively
+    public static double kV = 0.0003375;  // previosuly 0.000341754, feedforward per RPM — primary steady-state tuning knob
+    public static double kS = 0.0455;
+//    public static double kP = 0.0032;       // proportional — increase if slow to reach target
+//    public static double kI = 0;            // integral — leave at 0, causes windup
+//    public static double kD = 10e-7;        // derivative — leave at 0 effectively
+//    public static double kV = 0.000341754;  // feedforward per RPM — primary steady-state tuning knob
+//    public static double kS = 0.12;         // static friction offset
     public static double NOMINAL_VOLTAGE = 12.8; // voltage PIDF was tuned at, auto-compensates battery drain
 
     // -----------------------------------------------------------------------
@@ -75,7 +79,7 @@ public class Constant {
     // -----------------------------------------------------------------------
     // HOOD
     // -----------------------------------------------------------------------
-    public static double HOOD_INIT = 0.14;           // rest position (not shooting)
+    public static double HOOD_INIT = 0.07;           // rest position (not shooting)
     public static double HOOD_MAX  = 0.81 + HOOD_INIT;
 
     // -----------------------------------------------------------------------
@@ -125,12 +129,13 @@ public class Constant {
     public static int VELOCITY_TOLERANCE = 120; //120
 
     // How long pivot travels up before coming back down (ms).
-    public static int PIVOT_UP_TIMER   = 90; //70 if module
+    public static int PIVOT_UP_TIMER   = 95; //70 if module
     public static int PIVOT_DOWN_TIMER = 160; //125 if module
 
     // Milliseconds before spindexer gives up and retries if it can't reach position.
     //   Getting stuck often → INCREASE
     public static int ANTI_STUCK_TIMER = 750;
+    public static float RESET_TIMER = 600;
 
     public static float CALIBRATE_TIMER = 10;
 
@@ -141,35 +146,35 @@ public class Constant {
     // -----------------------------------------------------------------------
     public static final TreeMap<Double, double[]> SHOOTING_TABLE = new TreeMap<>();
     static {
-//        SHOOTING_TABLE.put(20.0, new double[]{0,0});
-//        SHOOTING_TABLE.put(30.0,  new double[]{1380, 30});
-//        SHOOTING_TABLE.put(40.0,  new double[]{1440, 35});
-//        SHOOTING_TABLE.put(50.0,  new double[]{1220, 32});
-//        SHOOTING_TABLE.put(60.0,  new double[]{1300, 35});
-//        SHOOTING_TABLE.put(70.0,  new double[]{1400, 40});
-//        SHOOTING_TABLE.put(80.0,  new double[]{1500, 45});
-//        SHOOTING_TABLE.put(90.0,  new double[]{1550, 45});
-//        SHOOTING_TABLE.put(100.0, new double[]{1620, 45});
-//        SHOOTING_TABLE.put(110.0, new double[]{1700, 45});
-//        SHOOTING_TABLE.put(120.0, new double[]{1780, 45});
-//        SHOOTING_TABLE.put(130.0, new double[]{1860, 45});
-//        SHOOTING_TABLE.put(140.0, new double[]{1900, 45});
-//        SHOOTING_TABLE.put(150.0, new double[]{2140, 45});
-//        SHOOTING_TABLE.put(160.0, new double[]{2140, 45});
         SHOOTING_TABLE.put(20.0, new double[]{1240,27});
-        SHOOTING_TABLE.put(30.0,  new double[]{1300, 30});
-        SHOOTING_TABLE.put(40.0,  new double[]{1380, 35});
-        SHOOTING_TABLE.put(50.0,  new double[]{1420, 40});
-        SHOOTING_TABLE.put(60.0,  new double[]{1540, 45});
-        SHOOTING_TABLE.put(70.0,  new double[]{1580, 45});
-        SHOOTING_TABLE.put(80.0,  new double[]{1640, 45});
-        SHOOTING_TABLE.put(90.0,  new double[]{1670, 45});
-        SHOOTING_TABLE.put(100.0, new double[]{1720, 45});
-        SHOOTING_TABLE.put(110.0, new double[]{1880, 45});
-        SHOOTING_TABLE.put(120.0, new double[]{1980, 45});
-        SHOOTING_TABLE.put(130.0, new double[]{2200, 45});
-        SHOOTING_TABLE.put(140.0, new double[]{2240, 45});
-        SHOOTING_TABLE.put(150.0, new double[]{2380, 45});
+        SHOOTING_TABLE.put(30.0,  new double[]{1380, 30});
+        SHOOTING_TABLE.put(40.0,  new double[]{1440, 35});
+        SHOOTING_TABLE.put(50.0,  new double[]{1220, 32});
+        SHOOTING_TABLE.put(60.0,  new double[]{1460, 35});
+        SHOOTING_TABLE.put(70.0,  new double[]{1520, 40});
+        SHOOTING_TABLE.put(80.0,  new double[]{1610, 45});
+        SHOOTING_TABLE.put(90.0,  new double[]{1690, 45});
+        SHOOTING_TABLE.put(100.0, new double[]{1750, 45});
+        SHOOTING_TABLE.put(110.0, new double[]{1840, 45});
+        SHOOTING_TABLE.put(120.0, new double[]{1900, 45});
+        SHOOTING_TABLE.put(130.0, new double[]{1980, 45});
+        SHOOTING_TABLE.put(140.0, new double[]{2040, 45});
+        SHOOTING_TABLE.put(150.0, new double[]{2120, 45});
+        //SHOOTING_TABLE.put(160.0, new double[]{2120, 45});
+//        SHOOTING_TABLE.put(20.0, new double[]{1240,27});
+//        SHOOTING_TABLE.put(30.0,  new double[]{1300, 30});
+//        SHOOTING_TABLE.put(40.0,  new double[]{1380, 35});
+//        SHOOTING_TABLE.put(50.0,  new double[]{1420, 40});
+//        SHOOTING_TABLE.put(60.0,  new double[]{1540, 45});
+//        SHOOTING_TABLE.put(70.0,  new double[]{1580, 45});
+//        SHOOTING_TABLE.put(80.0,  new double[]{1640, 45});
+//        SHOOTING_TABLE.put(90.0,  new double[]{1670, 45});
+//        SHOOTING_TABLE.put(100.0, new double[]{1720, 45});
+//        SHOOTING_TABLE.put(110.0, new double[]{1880, 45});
+//        SHOOTING_TABLE.put(120.0, new double[]{1980, 45});
+//        SHOOTING_TABLE.put(130.0, new double[]{2200, 45});
+//        SHOOTING_TABLE.put(140.0, new double[]{2240, 45});
+//        SHOOTING_TABLE.put(150.0, new double[]{2380, 45});
     }
 
     // -----------------------------------------------------------------------

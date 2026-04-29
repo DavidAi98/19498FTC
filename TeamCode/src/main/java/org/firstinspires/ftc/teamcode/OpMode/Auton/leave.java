@@ -13,10 +13,10 @@ public class leave extends LinearOpMode {
     @Override
     public void runOpMode() {
 
-        leftFront  = hardwareMap.get(DcMotor.class, "leftFront");
-        leftBack   = hardwareMap.get(DcMotor.class, "leftBack");
-        rightFront = hardwareMap.get(DcMotor.class, "rightFront");
-        rightBack  = hardwareMap.get(DcMotor.class, "rightBack");
+        leftFront  = hardwareMap.get(DcMotor.class, "leftFrontMotor");
+        leftBack   = hardwareMap.get(DcMotor.class, "leftBackMotor");
+        rightFront = hardwareMap.get(DcMotor.class, "rightFrontMotor");
+        rightBack  = hardwareMap.get(DcMotor.class, "rightBackMotor");
 
         leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
         leftBack.setDirection(DcMotorSimple.Direction.REVERSE);

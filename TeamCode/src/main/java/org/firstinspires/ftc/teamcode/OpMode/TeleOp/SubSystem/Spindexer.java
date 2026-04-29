@@ -76,12 +76,12 @@ public class Spindexer {
             artifactCount = 0;
             Index = 1;
             setSpindexer(Constant.INTAKE_POS1);
-            if (resetTimer.milliseconds() >= 2 * Constant.ANTI_STUCK_TIMER) {
+            if (resetTimer.milliseconds() >= 3 * Constant.RESET_TIMER) {
                 spindexerEncoder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                 spindexerEncoder.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
                 intake.setPower(0);
                 encoderResetDone = true;
-            } else if (resetTimer.milliseconds() >= Constant.ANTI_STUCK_TIMER){
+            } else if (resetTimer.milliseconds() >= 2 * Constant.RESET_TIMER){
                 intake.setPower(-1);
             } else {
                 intake.setPower(0);
@@ -154,9 +154,9 @@ public class Spindexer {
                 }
 
                 if (sensorInUse == 1) {
-                    colorDetected = artifactCount < 3 && colorSensor1.blue() + colorSensor1.green() > 175;
+                    colorDetected = artifactCount < 3 && colorSensor1.blue() + colorSensor1.green() > 180;
                 } else if (sensorInUse == 2) {
-                    colorDetected = artifactCount < 3 && colorSensor2.blue() + colorSensor2.green() > 175;
+                    colorDetected = artifactCount < 3 && colorSensor2.blue() + colorSensor2.green() > 180;
                 }
 
                 if (colorDetected || sensorInUse == -1 || skipSlot) {
@@ -248,7 +248,7 @@ public class Spindexer {
             case 2:
                 targetTicks = getOuttakeTick(nearestIndex);
                 boolean inSlot = withinTarget(targetTicks, Constant.OUTTAKE_TICK_TOLERANCE);
-                boolean notStuck = withinTarget(targetTicks, Constant.OUTTAKE_TICK_TOLERANCE-200);
+                boolean notStuck = withinTarget(targetTicks, Constant.OUTTAKE_TICK_TOLERANCE - 200);
                 if (inSlot && shooterReady) {
                     slots[nearestIndex - 1] = null;
                     artifactCount--;
@@ -292,12 +292,12 @@ public class Spindexer {
             artifactCount = 0;
             Index = 1;
             setSpindexer(Constant.INTAKE_POS1);
-            if (resetTimer.milliseconds() >= 2 * Constant.ANTI_STUCK_TIMER) {
+            if (resetTimer.milliseconds() >= 3 * Constant.RESET_TIMER) {
                 spindexerEncoder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                 spindexerEncoder.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
                 intake.setPower(0);
                 encoderResetDone = true;
-            } else if (resetTimer.milliseconds() >= Constant.ANTI_STUCK_TIMER) {
+            } else if (resetTimer.milliseconds() >= 2 * Constant.RESET_TIMER) {
                 intake.setPower(-1);
             } else {
                 intake.setPower(0);
@@ -332,9 +332,9 @@ public class Spindexer {
                 }
 
                 if (sensorInUse == 1) {
-                    colorDetected = artifactCount < 3 && colorSensor1.blue() + colorSensor1.green() > 175;
+                    colorDetected = artifactCount < 3 && colorSensor1.blue() + colorSensor1.green() > 180;
                 } else if (sensorInUse == 2) {
-                    colorDetected = artifactCount < 3 && colorSensor2.blue() + colorSensor2.green() > 175;
+                    colorDetected = artifactCount < 3 && colorSensor2.blue() + colorSensor2.green() > 180;
                 }
 
                 if (colorDetected || sensorInUse == -1) {

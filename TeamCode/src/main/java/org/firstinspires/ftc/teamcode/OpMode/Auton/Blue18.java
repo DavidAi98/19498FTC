@@ -286,8 +286,8 @@ public class Blue18 extends OpMode {
         }
 
         Pose p = follower.getPose();
-        Constant.AUTON_LAST_X           = 113.5 - p.getX();
-        Constant.AUTON_LAST_Y           =   8 - p.getY();
+        Constant.AUTON_LAST_X           = 110 - p.getX();
+        Constant.AUTON_LAST_Y           =   10 - p.getY();
         Constant.AUTON_LAST_HEADING_RAD = p.getHeading() - Math.PI;
         Constant.AUTON_LAST_HEADING_DEG = Math.toDegrees(Constant.AUTON_LAST_HEADING_RAD);
 

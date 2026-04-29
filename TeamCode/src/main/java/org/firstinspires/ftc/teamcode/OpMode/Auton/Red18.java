@@ -312,7 +312,7 @@ public class Red18 extends OpMode {
         }
 
         Pose p = follower.getPose();
-        Constant.AUTON_LAST_X = p.getX() - 31;
+        Constant.AUTON_LAST_X = p.getX() - 30;
         Constant.AUTON_LAST_Y = p.getY() - 11.5;
         Constant.AUTON_LAST_HEADING_RAD = p.getHeading();
         Constant.AUTON_LAST_HEADING_DEG = Math.toDegrees(Constant.AUTON_LAST_HEADING_RAD);
