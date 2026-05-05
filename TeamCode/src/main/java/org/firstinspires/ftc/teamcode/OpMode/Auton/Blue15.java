@@ -87,14 +87,14 @@
                                 new BezierLine(
                                         new Pose(17, 65),
 
-                                        new Pose(11.5, 63)
+                                        new Pose(11, 63)
                                 )
                         ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(147.5))
                         .build();
 
                 ShootGate = follower.pathBuilder().addPath(
                                 new BezierLine(
-                                        new Pose(11.5, 63),
+                                        new Pose(11, 63),
 
                                         new Pose(58, 77)
                                 )

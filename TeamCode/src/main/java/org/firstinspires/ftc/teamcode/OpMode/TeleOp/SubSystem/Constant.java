@@ -121,7 +121,7 @@ public class Constant {
     // How many encoder ticks away from target still counts as "in slot".
     //   Artifacts not firing → INCREASE (spindexer settling slowly)
     //   Artifacts fire at wrong slot → DECREASE (too loose)
-    public static int OUTTAKE_TICK_TOLERANCE = 600; //maybe 750 if module
+    public static int OUTTAKE_TICK_TOLERANCE = 500; //maybe 750 if module
 
     // RPM error allowed before isReady() returns true and fires the ball.
     // Note: isReady() has a (2200/currentVelo)^2 term making this looser than it looks.
@@ -146,35 +146,36 @@ public class Constant {
     // -----------------------------------------------------------------------
     public static final TreeMap<Double, double[]> SHOOTING_TABLE = new TreeMap<>();
     static {
-        SHOOTING_TABLE.put(20.0, new double[]{1240,27});
-        SHOOTING_TABLE.put(30.0,  new double[]{1380, 30});
-        SHOOTING_TABLE.put(40.0,  new double[]{1440, 35});
-        SHOOTING_TABLE.put(50.0,  new double[]{1220, 32});
-        SHOOTING_TABLE.put(60.0,  new double[]{1460, 35});
-        SHOOTING_TABLE.put(70.0,  new double[]{1520, 40});
-        SHOOTING_TABLE.put(80.0,  new double[]{1610, 45});
-        SHOOTING_TABLE.put(90.0,  new double[]{1690, 45});
-        SHOOTING_TABLE.put(100.0, new double[]{1750, 45});
+        // ACTUAL COMP
+        SHOOTING_TABLE.put(20.0, new double[]{1250,27});
+        SHOOTING_TABLE.put(30.0,  new double[]{1325, 30});
+        SHOOTING_TABLE.put(40.0,  new double[]{1400+30, 35});
+        SHOOTING_TABLE.put(50.0,  new double[]{1375+30, 32});
+        SHOOTING_TABLE.put(60.0,  new double[]{1440+30, 35});
+        SHOOTING_TABLE.put(70.0,  new double[]{1520+30, 40});
+        SHOOTING_TABLE.put(80.0,  new double[]{1640+30, 45});
+        SHOOTING_TABLE.put(90.0,  new double[]{1690+30, 45});
+        SHOOTING_TABLE.put(100.0, new double[]{1750+30, 45});
         SHOOTING_TABLE.put(110.0, new double[]{1840, 45});
         SHOOTING_TABLE.put(120.0, new double[]{1900, 45});
         SHOOTING_TABLE.put(130.0, new double[]{1980, 45});
         SHOOTING_TABLE.put(140.0, new double[]{2040, 45});
         SHOOTING_TABLE.put(150.0, new double[]{2120, 45});
-        //SHOOTING_TABLE.put(160.0, new double[]{2120, 45});
-//        SHOOTING_TABLE.put(20.0, new double[]{1240,27});
-//        SHOOTING_TABLE.put(30.0,  new double[]{1300, 30});
-//        SHOOTING_TABLE.put(40.0,  new double[]{1380, 35});
-//        SHOOTING_TABLE.put(50.0,  new double[]{1420, 40});
-//        SHOOTING_TABLE.put(60.0,  new double[]{1540, 45});
-//        SHOOTING_TABLE.put(70.0,  new double[]{1580, 45});
-//        SHOOTING_TABLE.put(80.0,  new double[]{1640, 45});
-//        SHOOTING_TABLE.put(90.0,  new double[]{1670, 45});
-//        SHOOTING_TABLE.put(100.0, new double[]{1720, 45});
-//        SHOOTING_TABLE.put(110.0, new double[]{1880, 45});
-//        SHOOTING_TABLE.put(120.0, new double[]{1980, 45});
-//        SHOOTING_TABLE.put(130.0, new double[]{2200, 45});
-//        SHOOTING_TABLE.put(140.0, new double[]{2240, 45});
-//        SHOOTING_TABLE.put(150.0, new double[]{2380, 45});
+
+//        SHOOTING_TABLE.put(20.0, new double[]{1250+30,27});
+//        SHOOTING_TABLE.put(30.0,  new double[]{1325+30, 30});
+//        SHOOTING_TABLE.put(40.0,  new double[]{1400+30, 35});
+//        SHOOTING_TABLE.put(50.0,  new double[]{1375+30, 32});
+//        SHOOTING_TABLE.put(60.0,  new double[]{1440+30, 35});
+//        SHOOTING_TABLE.put(70.0,  new double[]{1520+30, 40});
+//        SHOOTING_TABLE.put(80.0,  new double[]{1640+30, 45});
+//        SHOOTING_TABLE.put(90.0,  new double[]{1690+30, 45});
+//        SHOOTING_TABLE.put(100.0, new double[]{1750+30, 45});
+//        SHOOTING_TABLE.put(110.0, new double[]{1840+30, 45});
+//        SHOOTING_TABLE.put(120.0, new double[]{1900+30, 45});
+//        SHOOTING_TABLE.put(130.0, new double[]{1980+30, 45});
+//        SHOOTING_TABLE.put(140.0, new double[]{2040+30, 45});
+//        SHOOTING_TABLE.put(150.0, new double[]{2120+30, 45});
     }
 
     // -----------------------------------------------------------------------

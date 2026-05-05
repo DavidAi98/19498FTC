@@ -149,7 +149,7 @@ public class RedFar extends OpMode {
 
             // Sweep across row 3
             case 1:
-                if (spindexer.artifactCount == 3 && spindexer.intakeStage == -1) {
+                if (spindexer.artifactCount == 3 && spindexer.intakeStage == -1 && opmodeTimer.getElapsedTimeSeconds() > 2) {
                     spindexer.startOuttake();
                     setPathState(2);
                 }

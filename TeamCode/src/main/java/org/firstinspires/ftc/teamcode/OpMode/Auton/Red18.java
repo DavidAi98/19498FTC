@@ -78,21 +78,21 @@ public class Red18 extends OpMode {
                             new BezierCurve(
                                     new Pose(58, 77).mirror(),
                                     new Pose(42.000, 64.000).mirror(),
-                                    new Pose(16, 65).mirror()
+                                    new Pose(18, 65).mirror()
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
                     .addPath(
                             new BezierLine(
-                                    new Pose(16, 65).mirror(),
+                                    new Pose(18, 65).mirror(),
 
-                                    new Pose(12.3, 61.8).mirror()
+                                    new Pose(12.5, 63.5).mirror()
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(32.5))
                     .build();
 
             ShootGate = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(12.3, 61.8).mirror(),
+                                    new Pose(12.5, 63.5).mirror(),
                                     // (12.3, 61.2) 32.5deg
                                     new Pose(58, 77).mirror()
                             )
@@ -137,7 +137,7 @@ public class Red18 extends OpMode {
 
     private double angle       = 130;
     private double odoDist     = 72;
-    private String targetMotif = "Null";
+    private String targetMotif = "PPP";
 
     public final Pose START_POS = new Pose(31, 135, Math.toRadians(270)).mirror();
 
@@ -170,7 +170,7 @@ public class Red18 extends OpMode {
             case 10:
                 if (!follower.isBusy() && spindexer.outtakeStage == -1) {
                     angle = 197;
-                    odoDist     = 76;
+                    odoDist     = 77;
                     follower.followPath(paths.IntakeSecondRow, true);
                     spindexer.startIntake();
                     setPathState(11);
@@ -287,18 +287,8 @@ public class Red18 extends OpMode {
     public void loop() {
         follower.update();
 
-        if (targetMotif.equals("Null")) {
-            targetMotif = shooter.detectMotif();
-        }
-
         shooter.updateShootingParams(odoDist, 24, spindexer.outtakeStage != -1);
-
-        if (targetMotif.equals("Null")) {
-            shooter.updateTurret(70, 0);
-        } else {
-            shooter.updateTurret(angle, 0);
-        }
-
+        shooter.updateTurret(angle, 0);
         shooter.runShooter(spindexer.outtakeStage != -1);
         spindexer.update(targetMotif, shooter.isReady());
 

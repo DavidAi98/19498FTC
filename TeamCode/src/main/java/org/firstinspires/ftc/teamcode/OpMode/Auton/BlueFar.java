@@ -76,17 +76,18 @@ public class BlueFar extends OpMode {
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(145))
                     .addPath(
-                            new BezierLine(
+                            new BezierCurve(
                                     new Pose(14, 13),
-
-                                    new Pose(14, 30)
+                                    new Pose(18,23),
+                                    new Pose(13, 34)
                             )
-                    ).setConstantHeadingInterpolation(Math.toRadians(145))
+                    ).setLinearHeadingInterpolation(Math.toRadians(145), Math.toRadians(170))
+
                     .build();
 
             ShootCycle = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(14, 35),
+                                    new Pose(13, 34),
 
                                     new Pose(57, 15)
                             )
@@ -119,7 +120,7 @@ public class BlueFar extends OpMode {
     private Spindexer spindexer;
 
     private double angle       = 247;
-    private double odoDist     = 148;
+    private double odoDist     = 149;
     private String targetMotif = "PPP";
 
     public static final Pose START_POS = new Pose(55, 8, Math.toRadians(90));
@@ -137,6 +138,7 @@ public class BlueFar extends OpMode {
 
             // PRELOAD
             case -1:
+                Constant.VELOCITY_TOLERANCE = 45;
                 follower.setMaxPower(1);
                 setPathState(0);
                 break;
@@ -160,6 +162,7 @@ public class BlueFar extends OpMode {
 
             // Return to shooting position
             case 2:
+                Constant.VELOCITY_TOLERANCE = 120;
                 if (spindexer.artifactCount == 0 && spindexer.outtakeStage == -1) {
                     spindexer.startIntake();
                     follower.followPath(paths.IntakeThirdRow, true);
@@ -178,7 +181,7 @@ public class BlueFar extends OpMode {
             // Drive to far intake zone
             case 3:
                 if (!follower.isBusy()) {
-                    angle = 315;
+                    angle = 312;
                     odoDist = 135;
                     follower.followPath(paths.ShootThirdRow, true);
                     setPathState(4);
@@ -205,7 +208,7 @@ public class BlueFar extends OpMode {
                     setPathState(100);
                 }
                 if (!follower.isBusy() || spindexer.artifactCount == 3) {
-                    angle = 313;
+                    angle = 311;
                     odoDist = 135;
                     follower.followPath(paths.ShootCycle, true);
                     setPathState(4);
@@ -267,7 +270,7 @@ public class BlueFar extends OpMode {
         autonomousPathUpdate();
 
         shooter.updateShootingParams(odoDist, 20, spindexer.outtakeStage != -1);
-        shooter.updateTurret(angle, 0);
+        shooter.updateTurret(angle);
         shooter.runShooter(spindexer.outtakeStage != -1);
         spindexer.update(targetMotif, shooter.isReady());
 
